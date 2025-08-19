@@ -9,7 +9,8 @@
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
 
-UBTTask_FindPlayer::UBTTask_FindPlayer(FObjectInitializer const& ObjectInitializer)
+UBTTask_FindPlayer::UBTTask_FindPlayer(FObjectInitializer const& ObjectInitializer) :
+	UBTTask_BlackboardBase(ObjectInitializer)
 {
 	
 }

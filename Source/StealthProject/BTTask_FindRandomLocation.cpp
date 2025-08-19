@@ -6,7 +6,8 @@
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer)
+UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer) :
+	UBTTask_BlackboardBase(ObjectInitializer)
 {
 	NodeName = "Find a random location in within search radius in Navmesh";
 }

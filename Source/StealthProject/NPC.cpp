@@ -53,6 +53,11 @@ UBehaviorTree* ANPC::GetBehaviorTree() const
 	return Tree;
 }
 
+APatrolPath* ANPC::GetPatrolPath()
+{
+	return PatrolPath;
+}
+
 // Called every frame
 void ANPC::Tick(float DeltaTime)
 {
