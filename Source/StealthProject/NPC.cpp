@@ -62,7 +62,7 @@ APatrolPath* ANPC::GetPatrolPath()
 void ANPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RayCast();
+	//RayCast();
 
 }
 
