@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "AgentBeliefs.generated.h"
+//#include "UObject/NoExportTypes.h"
+//#include "AgentBeliefs.generated.h"
 
 /**
  * 
  */
-UCLASS()
-class STEALTHPROJECT_API UAgentBeliefs : public UObject
+//UCLASS()
+class STEALTHPROJECT_API AgentBeliefs /*: public UObject*/
 {
-	GENERATED_BODY()
+	//GENERATED_BODY()
 	
 
 public:
@@ -25,13 +25,15 @@ public:
 
 	FVector const GetLocation();
 
+	AgentBeliefs(FString name);
+
 
 	class Builder
 	{
-		UAgentBeliefs* Beliefs;
+		TSharedPtr<AgentBeliefs> Beliefs;
 
 	public:
-		Builder(UObject* object, const FString& name);
+		Builder(/*UObject* object,*/const FString name);
 
 		//I don't understand why this is what works, I tried my own way first but a youtube example and ChatGPT told me it had to be written like this
 		Builder& WithCondition(TFunction<bool()> func)
@@ -46,7 +48,7 @@ public:
 			return *this;
 		}
 
-		UAgentBeliefs* Build()
+		TSharedPtr<AgentBeliefs> Build()
 		{
 			return Beliefs;
 		}

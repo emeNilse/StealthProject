@@ -3,21 +3,23 @@
 
 #include "AgentBeliefs.h"
 
-bool const UAgentBeliefs::Evaluate()
+AgentBeliefs::AgentBeliefs(FString name)
+{
+	Name = name;
+}
+
+bool const AgentBeliefs::Evaluate()
 {
 	return ConditionFunc ? ConditionFunc() : false;
 }
 
-FVector const UAgentBeliefs::GetLocation()
+FVector const AgentBeliefs::GetLocation()
 {
 	return ObservedLocation ? ObservedLocation() : FVector::ZeroVector;
 }
 
-UAgentBeliefs::Builder::Builder(UObject* object, const FString& name)
-{
-	Beliefs = NewObject<UAgentBeliefs>(object);
-	Beliefs->Name = name;
-}
+AgentBeliefs::Builder::Builder(/*UObject* object, */const FString name) : Beliefs(MakeShared<AgentBeliefs>(name))
+{}
 
 
 
