@@ -19,9 +19,9 @@ public:
 
 	float Cost;
 
-	//FORCEINLINE const FString& GetName() const { return Name; }
+	// const FString& GetName() const { return Name; }
 	
-	//FORCEINLINE float GetCost() const { return Cost; }
+	// float GetCost() const { return Cost; }
 
 	TSet<TSharedPtr<AgentBeliefs>> Preconditions;
 

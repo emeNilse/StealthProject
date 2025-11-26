@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GoapAction.h"
 #include "GoapComponent.generated.h"
 
 
@@ -15,6 +16,8 @@ class STEALTHPROJECT_API UGoapComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UGoapComponent();
+
+	TSet<GoapAction*> Actions;
 
 protected:
 	// Called when the game starts
