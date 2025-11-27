@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
-#include "GoapComponent.h"
 
 //class AGoapAgent;
 class USensor;
+class UGoapComponent;
 /**
  * 
  */
@@ -16,7 +16,7 @@ class STEALTHPROJECT_API BeliefFactory
 private:
 
 	UGoapComponent* Component;
-	TMap<FString, TSharedPtr<AgentBeliefs>>& Beliefs;
+	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
 
 
 public:
