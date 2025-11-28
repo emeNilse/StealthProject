@@ -53,6 +53,11 @@ UBehaviorTree* ANPC::GetBehaviorTree() const
 	return Tree;
 }
 
+UBlackboardData* ANPC::GetBlackBoardData() const
+{
+	return BlackboardAsset;
+}
+
 APatrolPath* ANPC::GetPatrolPath()
 {
 	return PatrolPath;

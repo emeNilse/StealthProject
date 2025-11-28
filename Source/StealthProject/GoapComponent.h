@@ -9,7 +9,6 @@
 #include "ActionPlan.h"
 #include "AI_Controller.h"
 #include "AgentBeliefs.h"
-#include "BeliefFactory.h"
 #include "GoapPlannerInterface.h"
 #include "GoapFactorySubsystem.h"
 #include "GoapComponent.generated.h"

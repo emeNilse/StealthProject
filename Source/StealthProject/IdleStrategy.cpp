@@ -25,3 +25,8 @@ void IdleStrategy::Tick(float DeltaTime)
 {
 	Timer->Tick(DeltaTime);
 }
+
+void IdleStrategy::Stop()
+{
+	Timer->Stop();
+}

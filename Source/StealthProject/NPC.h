@@ -34,6 +34,8 @@ public:
 
 	UBehaviorTree* GetBehaviorTree() const;
 
+	UBlackboardData* GetBlackBoardData() const;
+
 	APatrolPath* GetPatrolPath();
 
 protected:
@@ -46,5 +48,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UBlackboardData* BlackboardAsset;
 
 };

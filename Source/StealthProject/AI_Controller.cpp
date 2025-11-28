@@ -11,6 +11,12 @@
 AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
 {
 	SetupPerceptionSystem();
+
+	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAsset(TEXT("/StealthProject/Content/AI/Controller/BP_BlackboardData"));
+	if (BBAsset.Succeeded())
+	{
+		BlackboardAsset = BBAsset.Object;
+	}*/
 }
 
 void AAI_Controller::OnPossess(APawn* InPawn)
@@ -18,12 +24,17 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	if (ANPC* const NPC = Cast<ANPC>(InPawn))
 	{
-		if (UBehaviorTree* const Tree = NPC->GetBehaviorTree())
+		/*if (UBehaviorTree* const Tree = NPC->GetBehaviorTree())
 		{
 			UBlackboardComponent* b;
 			UseBlackboard(Tree->BlackboardAsset, b);
 			Blackboard = b;
 			RunBehaviorTree(Tree);
+		}*/
+
+		if (NPC->GetBlackBoardData())
+		{
+			UseBlackboard(NPC->GetBlackBoardData(), BlackboardComponent);
 		}
 	}
 }

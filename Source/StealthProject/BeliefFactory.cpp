@@ -2,7 +2,7 @@
 
 
 #include "BeliefFactory.h"
-
+#include "GoapComponent.h"
 
 
 BeliefFactory::BeliefFactory(UGoapComponent* component, TMap<FString, TSharedPtr<AgentBeliefs>>& beliefs) : Component(component), Beliefs(beliefs)

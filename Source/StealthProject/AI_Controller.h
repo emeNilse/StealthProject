@@ -25,6 +25,9 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UBlackboardComponent* BlackboardComponent;
+
 private:
 	class UAISenseConfig_Sight* SightConfig;
 

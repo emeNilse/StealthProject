@@ -46,3 +46,4 @@ void CountdownTimer::Stop()
 	bRunning = false;
 	OnTimerStop.Broadcast();
 }
+

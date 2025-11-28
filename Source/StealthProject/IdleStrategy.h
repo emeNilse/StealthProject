@@ -26,7 +26,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	//will idle need a Stop()?
+	virtual void Stop() override;
 
 	virtual bool CanPerform() const override { return true; }
 
