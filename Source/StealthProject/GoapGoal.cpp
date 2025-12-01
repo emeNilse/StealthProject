@@ -14,5 +14,5 @@ GoapGoal::~GoapGoal()
 
 GoapGoal::Builder::Builder(const FString name)
 {
-	goal->GoapGoal::GoapGoal(name);
+	goal = MakeShared<GoapGoal>(name);
 }

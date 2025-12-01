@@ -72,16 +72,13 @@ void UGoapComponent::SetupBeliefs()
 
 	Factory.AddBelief("AgentStaminaLow", [this]() {return Stamina < 10.0;});
 
-
-
 	Factory.AddLocationBelief("AgentAtOilWell", 3.f, OilWell);
-
 
 }
 
 void UGoapComponent::SetupAction()
 {
-
+	Actions.Add(GoapAction::Builder("Relax").WithStrategy(MakeShared<IdleStrategy>(5)).AddEffect(*Beliefs["Nothing"]).Build());
 }
 
 void UGoapComponent::SetupGoals()

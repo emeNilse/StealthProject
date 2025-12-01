@@ -12,13 +12,13 @@
 class STEALTHPROJECT_API ActionPlan
 {
 public:
-	GoapGoal* AgentGoal;
+	TSharedPtr<GoapGoal> AgentGoal;
 
-	TArray<GoapAction*> AgentActions;
+	TArray<TSharedPtr<GoapAction>> AgentActions;
 
 	float TotalCost;
 
-	ActionPlan(GoapGoal* goal, TArray<GoapAction*> actions, float totalCost);
+	ActionPlan(TSharedPtr<GoapGoal> goal, TArray<TSharedPtr<GoapAction>> actions, float totalCost);
 
 	ActionPlan();
 

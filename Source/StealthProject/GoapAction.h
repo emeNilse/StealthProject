@@ -27,7 +27,7 @@ public:
 
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
-	IGoapActionStrategy* Strategy;
+	TSharedPtr<IGoapActionStrategy> Strategy;
 	
 	bool complete = Strategy->Complete();
 
@@ -40,7 +40,7 @@ public:
 
 	class Builder
 	{
-		GoapAction* action;
+		TSharedPtr<GoapAction> action;
 
 	public:
 
@@ -52,7 +52,7 @@ public:
 			return *this;
 		}
 
-		Builder& WithStrategy(IGoapActionStrategy* strategy)
+		Builder& WithStrategy(TSharedPtr<IGoapActionStrategy> strategy)
 		{
 			action->Strategy = strategy;
 			return *this;
@@ -72,7 +72,7 @@ public:
 			return *this;
 		}
 
-		GoapAction* Build()
+		TSharedPtr<GoapAction> Build()
 		{
 			return action;
 		}

@@ -9,6 +9,7 @@
 #include "ActionPlan.h"
 #include "AI_Controller.h"
 #include "AgentBeliefs.h"
+#include "IdleStrategy.h"
 #include "GoapPlannerInterface.h"
 #include "GoapFactorySubsystem.h"
 #include "GoapComponent.generated.h"
@@ -25,13 +26,13 @@ public:
 
 	AAI_Controller* AI;
 
-	GoapAction* CurrentAction;
-	TSet<GoapAction*> Actions;
+	TSharedPtr<GoapAction> CurrentAction;
+	TSet<TSharedPtr<GoapAction>> Actions;
 
-	GoapGoal* CurrentGoal;
+	TSharedPtr<GoapGoal> CurrentGoal;
 	TSet<GoapGoal*> Goals;
 
-	ActionPlan* ActionPlan;
+	TSharedPtr<ActionPlan> ActionPlan;
 	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
 
 	TSharedPtr<IGoapPlannerInterface> GoapPlanner;
@@ -76,5 +77,5 @@ public:
 
 private:
 
-	GoapGoal* LastGoal;
+	TSharedPtr<GoapGoal> LastGoal;
 };

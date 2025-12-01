@@ -18,8 +18,10 @@ FVector const AgentBeliefs::GetLocation()
 	return ObservedLocation ? ObservedLocation() : FVector::ZeroVector;
 }
 
-AgentBeliefs::Builder::Builder(/*UObject* object, */const FString name) : Beliefs(MakeShared<AgentBeliefs>(name))
-{}
+AgentBeliefs::Builder::Builder(/*UObject* object, */const FString name) : Belief(MakeShared<AgentBeliefs>(name))
+{
+	//Belief = new AgentBeliefs(name);
+}
 
 
 

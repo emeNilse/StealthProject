@@ -11,7 +11,7 @@ ActionPlan::~ActionPlan()
 {
 }
 
-ActionPlan::ActionPlan(GoapGoal* goal, TArray<GoapAction*> actions, float totalCost)
+ActionPlan::ActionPlan(TSharedPtr<GoapGoal> goal, TArray<TSharedPtr<GoapAction>> actions, float totalCost)
 {
 	AgentGoal = goal;
 	AgentActions = actions;

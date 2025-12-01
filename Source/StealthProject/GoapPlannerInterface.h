@@ -24,6 +24,6 @@ class IGoapPlannerInterface
 {
 public:
 	//virtual ~IGoapPlannerInterface();
-	virtual ActionPlan* Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, GoapGoal* mostRecentGoal = nullptr) = 0;
+	virtual ActionPlan* Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) = 0;
 
 };

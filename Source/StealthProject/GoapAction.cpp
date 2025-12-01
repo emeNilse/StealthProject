@@ -44,7 +44,7 @@ void GoapAction::Stop()
 
 GoapAction::Builder::Builder(const FString name)
 {
-	action->GoapAction::GoapAction(name);
+	action = MakeShared<GoapAction>(name);
 }
 
 

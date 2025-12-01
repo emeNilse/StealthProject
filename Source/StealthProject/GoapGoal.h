@@ -27,7 +27,7 @@ public:
 
 	class Builder
 	{
-		GoapGoal* goal;
+		TSharedPtr<GoapGoal> goal;
 
 		Builder(const FString name);
 
@@ -41,7 +41,7 @@ public:
 			goal->DesiredEffects.Add(MakeShared<AgentBeliefs>(effect));
 		}
 
-		GoapGoal* Build()
+		TSharedPtr<GoapGoal> Build()
 		{
 			return goal;
 		}

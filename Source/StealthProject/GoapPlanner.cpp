@@ -11,11 +11,11 @@ GoapPlanner::~GoapPlanner()
 {
 }
 
-ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, GoapGoal* mostRecentGoal)
+ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
 {
-	TArray<GoapGoal*> orderdGoals = goals.Array();
+	TArray<TSharedPtr<GoapGoal>> orderdGoals = goals.Array();
 
-	orderdGoals = orderdGoals.FilterByPredicate([](GoapGoal* G)
+	orderdGoals = orderdGoals.FilterByPredicate([](TSharedPtr<GoapGoal> G)
 		{
 			for (TSharedPtr<AgentBeliefs> belief : G->DesiredEffects)
 			{
@@ -27,16 +27,16 @@ ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, Goa
 			return false;
 		});
 
-	orderdGoals.Sort([mostRecentGoal](const GoapGoal& A, const GoapGoal& B)
+	orderdGoals.Sort([mostRecentGoal](const TSharedPtr<GoapGoal>& A, const TSharedPtr<GoapGoal>& B)
 		{
-			float APriority = (&A == mostRecentGoal) ? A.Priority - 0.01f : A.Priority;
+			float APriority = (A.Get() == mostRecentGoal.Get()) ? A->Priority - 0.01f : A->Priority;
 
-			float BPriority = (&B == mostRecentGoal) ? B.Priority - 0.01f : B.Priority;
+			float BPriority = (B.Get() == mostRecentGoal.Get()) ? B->Priority - 0.01f : B->Priority;
 
 			return APriority > BPriority;
 		});
 
-	for (GoapGoal* goal : orderdGoals)
+	for (TSharedPtr<GoapGoal> goal : orderdGoals)
 	{
 		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 
@@ -47,7 +47,7 @@ ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, Goa
 				continue;
 			}
 
-			TArray<GoapAction*> goapActionStack;
+			TArray<TSharedPtr<GoapAction>> goapActionStack;
 			//Node* currentNode = goalNode;
 			while (goalNode->Leaves.Num() > 0)
 			{
@@ -74,16 +74,16 @@ ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, Goa
 	return nullptr;
 }
 
-bool GoapPlanner::FindPath(Node* parent, TSet<GoapAction*>& actions)
+bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 {
-	TArray<GoapAction*> orderdActions = actions.Array();
+	TArray<TSharedPtr<GoapAction>> orderdActions = actions.Array();
 
-	orderdActions.Sort([](const GoapAction& A, const GoapAction& B)
+	orderdActions.Sort([](const TSharedPtr<GoapAction>& A, const TSharedPtr<GoapAction>& B)
 		{
-			return A.Cost < B.Cost;
+			return A->Cost < B->Cost;
 		});
 	
-	for (GoapAction* action : orderdActions)
+	for (TSharedPtr<GoapAction> action : orderdActions)
 	{
 		TSet<TSharedPtr<AgentBeliefs>> requiredEffects = parent->RequiredEffects;
 
@@ -108,7 +108,7 @@ bool GoapPlanner::FindPath(Node* parent, TSet<GoapAction*>& actions)
 				newRequiredEffects = newRequiredEffects.Difference(action->Effects);
 				newRequiredEffects = newRequiredEffects.Union(action->Preconditions);
 
-				TSet<GoapAction*> newAvailableActions = actions;
+				TSet<TSharedPtr<GoapAction>> newAvailableActions = actions;
 				newAvailableActions.Remove(action);
 
 				Node* newNode = new Node(parent, action, newRequiredEffects, parent->Cost + action->Cost);

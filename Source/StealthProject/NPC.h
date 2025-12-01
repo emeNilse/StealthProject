@@ -38,6 +38,8 @@ public:
 
 	APatrolPath* GetPatrolPath();
 
+	void SetPatrolPath(APatrolPath* inPath);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

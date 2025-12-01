@@ -14,7 +14,7 @@ class STEALTHPROJECT_API Node
 public:
 	Node* Parent;
 
-	GoapAction* Action;
+	TSharedPtr<GoapAction> Action;
 
 	TSet<TSharedPtr<AgentBeliefs>> RequiredEffects;
 
@@ -27,5 +27,5 @@ public:
 		return Leaves.Num() == 0 && Action == nullptr;
 	}
 
-	Node(Node* parent, GoapAction* action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost);
+	Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost);
 };

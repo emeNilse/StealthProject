@@ -30,7 +30,7 @@ public:
 
 	class Builder
 	{
-		TSharedPtr<AgentBeliefs> Beliefs;
+		TSharedPtr<AgentBeliefs> Belief;
 
 	public:
 		Builder(/*UObject* object,*/const FString name);
@@ -38,19 +38,19 @@ public:
 		//I don't understand why this is what works, I tried my own way first but a youtube example and ChatGPT told me it had to be written like this
 		Builder& WithCondition(TFunction<bool()> func)
 		{
-			Beliefs->ConditionFunc = func;
+			Belief->ConditionFunc = func;
 			return *this;
 		}
 
 		Builder& WithLocation(TFunction<FVector()> func)
 		{
-			Beliefs->ObservedLocation = func;
+			Belief->ObservedLocation = func;
 			return *this;
 		}
 
 		TSharedPtr<AgentBeliefs> Build()
 		{
-			return Beliefs;
+			return Belief;
 		}
 
 	};

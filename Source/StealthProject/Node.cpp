@@ -3,7 +3,7 @@
 
 #include "Node.h"
 
-Node::Node(Node* parent, GoapAction* action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost)
+Node::Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost)
 {
 	Parent = parent;
 	Action = action;

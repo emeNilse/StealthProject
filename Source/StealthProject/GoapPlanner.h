@@ -29,7 +29,7 @@ public:
 
 	~GoapPlanner();
 
-	virtual ActionPlan* Plan(UGoapComponent* agent, TSet<GoapGoal*>& goals, GoapGoal* mostRecentGoal = nullptr) override;
+	virtual ActionPlan* Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) override;
 
-	bool FindPath(Node* parent, TSet<GoapAction*>& actions);
+	bool FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions);
 };

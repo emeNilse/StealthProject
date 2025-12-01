@@ -63,6 +63,11 @@ APatrolPath* ANPC::GetPatrolPath()
 	return PatrolPath;
 }
 
+void ANPC::SetPatrolPath(APatrolPath* inPath)
+{
+	PatrolPath = inPath;
+}
+
 // Called every frame
 void ANPC::Tick(float DeltaTime)
 {
