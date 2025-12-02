@@ -2,6 +2,10 @@
 
 
 #include "GoapPlanner.h"
+#include "GoapComponent.h"
+//#include "ActionPlan.h"
+#include "GoapGoal.h"
+#include "GoapAction.h"
 
 GoapPlanner::GoapPlanner()
 {
@@ -11,7 +15,7 @@ GoapPlanner::~GoapPlanner()
 {
 }
 
-ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
+TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
 {
 	TArray<TSharedPtr<GoapGoal>> orderdGoals = goals.Array();
 
@@ -66,7 +70,7 @@ ActionPlan* GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> 
 			//to make it a "stack"
 			Algo::Reverse(goapActionStack);
 
-			return new ActionPlan(goal, goapActionStack, goalNode->Cost);
+			return MakeShared<ActionPlan>(goal, goapActionStack, goalNode->Cost);
 		}
 	}
 	

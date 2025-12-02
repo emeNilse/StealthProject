@@ -7,7 +7,7 @@
 #include "Perception/AIPerceptionTypes.h"
 #include "AI_Controller.generated.h"
 
-
+class UGoapComponent;
 /**
  * 
  */
@@ -30,6 +30,8 @@ protected:
 
 private:
 	class UAISenseConfig_Sight* SightConfig;
+
+	UGoapComponent* Goap;
 
 	void SetupPerceptionSystem();
 

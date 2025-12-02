@@ -29,16 +29,19 @@ public:
 	{
 		TSharedPtr<GoapGoal> goal;
 
+	public:
 		Builder(const FString name);
 
 		Builder& WithPriority(float priority)
 		{
 			goal->Priority = priority;
+			return *this;
 		}
 
 		Builder& WithDesiredEffect(AgentBeliefs effect)
 		{
 			goal->DesiredEffects.Add(MakeShared<AgentBeliefs>(effect));
+			return *this;
 		}
 
 		TSharedPtr<GoapGoal> Build()

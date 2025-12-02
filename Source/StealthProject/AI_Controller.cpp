@@ -7,6 +7,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "StealthProjectCharacter.h"
+#include "GoapComponent.h"
 
 AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
 {
@@ -31,6 +32,7 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 			Blackboard = b;
 			RunBehaviorTree(Tree);
 		}*/
+		Goap = NPC->FindComponentByClass<UGoapComponent>();
 
 		if (NPC->GetBlackBoardData())
 		{
@@ -64,6 +66,12 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 {
 	if (auto* const c = Cast<AStealthProjectCharacter>(Actor))
 	{
-		GetBlackboardComponent()->SetValueAsBool("CanSeePlayer", Stimulus.WasSuccessfullySensed());
+		GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", Stimulus.WasSuccessfullySensed());
+		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
+
+		if (Goap)
+		{
+
+		}
 	}
 }

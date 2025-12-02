@@ -2,6 +2,8 @@
 
 
 #include "ActionPlan.h"
+#include "GoapAction.h"
+#include "GoapGoal.h"
 
 ActionPlan::ActionPlan()
 {

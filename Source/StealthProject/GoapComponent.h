@@ -6,14 +6,19 @@
 #include "Components/ActorComponent.h"
 #include "GoapAction.h"
 #include "GoapGoal.h"
+#include "CountdownTimer.h"
 #include "ActionPlan.h"
-#include "AI_Controller.h"
+#include "GoapPlanner.h"
 #include "AgentBeliefs.h"
 #include "IdleStrategy.h"
+#include "MoveStrategy.h"
+#include "PatrolStrategy.h"
+#include "AttackStrategy.h"
 #include "GoapPlannerInterface.h"
 #include "GoapFactorySubsystem.h"
 #include "GoapComponent.generated.h"
 
+class AAI_Controller;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API UGoapComponent : public UActorComponent
@@ -25,14 +30,18 @@ public:
 	UGoapComponent();
 
 	AAI_Controller* AI;
+	UBlackboardComponent* AI_BlackBoard;
+
+	TUniquePtr<CountdownTimer> StatTimer;
+	bool bShouldReplan;
 
 	TSharedPtr<GoapAction> CurrentAction;
 	TSet<TSharedPtr<GoapAction>> Actions;
 
 	TSharedPtr<GoapGoal> CurrentGoal;
-	TSet<GoapGoal*> Goals;
+	TSet<TSharedPtr<GoapGoal>> Goals;
 
-	TSharedPtr<ActionPlan> ActionPlan;
+	TSharedPtr<ActionPlan> TheActionPlan;
 	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
 
 	TSharedPtr<IGoapPlannerInterface> GoapPlanner;
@@ -57,7 +66,7 @@ public:
 	UPROPERTY()
 	float Health;
 	UPROPERTY()
-	float Stamina;
+	float Stamina = 100;
 
 protected:
 	// Called when the game starts
@@ -67,13 +76,19 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SetupTimers();
-
 	void SetupBeliefs();
 
 	void SetupAction();
 
 	void SetupGoals();
+
+	void SetupTimers();
+
+	void UpdateStats();
+
+	void CalculatePlan();
+
+	void RequestReplan();
 
 private:
 

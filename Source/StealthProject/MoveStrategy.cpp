@@ -7,10 +7,10 @@
 #include "NavigationPath.h"
 #include "GameFramework/Pawn.h"
 
-MoveStrategy::MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination)
+MoveStrategy::MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination) : AI(inAI), Destination(inDestination)
 {
-	AI = inAI;
-	Destination = inDestination;
+	/*AI = inAI;
+	Destination = inDestination;*/
 }
 
 MoveStrategy::~MoveStrategy()

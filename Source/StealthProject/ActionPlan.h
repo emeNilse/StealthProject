@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GoapAction.h"
-#include "GoapGoal.h"
 
+
+class GoapAction;
+class GoapGoal;
 /**
  * 
  */

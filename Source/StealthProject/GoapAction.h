@@ -29,7 +29,7 @@ public:
 
 	TSharedPtr<IGoapActionStrategy> Strategy;
 	
-	bool complete = Strategy->Complete();
+	bool bComplete = Strategy->Complete();
 
 	void Start();
 
