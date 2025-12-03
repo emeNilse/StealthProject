@@ -26,6 +26,12 @@ void UGoapComponent::BeginPlay()
 	AI = Cast<AAI_Controller>(GetOwner()->GetInstigatorController());
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
+	SetupTimers();
+	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
+	SetupBeliefs();
+	SetupAction();
+	SetupGoals();
+
 	if (GetWorld())
 	{
 		GoapFactory = GetWorld()->GetGameInstance()->GetSubsystem<UGoapFactorySubsystem>();
@@ -115,29 +121,34 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UGoapComponent::SetupBeliefs()
 {
-	BeliefFactory Factory = BeliefFactory(this, Beliefs);
+	//BeliefFactory
+	
 
-	Factory.AddBelief("Nothing", []() { return false; });
+	Factory->AddBelief("Nothing", []() { return false; });
 
-	Factory.AddBelief("AgentIdle", [this]()
+	Factory->AddBelief("AgentIdle", [this]()
 		{
 			if (!AI) return false;
 			return AI->GetMoveStatus() == EPathFollowingStatus::Idle;
 		});
 
-	Factory.AddBelief("AgentMoving", [this]()
+	Factory->AddBelief("AgentMoving", [this]()
 		{
 			if (!AI) return false;
 			return AI->GetMoveStatus() == EPathFollowingStatus::Moving;
 		});
 
-	Factory.AddBelief("AgentStaminaLow", [this]() {return Stamina < 10.0;});
+	Factory->AddBelief("AgentStaminaLow", [this]() {return Stamina < 10.0;});
 
-	Factory.AddLocationBelief("AgentAtRechargeStation", 5.f, RechargeStation);
+	Factory->AddBelief("AgentIsRested", [this]() {return Stamina > 90.0;});
 
-	Factory.AddBelief("PlayerInChaseRange", [this]() { return AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer"); });
+	Factory->AddLocationBelief("AgentAtRechargeStation", 5.f, RechargeStation);
 
-	Factory.AddBelief("PlayerInAttackRange", [this]() { return FVector::Dist(this->GetOwner()->GetActorLocation(), AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation")) < 5.f; });
+	Factory->AddBelief("PlayerInChaseRange", [this]() { return AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer"); });
+
+	Factory->AddBelief("PlayerInAttackRange", [this]() { return FVector::Dist(this->GetOwner()->GetActorLocation(), AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation")) < 5.f; });
+
+	Factory->AddBelief("AttackingPlayer", []() { return false; });
 }
 
 void UGoapComponent::SetupAction()

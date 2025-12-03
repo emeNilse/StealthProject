@@ -71,7 +71,7 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 
 		if (Goap)
 		{
-
+			Goap->RequestReplan();
 		}
 	}
 }

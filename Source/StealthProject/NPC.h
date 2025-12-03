@@ -44,6 +44,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
+	UBlackboardData* BlackboardAsset;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta=(AllowPrivateAccess = "true"))
 	UBehaviorTree* Tree;
@@ -51,7 +54,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	UBlackboardData* BlackboardAsset;
+	
 
 };

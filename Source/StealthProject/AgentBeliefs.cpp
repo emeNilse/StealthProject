@@ -13,6 +13,11 @@ bool const AgentBeliefs::Evaluate()
 	return ConditionFunc ? ConditionFunc() : false;
 }
 
+bool AgentBeliefs::Equals(TSharedPtr<AgentBeliefs> comparison)
+{
+	return (this->Name == comparison->Name);
+}
+
 FVector const AgentBeliefs::GetLocation()
 {
 	return ObservedLocation ? ObservedLocation() : FVector::ZeroVector;

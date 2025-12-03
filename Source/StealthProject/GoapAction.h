@@ -29,7 +29,7 @@ public:
 
 	TSharedPtr<IGoapActionStrategy> Strategy;
 	
-	bool bComplete = Strategy->Complete();
+	bool bComplete = Strategy.IsValid() ? Strategy->Complete() : false;
 
 	void Start();
 

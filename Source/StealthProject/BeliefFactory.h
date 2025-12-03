@@ -16,7 +16,7 @@ class STEALTHPROJECT_API BeliefFactory
 private:
 
 	UGoapComponent* Component;
-	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
+	TMap<FString, TSharedPtr<AgentBeliefs>>& Beliefs;
 
 
 public:

@@ -106,7 +106,8 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 
 		for (TSharedPtr<AgentBeliefs> belief : requiredEffects)
 		{
-			if (action->Effects.Contains(belief))
+			//if (action->Effects.Contains(belief))
+			if(HasMatchingEffect(action->Effects, belief))
 			{
 				TSet<TSharedPtr<AgentBeliefs>> newRequiredEffects = requiredEffects;
 				newRequiredEffects = newRequiredEffects.Difference(action->Effects);
@@ -121,6 +122,7 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 				{
 					parent->Leaves.Add(newNode);
 					newRequiredEffects.Difference(newNode->Action->Preconditions);
+					//newRequiredEffects = newRequiredEffects.Difference(newNode->Action->Preconditions); ?
 				}
 
 				if (newRequiredEffects.Num() == 0)
@@ -133,5 +135,17 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 
 	return parent->Leaves.Num() > 0;
 	//return false;
+}
+
+bool GoapPlanner::HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief)
+{
+	for (TSharedPtr<AgentBeliefs> effect : actionEffects)
+	{
+		if (effect->Equals(belief))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 

@@ -19,6 +19,7 @@
 #include "GoapComponent.generated.h"
 
 class AAI_Controller;
+class BeliefFactory;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API UGoapComponent : public UActorComponent
@@ -46,12 +47,13 @@ public:
 
 	TSharedPtr<IGoapPlannerInterface> GoapPlanner;
 	UGoapFactorySubsystem* GoapFactory;
+	TUniquePtr<BeliefFactory> Factory;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Destination;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AActor* Target;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector RechargeStation;
 	UPROPERTY()
 	FVector SupplyStation;

@@ -23,6 +23,8 @@ public:
 
 	bool const Evaluate();
 
+	bool Equals(TSharedPtr<AgentBeliefs> comparison);
+
 	FVector const GetLocation();
 
 	AgentBeliefs(FString name);

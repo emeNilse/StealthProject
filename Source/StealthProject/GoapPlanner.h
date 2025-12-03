@@ -34,4 +34,6 @@ public:
 	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) override;
 
 	bool FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions);
+
+	bool HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief);
 };
