@@ -16,6 +16,8 @@ CountdownTimer::~CountdownTimer()
 
 void CountdownTimer::Start()
 {
+	CurrentDuration = Duration;
+	
 	OnTimerStart.Broadcast();
 
 	bRunning = true;
@@ -28,9 +30,9 @@ void CountdownTimer::Tick(float DeltaTime)
 		return;
 	}
 	
-	Duration -= DeltaTime;
+	CurrentDuration -= DeltaTime;
 
-	if (Duration <= 0)
+	if (CurrentDuration <= 0)
 	{
 		Stop();
 	}

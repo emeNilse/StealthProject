@@ -18,25 +18,32 @@ PatrolStrategy::~PatrolStrategy()
 void PatrolStrategy::Start()
 {
 	if (!World) return;
-	bPatrolling = true;
+	bComplete = false;
 	NPC = Cast<ANPC>(AI->GetPawn());
 	FVector currentLocation = NPC->GetActorLocation();
 	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
-	auto* const BBC = AI->GetBlackboardComponent();
+	NOofPoints = NPC->GetPatrolPath()->Num();
+	BBC = AI->GetBlackboardComponent();
 	Index = BBC->GetValueAsInt("PatrolPathIndex");
-	auto const Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
-	auto const GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+	FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
+	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 
 	AI->MoveToLocation(GlobalPoint);
 }
 
 void PatrolStrategy::Tick(float DeltaTime)
 {
-	if (bPatrolling && NPC->GetVelocity().IsNearlyZero())
+	DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
+	
+	if (/*!bComplete &&*/ DistanceToTarget < 100.f)
 	{
-		IncrementPathIndex();
-		auto const Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
-		auto const GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+		//IncrementPathIndex();
+		Index = ++Index % NOofPoints;
+
+		BBC->SetValueAsInt("PatrolPathIndex", Index);
+
+		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
+		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 
 		AI->MoveToLocation(GlobalPoint);
 	}
@@ -44,10 +51,15 @@ void PatrolStrategy::Tick(float DeltaTime)
 
 void PatrolStrategy::Stop()
 {
-	bPatrolling = false;
+	bComplete = true;
 	AI->StopMovement();
 }
 
+
+bool PatrolStrategy::Complete() const
+{
+	return ((Index + 1) % (NOofPoints + 1) == 0);
+}
 
 float PatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
@@ -104,7 +116,5 @@ int PatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVect
 
 void PatrolStrategy::IncrementPathIndex()
 {
-	int NOofPoints = NPC->GetPatrolPath()->Num();
-
-	Index = ++Index % NOofPoints;
+	
 }

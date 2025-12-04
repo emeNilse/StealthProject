@@ -12,6 +12,7 @@ DECLARE_MULTICAST_DELEGATE(FOnTimerEvent);
 class STEALTHPROJECT_API CountdownTimer
 {
 	float Duration;
+	float CurrentDuration;
 	bool bRunning;
 
 public:

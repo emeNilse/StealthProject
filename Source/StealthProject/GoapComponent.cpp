@@ -9,6 +9,8 @@
 #include "AI_Controller.h"
 #include "ActionPlan.h"
 
+
+
 // Sets default values for this component's properties
 UGoapComponent::UGoapComponent()
 {
@@ -55,22 +57,18 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	StatTimer->Tick(DeltaTime);
 
-	//Update plan and current action if there is no
-	if (!CurrentAction.IsValid())
+	if (!CurrentAction.IsValid() /*|| HasNPCStateChanged()*/)
 	{
-		//Calculate Plan
 		CalculatePlan();
+		UpdateNPCState();
 
 		if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 		{
-			if (AI)
-			{
-				AI->StopMovement();
-			}
 
 			CurrentGoal = TheActionPlan->AgentGoal;
 			UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
-			CurrentAction = TheActionPlan->AgentActions.Pop();
+			CurrentAction = TheActionPlan->AgentActions[0];
+			TheActionPlan->AgentActions.RemoveAt(0);
 			UE_LOG(LogTemp, Warning, TEXT("Popped action: %s"), *CurrentAction->Name);
 
 			//verify all precondition effects are true
@@ -97,7 +95,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			}
 		}
 	}
-
+	
 	//if there is a currentaction, execute
 	if (TheActionPlan.IsValid() && CurrentAction.IsValid())
 	{
@@ -107,8 +105,15 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s complete"), *CurrentAction->Name);
 			CurrentAction->Stop();
-			CurrentAction = nullptr;
-
+			if (TheActionPlan->AgentActions.Num() > 0)
+			{
+				CurrentAction = TheActionPlan->AgentActions[0];
+			}
+			else
+			{
+				CurrentAction = nullptr;
+			}
+			
 			if (TheActionPlan->AgentActions.Num() == 0)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Plan complete"));
@@ -123,14 +128,15 @@ void UGoapComponent::SetupBeliefs()
 {
 	//BeliefFactory
 	
+	//auto AgentMoving = MakeShared<AgentBeliefs>("AgentMoving");
 
 	Factory->AddBelief("Nothing", []() { return false; });
 
-	Factory->AddBelief("AgentIdle", [this]()
+	/*Factory->AddBelief("AgentIdle", [this]()
 		{
 			if (!AI) return false;
 			return AI->GetMoveStatus() == EPathFollowingStatus::Idle;
-		});
+		});*/
 
 	Factory->AddBelief("AgentMoving", [this]()
 		{
@@ -153,34 +159,34 @@ void UGoapComponent::SetupBeliefs()
 
 void UGoapComponent::SetupAction()
 {
-	Actions.Add(GoapAction::Builder("Relax").WithStrategy(MakeShared<IdleStrategy>(5)).AddEffect(*Beliefs["Nothing"]).Build());
+	Actions.Add(GoapAction::Builder("Relax").WithStrategy(MakeShared<IdleStrategy>(2)).AddEffect("Nothing").Build());
 
-	Actions.Add(GoapAction::Builder("Patrol").WithStrategy(MakeShared<PatrolStrategy>(AI, this->GetWorld())).AddEffect(*Beliefs["AgentMoving"]).Build());
+	Actions.Add(GoapAction::Builder("Patrol").WithStrategy(MakeShared<PatrolStrategy>(AI, this->GetWorld())).AddEffect("AgentMoving").Build());
 
-	Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddEffect(*Beliefs["AgentAtRechargeStation"]).Build());
+	Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
 
-	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<IdleStrategy>(5)).AddPrecondition(*Beliefs["AgentAtRechargeStation"]).AddEffect(*Beliefs["AgentIsRested"]).Build());
+	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<IdleStrategy>(5)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
 
-	Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition(*Beliefs["PlayerInChaseRange"]).AddEffect(*Beliefs["PlayerInAttackRange"]).Build());
+	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
 
-	Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<AttackStrategy>(1)).AddPrecondition(*Beliefs["PlayerInAttackRange"]).AddEffect(*Beliefs["AttackingPlayer"]).Build());
+	//Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<AttackStrategy>(1)).AddPrecondition("PlayerInAttackRange").AddEffect("AttackingPlayer").Build());
 }
 
 void UGoapComponent::SetupGoals()
 {
-	Goals.Add(GoapGoal::Builder("ChillOut").WithPriority(1).WithDesiredEffect(*Beliefs["Nothing"]).Build());
+	Goals.Add(GoapGoal::Builder("ChillOut").WithPriority(1).WithDesiredEffect("Nothing").Build());
 
-	Goals.Add(GoapGoal::Builder("SecureTheArea").WithPriority(1).WithDesiredEffect(*Beliefs["AgentMoving"]).Build());
+	Goals.Add(GoapGoal::Builder("SecureTheArea").WithPriority(2).WithDesiredEffect("AgentMoving").Build());
 
-	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(2).WithDesiredEffect(*Beliefs["AgentIsRested"]).Build());
+	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(3).WithDesiredEffect("AgentIsRested").Build());
 
-	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(3).WithDesiredEffect(*Beliefs["AttackingPlayer"]).Build());
+	//Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("AttackingPlayer").Build());
 }
 
 void UGoapComponent::SetupTimers()
 {
 	//Update stats every 2 seconds
-	StatTimer = MakeUnique<CountdownTimer>(2.f);
+	StatTimer = MakeUnique<CountdownTimer>(1.f);
 
 	StatTimer->OnTimerStop.AddLambda([this]() { UpdateStats(); StatTimer->Start(); });
 
@@ -189,9 +195,16 @@ void UGoapComponent::SetupTimers()
 
 void UGoapComponent::UpdateStats()
 {
-	Stamina += FVector::Dist(this->GetOwner()->GetActorLocation(), RechargeStation) < 5.f ? 20 : -5;
+	Stamina += FVector::Dist(this->GetOwner()->GetActorLocation(), RechargeStation) < 200.f ? 20 : -5;
+
+	/*if (Stamina < 10)
+	{
+		RequestReplan();
+	}*/
 
 	Stamina = FMath::Clamp(Stamina, 0, 100);
+
+	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), Stamina);
 }
 
 void UGoapComponent::CalculatePlan()
@@ -226,8 +239,28 @@ void UGoapComponent::CalculatePlan()
 
 void UGoapComponent::RequestReplan()
 {
-	CurrentAction = nullptr;
-	CurrentGoal = nullptr;
 	bShouldReplan = true;
+}
+
+void UGoapComponent::UpdateNPCState()
+{
+	LastNPCState.Stamina = Stamina;
+
+	LastNPCState.bCanSeePlayer = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
+}
+
+bool UGoapComponent::HasNPCStateChanged()
+{
+	if (FMath::Abs(LastNPCState.Stamina - Stamina) > 5)
+	{
+		return true;
+	}
+	
+	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
+	{
+		return true;
+	}
+
+	return false;
 }
 

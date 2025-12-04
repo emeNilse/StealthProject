@@ -25,6 +25,8 @@ public:
 
 	void AddBelief(FString key, TFunction<bool()> condition);
 
+	//void AddBelief(TSharedPtr<AgentBeliefs>& belief, TFunction<bool()> condition);
+
 	void AddSensorBelief(FString key, USensor* sensor);
 
 	void AddLocationBelief(FString key, float distance, FVector& locationCondition);

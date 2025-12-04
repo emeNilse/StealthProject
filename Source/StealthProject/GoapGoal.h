@@ -38,9 +38,9 @@ public:
 			return *this;
 		}
 
-		Builder& WithDesiredEffect(AgentBeliefs effect)
+		Builder& WithDesiredEffect(FString effect)
 		{
-			goal->DesiredEffects.Add(MakeShared<AgentBeliefs>(effect));
+			goal->DesiredEffects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
 			return *this;
 		}
 

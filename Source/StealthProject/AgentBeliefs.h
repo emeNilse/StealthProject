@@ -35,7 +35,8 @@ public:
 		TSharedPtr<AgentBeliefs> Belief;
 
 	public:
-		Builder(/*UObject* object,*/const FString name);
+		Builder(const FString name);
+		//Builder(const TSharedPtr<AgentBeliefs>& name);
 
 		//I don't understand why this is what works, I tried my own way first but a youtube example and ChatGPT told me it had to be written like this
 		Builder& WithCondition(TFunction<bool()> func)
@@ -55,6 +56,22 @@ public:
 			return Belief;
 		}
 
+	};
+
+	class BeliefRegistry
+	{
+	public:
+		static TSharedPtr<AgentBeliefs> Get(const FString& name)
+		{
+			static TMap<FString, TSharedPtr<AgentBeliefs>> Cache;
+
+			if (!Cache.Contains(name))
+			{
+				Cache.Add(name, MakeShared<AgentBeliefs>(name));
+			}
+
+			return Cache[name];
+		}
 	};
 
 };

@@ -24,9 +24,17 @@ public:
 
 	ANPC* NPC;
 
+	FVector GlobalPoint;
+
+	UBlackboardComponent* BBC;
+
+	float DistanceToTarget;
+
 	int Index;
 
-	bool bPatrolling;
+	bool bComplete;
+
+	int NOofPoints;
 
 	virtual void Start() override;
 
@@ -34,9 +42,9 @@ public:
 
 	virtual void Stop() override;
 
-	virtual bool CanPerform() const override { return true; };
+	virtual bool CanPerform() const override { return !Complete(); };
 
-	virtual bool Complete() const override { return !bPatrolling; };
+	virtual bool Complete() const override;
 
 	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;
 

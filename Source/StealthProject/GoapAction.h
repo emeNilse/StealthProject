@@ -58,17 +58,18 @@ public:
 			return *this;
 		}
 
-		Builder& AddPrecondition(AgentBeliefs precondition)
+		Builder& AddPrecondition(FString precondition)
 		{
 			//TSet uses hashes, AgentBeliefs is user defined and not primitive like int32 or FString
 			//problem solved by making TSets shared pointers or giving the agent beliefs a key and value for hash conversion
-			action->Preconditions.Add(MakeShared<AgentBeliefs>(precondition));
+			//action->Preconditions.Add(MakeShared<AgentBeliefs>(precondition));
+			action->Preconditions.Add(AgentBeliefs::BeliefRegistry::Get(precondition));
 			return *this;
 		}
 
-		Builder& AddEffect(AgentBeliefs effect)
+		Builder& AddEffect(FString effect)
 		{
-			action->Effects.Add(MakeShared<AgentBeliefs>(effect));
+			action->Effects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
 			return *this;
 		}
 

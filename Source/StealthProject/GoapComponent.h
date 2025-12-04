@@ -21,6 +21,13 @@
 class AAI_Controller;
 class BeliefFactory;
 
+struct NPCState
+{
+	float Stamina;
+	bool bCanSeePlayer;
+};
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API UGoapComponent : public UActorComponent
 {
@@ -48,6 +55,8 @@ public:
 	TSharedPtr<IGoapPlannerInterface> GoapPlanner;
 	UGoapFactorySubsystem* GoapFactory;
 	TUniquePtr<BeliefFactory> Factory;
+
+	NPCState LastNPCState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Destination;
@@ -91,6 +100,10 @@ public:
 	void CalculatePlan();
 
 	void RequestReplan();
+
+	void UpdateNPCState();
+
+	bool HasNPCStateChanged();
 
 private:
 

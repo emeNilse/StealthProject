@@ -89,28 +89,36 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 	
 	for (TSharedPtr<GoapAction> action : orderdActions)
 	{
-		TSet<TSharedPtr<AgentBeliefs>> requiredEffects = parent->RequiredEffects;
+		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = parent->RequiredEffects;
 
-		for (TSharedPtr<AgentBeliefs> belief : requiredEffects)
+		TArray<TSharedPtr<AgentBeliefs>> removeList;
+
+		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
 		{
 			if (belief->Evaluate())
 			{
-				requiredEffects.Remove(belief);
+				removeList.Add(belief);
 			}
 		}
 
-		if (requiredEffects.Num() == 0)
+		for (TSharedPtr<AgentBeliefs> belief : removeList)
+		{
+			requiredDesiredEffects.Remove(belief);
+		}
+
+		if (requiredDesiredEffects.Num() == 0)
 		{
 			return true;
 		}
 
-		for (TSharedPtr<AgentBeliefs> belief : requiredEffects)
+		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
 		{
 			//if (action->Effects.Contains(belief))
 			if(HasMatchingEffect(action->Effects, belief))
 			{
-				TSet<TSharedPtr<AgentBeliefs>> newRequiredEffects = requiredEffects;
+				TSet<TSharedPtr<AgentBeliefs>> newRequiredEffects = requiredDesiredEffects;
 				newRequiredEffects = newRequiredEffects.Difference(action->Effects);
+				
 				newRequiredEffects = newRequiredEffects.Union(action->Preconditions);
 
 				TSet<TSharedPtr<GoapAction>> newAvailableActions = actions;
@@ -121,7 +129,7 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 				if (FindPath(newNode, newAvailableActions))
 				{
 					parent->Leaves.Add(newNode);
-					newRequiredEffects.Difference(newNode->Action->Preconditions);
+					//newRequiredEffects.Difference(newNode->Action->Preconditions);
 					//newRequiredEffects = newRequiredEffects.Difference(newNode->Action->Preconditions); ?
 				}
 

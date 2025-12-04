@@ -14,8 +14,16 @@ BeliefFactory::~BeliefFactory()
 
 void BeliefFactory::AddBelief(FString key, TFunction<bool()> condition)
 {
-	Beliefs.Add(key, AgentBeliefs::Builder(key).WithCondition(condition).Build());
+	if (!Beliefs.Contains(key))
+	{
+		Beliefs.Add(key, AgentBeliefs::Builder(key).WithCondition(condition).Build());
+	}
 }
+
+//void BeliefFactory::AddBelief(TSharedPtr<AgentBeliefs>& belief, TFunction<bool()> condition)
+//{
+//	Beliefs.Add(belief, )
+//}
 
 void BeliefFactory::AddSensorBelief(FString key, USensor* sensor)
 {

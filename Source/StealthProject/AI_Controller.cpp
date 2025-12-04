@@ -69,9 +69,9 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 		GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", Stimulus.WasSuccessfullySensed());
 		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
 
-		if (Goap)
+		/*if (Goap)
 		{
 			Goap->RequestReplan();
-		}
+		}*/
 	}
 }
