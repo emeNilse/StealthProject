@@ -29,7 +29,8 @@ public:
 
 	TSharedPtr<IGoapActionStrategy> Strategy;
 	
-	bool bComplete = Strategy.IsValid() ? Strategy->Complete() : false;
+	//only initializes, must use tick to update
+	//bool bComplete = Strategy.IsValid() ? Strategy->Complete() : false;
 
 	void Start();
 
@@ -37,6 +38,8 @@ public:
 	void Tick(float deltaTime);
 
 	void Stop();
+
+	void EvaluateEffects();
 
 	class Builder
 	{

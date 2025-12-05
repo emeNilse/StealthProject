@@ -25,21 +25,28 @@ void GoapAction::Tick(float deltaTime)
 		Strategy->Tick(deltaTime);
 	}
 
-	//if still executing
-	if (!Strategy->Complete())
+	if (Strategy->Complete())
 	{
-		return;
+		EvaluateEffects();
 	}
 
-	for (TSharedPtr<AgentBeliefs> effect : Effects)
+	/*for (TSharedPtr<AgentBeliefs> effect : Effects)
 	{
 		effect->Evaluate();
-	}
+	}*/
 }
 
 void GoapAction::Stop()
 {
 	Strategy->Stop();
+}
+
+void GoapAction::EvaluateEffects()
+{
+	for (TSharedPtr<AgentBeliefs> effect : Effects)
+	{
+		effect->Evaluate();
+	}
 }
 
 GoapAction::Builder::Builder(const FString name)

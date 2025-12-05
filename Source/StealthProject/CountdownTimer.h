@@ -11,21 +11,28 @@ DECLARE_MULTICAST_DELEGATE(FOnTimerEvent);
  */
 class STEALTHPROJECT_API CountdownTimer
 {
-	float Duration;
-	float CurrentDuration;
-	bool bRunning;
+	float Duration = 0.f;
+	float CurrentDuration = 0.f;
+	bool bRunning = false;
 
 public:
 	CountdownTimer(float duration);
 	~CountdownTimer();
 
-	FOnTimerEvent OnTimerStart;
-	FOnTimerEvent OnTimerStop;
-
+	/*FOnTimerEvent OnTimerStart;
+	FOnTimerEvent OnTimerStop;*/
+	
 	void Start();
 
 	void Tick(float DeltaTime);
 
 	void Stop();
 
+	void Reset();
+
+	bool IsRunning() const { return bRunning; }
+
+	bool IsFinished() const { return !bRunning && CurrentDuration <= 0.f; }
+
+	float GetDuration() const { return CurrentDuration; }
 };

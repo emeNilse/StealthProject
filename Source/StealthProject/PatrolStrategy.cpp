@@ -18,7 +18,7 @@ PatrolStrategy::~PatrolStrategy()
 void PatrolStrategy::Start()
 {
 	if (!World) return;
-	bComplete = false;
+	bPatrolling = true;
 	NPC = Cast<ANPC>(AI->GetPawn());
 	FVector currentLocation = NPC->GetActorLocation();
 	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
@@ -27,7 +27,7 @@ void PatrolStrategy::Start()
 	Index = BBC->GetValueAsInt("PatrolPathIndex");
 	FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
 	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
-
+	IndexCounter = 0;
 	AI->MoveToLocation(GlobalPoint);
 }
 
@@ -35,11 +35,15 @@ void PatrolStrategy::Tick(float DeltaTime)
 {
 	DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
 	
-	if (/*!bComplete &&*/ DistanceToTarget < 100.f)
+	if (bPatrolling && DistanceToTarget < 100.f)
 	{
 		//IncrementPathIndex();
 		Index = ++Index % NOofPoints;
-
+		IndexCounter++;
+		if (IndexCounter >= NOofPoints)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("fuck you"));
+		}
 		BBC->SetValueAsInt("PatrolPathIndex", Index);
 
 		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
@@ -51,14 +55,15 @@ void PatrolStrategy::Tick(float DeltaTime)
 
 void PatrolStrategy::Stop()
 {
-	bComplete = true;
+	bPatrolling = false;
+	Index = NOofPoints;
 	AI->StopMovement();
 }
 
 
 bool PatrolStrategy::Complete() const
 {
-	return ((Index + 1) % (NOofPoints + 1) == 0);
+	return (IndexCounter >= NOofPoints);
 }
 
 float PatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const

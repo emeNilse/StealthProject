@@ -51,7 +51,7 @@ bool MoveStrategy::Complete() const
 
 	bool bPathPending = AI->GetMoveStatus() == EPathFollowingStatus::Waiting;
 
-	return RemainingDistance < 200.f && !bPathPending;
+	return RemainingDistance < 50.f && !bPathPending;
 }
 
 float MoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const

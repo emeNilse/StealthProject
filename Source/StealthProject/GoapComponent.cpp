@@ -8,6 +8,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "AI_Controller.h"
 #include "ActionPlan.h"
+#include "NPC.h"
 
 
 
@@ -26,9 +27,13 @@ void UGoapComponent::BeginPlay()
 	Super::BeginPlay();
 
 	AI = Cast<AAI_Controller>(GetOwner()->GetInstigatorController());
+	NPC = Cast<ANPC>(AI->GetPawn());
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
-	SetupTimers();
+	StatTimerInterval = 1.f;
+	StatTimerRemaining = 1.f;
+
+	//SetupTimers();
 	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
 	SetupBeliefs();
 	SetupAction();
@@ -55,9 +60,16 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	StatTimer->Tick(DeltaTime);
+	StatTimerRemaining -= DeltaTime;
+	if (StatTimerRemaining <= 0.f)
+	{
+		UpdateStats();
+		StatTimerRemaining = StatTimerInterval;
+	}
 
-	if (!CurrentAction.IsValid() /*|| HasNPCStateChanged()*/)
+	/*StatTimer->Tick(DeltaTime);*/
+
+	if (!CurrentAction.IsValid() || HasNPCStateChanged())
 	{
 		CalculatePlan();
 		UpdateNPCState();
@@ -89,11 +101,13 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Preconditions met"));
+				UE_LOG(LogTemp, Warning, TEXT("Preconditions not met"));
 				CurrentAction = nullptr;
 				CurrentGoal = nullptr;
 			}
 		}
+
+		UE_LOG(LogTemp, Warning, TEXT("new plan"));
 	}
 	
 	//if there is a currentaction, execute
@@ -101,19 +115,29 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		CurrentAction->Tick(DeltaTime);
 
-		if (CurrentAction->bComplete)
+		/*if (CurrentAction->Strategy.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("strat is valid"));
+			UE_LOG(LogTemp, Warning, TEXT("%s"), CurrentAction->Strategy->Complete() ? TEXT("true") : TEXT("false"));
+		}*/
+
+		if (CurrentAction->Strategy->Complete())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("%s complete"), *CurrentAction->Name);
 			CurrentAction->Stop();
+			CurrentAction->EvaluateEffects();
+			
 			if (TheActionPlan->AgentActions.Num() > 0)
 			{
 				CurrentAction = TheActionPlan->AgentActions[0];
+				TheActionPlan->AgentActions.RemoveAt(0);
+				CurrentAction->Start();
 			}
 			else
 			{
 				CurrentAction = nullptr;
 			}
-			
+
 			if (TheActionPlan->AgentActions.Num() == 0)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Plan complete"));
@@ -144,11 +168,11 @@ void UGoapComponent::SetupBeliefs()
 			return AI->GetMoveStatus() == EPathFollowingStatus::Moving;
 		});
 
-	Factory->AddBelief("AgentStaminaLow", [this]() {return Stamina < 10.0;});
+	Factory->AddBelief("AgentStaminaLow", [this]() {return NPC->Stamina < 20.0;});
 
-	Factory->AddBelief("AgentIsRested", [this]() {return Stamina > 90.0;});
+	Factory->AddBelief("AgentIsRested", [this]() {return NPC->Stamina > 90.0;});
 
-	Factory->AddLocationBelief("AgentAtRechargeStation", 5.f, RechargeStation);
+	Factory->AddLocationBelief("AgentAtRechargeStation", 50.f, RechargeStation);
 
 	Factory->AddBelief("PlayerInChaseRange", [this]() { return AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer"); });
 
@@ -165,7 +189,7 @@ void UGoapComponent::SetupAction()
 
 	Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
 
-	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<IdleStrategy>(5)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
+	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
 
 	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
 
@@ -183,28 +207,27 @@ void UGoapComponent::SetupGoals()
 	//Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("AttackingPlayer").Build());
 }
 
-void UGoapComponent::SetupTimers()
-{
-	//Update stats every 2 seconds
-	StatTimer = MakeUnique<CountdownTimer>(1.f);
-
-	StatTimer->OnTimerStop.AddLambda([this]() { UpdateStats(); StatTimer->Start(); });
-
-	StatTimer->Start();
-}
+//void UGoapComponent::SetupTimers()
+//{
+//	//Update stats every 2 seconds
+//	StatTimer = MakeUnique<CountdownTimer>(1.f);
+//
+//	StatTimer->OnTimerStop.AddLambda([this]() { UpdateStats(); StatTimer->Start(); });
+//
+//	StatTimer->Start();
+//}
 
 void UGoapComponent::UpdateStats()
 {
-	Stamina += FVector::Dist(this->GetOwner()->GetActorLocation(), RechargeStation) < 200.f ? 20 : -5;
+	//Stamina += FVector::Dist(this->GetOwner()->GetActorLocation(), RechargeStation) < 200.f ? 5 : -5;
+	//Stamina += CurrentAction == ""
 
 	/*if (Stamina < 10)
 	{
 		RequestReplan();
 	}*/
 
-	Stamina = FMath::Clamp(Stamina, 0, 100);
-
-	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), Stamina);
+	
 }
 
 void UGoapComponent::CalculatePlan()
@@ -251,10 +274,10 @@ void UGoapComponent::UpdateNPCState()
 
 bool UGoapComponent::HasNPCStateChanged()
 {
-	if (FMath::Abs(LastNPCState.Stamina - Stamina) > 5)
+	/*if (FMath::Abs(LastNPCState.Stamina - Stamina) > 5)
 	{
 		return true;
-	}
+	}*/
 	
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{

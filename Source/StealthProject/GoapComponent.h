@@ -12,6 +12,7 @@
 #include "AgentBeliefs.h"
 #include "IdleStrategy.h"
 #include "MoveStrategy.h"
+#include "RechargeStrategy.h"
 #include "PatrolStrategy.h"
 #include "AttackStrategy.h"
 #include "GoapPlannerInterface.h"
@@ -20,6 +21,7 @@
 
 class AAI_Controller;
 class BeliefFactory;
+class ANPC;
 
 struct NPCState
 {
@@ -38,9 +40,12 @@ public:
 	UGoapComponent();
 
 	AAI_Controller* AI;
+	ANPC* NPC;
 	UBlackboardComponent* AI_BlackBoard;
 
-	TUniquePtr<CountdownTimer> StatTimer;
+	//TUniquePtr<CountdownTimer> StatTimer;
+	float StatTimerInterval;
+	float StatTimerRemaining;
 	bool bShouldReplan;
 
 	TSharedPtr<GoapAction> CurrentAction;

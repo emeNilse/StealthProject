@@ -15,7 +15,7 @@ class STEALTHPROJECT_API IdleStrategy : public IGoapActionStrategy
 {
 private:
 
-	bool bComplete;
+	bool bTimerComplete;
 	TUniquePtr<CountdownTimer> Timer;
 
 public:
@@ -30,5 +30,5 @@ public:
 
 	virtual bool CanPerform() const override { return true; }
 
-	virtual bool Complete() const override { return bComplete; }
+	virtual bool Complete() const override { return Timer->IsFinished(); }
 };

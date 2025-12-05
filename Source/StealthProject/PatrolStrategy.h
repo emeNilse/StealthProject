@@ -31,8 +31,10 @@ public:
 	float DistanceToTarget;
 
 	int Index;
+	
+	int IndexCounter;
 
-	bool bComplete;
+	bool bPatrolling;
 
 	int NOofPoints;
 

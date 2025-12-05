@@ -16,7 +16,10 @@ ANPC::ANPC()
 void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Stamina = 100.f;
+	StatTimerInterval = 1.f;
+	StatTimerRemaining = 1.f;
 }
 
 void ANPC::RayCast()
@@ -68,12 +71,30 @@ void ANPC::SetPatrolPath(APatrolPath* inPath)
 	PatrolPath = inPath;
 }
 
+void ANPC::UpdateStats()
+{
+	if (!bRecharging)
+	{
+		Stamina -= 5.f;
+	}
+
+	Stamina = FMath::Clamp(Stamina, 0, 100);
+
+	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), Stamina);
+}
+
 // Called every frame
 void ANPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//RayCast();
 
+	StatTimerRemaining -= DeltaTime;
+	if (StatTimerRemaining <= 0.f)
+	{
+		UpdateStats();
+		StatTimerRemaining = StatTimerInterval;
+	}
 }
 
 // Called to bind functionality to input

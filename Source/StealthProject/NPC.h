@@ -40,6 +40,12 @@ public:
 
 	void SetPatrolPath(APatrolPath* inPath);
 
+	void UpdateStats();
+
+	bool bRecharging = false;
+
+	float Stamina;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,6 +60,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
 
-	
+
+	float StatTimerInterval;
+	float StatTimerRemaining;
 
 };
