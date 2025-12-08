@@ -191,9 +191,9 @@ void UGoapComponent::SetupAction()
 
 	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
 
-	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
+	Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
 
-	//Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<AttackStrategy>(1)).AddPrecondition("PlayerInAttackRange").AddEffect("AttackingPlayer").Build());
+	Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<IdleStrategy>(1)).AddPrecondition("PlayerInAttackRange").AddEffect("AttackingPlayer").Build());
 }
 
 void UGoapComponent::SetupGoals()
@@ -204,7 +204,7 @@ void UGoapComponent::SetupGoals()
 
 	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(3).WithDesiredEffect("AgentIsRested").Build());
 
-	//Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("AttackingPlayer").Build());
+	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("AttackingPlayer").Build());
 }
 
 //void UGoapComponent::SetupTimers()
