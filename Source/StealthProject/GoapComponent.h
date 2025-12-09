@@ -15,6 +15,7 @@
 #include "RechargeStrategy.h"
 #include "PatrolStrategy.h"
 #include "AttackStrategy.h"
+#include "ChasePlayerStrategy.h"
 #include "GoapPlannerInterface.h"
 #include "GoapFactorySubsystem.h"
 #include "GoapComponent.generated.h"

@@ -71,8 +71,13 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	if (!CurrentAction.IsValid() || HasNPCStateChanged())
 	{
+		//Temp fix
+		if (CurrentAction.IsValid() && HasNPCStateChanged())
+		{
+			CurrentAction->Stop();
+		}
+		//Need figure out why CalculatePlan() doesn't check if current action plan's preconditions are met
 		CalculatePlan();
-		UpdateNPCState();
 
 		if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 		{
@@ -106,8 +111,35 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 				CurrentGoal = nullptr;
 			}
 		}
+		else if (HasNPCStateChanged())
+		{
+			//verify all precondition effects are true
+			bool bAllPreconditionsMet = true;
 
-		UE_LOG(LogTemp, Warning, TEXT("new plan"));
+			for (TSharedPtr<AgentBeliefs>& b : CurrentAction->Preconditions)
+			{
+				if (!b->Evaluate())
+				{
+					bAllPreconditionsMet = false;
+					break;
+				}
+			}
+
+			if (bAllPreconditionsMet)
+			{
+				CurrentAction->Start();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Preconditions not met"));
+				CurrentAction->Stop();
+				CurrentAction = nullptr;
+				CurrentGoal = nullptr;
+			}
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
+		UpdateNPCState();
 	}
 	
 	//if there is a currentaction, execute
@@ -191,7 +223,9 @@ void UGoapComponent::SetupAction()
 
 	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
 
-	Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
+	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation"); })).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
+
+	Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<ChasePlayerStrategy>(AI)).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
 
 	Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<IdleStrategy>(1)).AddPrecondition("PlayerInAttackRange").AddEffect("AttackingPlayer").Build());
 }
@@ -204,7 +238,7 @@ void UGoapComponent::SetupGoals()
 
 	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(3).WithDesiredEffect("AgentIsRested").Build());
 
-	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("AttackingPlayer").Build());
+	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("PlayerInAttackRange").Build());
 }
 
 //void UGoapComponent::SetupTimers()
@@ -243,7 +277,7 @@ void UGoapComponent::CalculatePlan()
 
 		for (TSharedPtr<GoapGoal> g : goalsToCheck)
 		{
-			if (g->Priority > priorityLevel)
+			if (g->Priority >= priorityLevel)
 			{
 				filteredGoals.Add(g);
 			}
@@ -274,13 +308,10 @@ void UGoapComponent::UpdateNPCState()
 
 bool UGoapComponent::HasNPCStateChanged()
 {
-	/*if (FMath::Abs(LastNPCState.Stamina - Stamina) > 5)
-	{
-		return true;
-	}*/
 	
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer") ? TEXT("True") : TEXT("false"));
 		return true;
 	}
 

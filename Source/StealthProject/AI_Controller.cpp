@@ -50,7 +50,7 @@ void AAI_Controller::SetupPerceptionSystem()
 		SightConfig->SightRadius = 500.f;
 		SightConfig->LoseSightRadius = SightConfig->SightRadius + 250.f;
 		SightConfig->PeripheralVisionAngleDegrees = 90.f;
-		SightConfig->SetMaxAge(5.f);
+		SightConfig->SetMaxAge(2.f);
 		SightConfig->AutoSuccessRangeFromLastSeenLocation = 520.f;
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
@@ -66,6 +66,7 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 {
 	if (auto* const c = Cast<AStealthProjectCharacter>(Actor))
 	{
+		GetBlackboardComponent()->SetValueAsObject("PlayerActor", Actor);
 		GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", Stimulus.WasSuccessfullySensed());
 		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
 
