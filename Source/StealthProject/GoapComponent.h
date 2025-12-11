@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GoapAction.h"
 #include "GoapGoal.h"
+#include "GoapGoalObject.h"
 #include "CountdownTimer.h"
 #include "ActionPlan.h"
 #include "GoapPlanner.h"
@@ -27,6 +28,9 @@ class ANPC;
 struct NPCState
 {
 	float Stamina;
+	float OilAmountAtStation;
+	int RefinedOreAtRefinery;
+	
 	bool bCanSeePlayer;
 };
 
@@ -43,16 +47,13 @@ public:
 	AAI_Controller* AI;
 	ANPC* NPC;
 	UBlackboardComponent* AI_BlackBoard;
-
-	//TUniquePtr<CountdownTimer> StatTimer;
-	float StatTimerInterval;
-	float StatTimerRemaining;
-	bool bShouldReplan;
-
+	
 	TSharedPtr<GoapAction> CurrentAction;
-	TSet<TSharedPtr<GoapAction>> Actions;
 
+	TSet<TSharedPtr<GoapAction>> Actions;
+	
 	TSharedPtr<GoapGoal> CurrentGoal;
+
 	TSet<TSharedPtr<GoapGoal>> Goals;
 
 	TSharedPtr<ActionPlan> TheActionPlan;
@@ -64,26 +65,31 @@ public:
 
 	NPCState LastNPCState;
 
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
+	TArray<UGoapGoalObject*> uGoals;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Destination;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AActor* Target;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector RechargeStation;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector SupplyStation;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Mine;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector OilWell;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Refinery;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector SupplyShipmentStation;
-	UPROPERTY()
-	float Health;
-	UPROPERTY()
-	float Stamina = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TEXT")
+	FString CurrentActionText;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TEXT")
+	FString CurrentGoalText;
 
 protected:
 	// Called when the game starts
@@ -99,13 +105,7 @@ public:
 
 	void SetupGoals();
 
-	void SetupTimers();
-
-	void UpdateStats();
-
 	void CalculatePlan();
-
-	void RequestReplan();
 
 	void UpdateNPCState();
 

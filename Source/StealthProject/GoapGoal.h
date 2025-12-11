@@ -10,6 +10,7 @@
  */
 class STEALTHPROJECT_API GoapGoal
 {
+	
 public:
 	GoapGoal(FString name);
 	~GoapGoal();
@@ -18,7 +19,7 @@ public:
 
 	//FORCEINLINE const FString& GetName() const { return Name; }
 
-	float Priority;
+	int Priority;
 
 	//FORCEINLINE float GetPriority() const { return Priority; }
 
@@ -32,7 +33,7 @@ public:
 	public:
 		Builder(const FString name);
 
-		Builder& WithPriority(float priority)
+		Builder& WithPriority(int priority)
 		{
 			goal->Priority = priority;
 			return *this;
@@ -41,6 +42,15 @@ public:
 		Builder& WithDesiredEffect(FString effect)
 		{
 			goal->DesiredEffects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
+			return *this;
+		}
+
+		Builder& WithDesiredEffect(TArray<FString> effect)
+		{
+			for (FString e : effect)
+			{
+				goal->DesiredEffects.Add(AgentBeliefs::BeliefRegistry::Get(e));
+			}
 			return *this;
 		}
 

@@ -30,10 +30,6 @@ void UGoapComponent::BeginPlay()
 	NPC = Cast<ANPC>(AI->GetPawn());
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
-	StatTimerInterval = 1.f;
-	StatTimerRemaining = 1.f;
-
-	//SetupTimers();
 	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
 	SetupBeliefs();
 	SetupAction();
@@ -60,15 +56,6 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	StatTimerRemaining -= DeltaTime;
-	if (StatTimerRemaining <= 0.f)
-	{
-		UpdateStats();
-		StatTimerRemaining = StatTimerInterval;
-	}
-
-	/*StatTimer->Tick(DeltaTime);*/
-
 	if (!CurrentAction.IsValid() || HasNPCStateChanged())
 	{
 		//Temp fix
@@ -81,7 +68,6 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 		if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 		{
-
 			CurrentGoal = TheActionPlan->AgentGoal;
 			UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
 			CurrentAction = TheActionPlan->AgentActions[0];
@@ -152,12 +138,28 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			}
 		}
 	}
+	
+	if (CurrentAction.IsValid())
+	{
+		CurrentActionText = "Action: " + CurrentAction->Name;
+	}
+	else
+	{
+		CurrentActionText = "Action: ";
+	}
+	if (CurrentGoal.IsValid())
+	{
+		CurrentGoalText = "Goal: " + CurrentGoal->Name;
+	} 
+	else
+	{
+		CurrentGoalText = "Goal: ";
+	}
+	
 }
 
 void UGoapComponent::SetupBeliefs()
 {
-	//BeliefFactory
-	
 	//auto AgentMoving = MakeShared<AgentBeliefs>("AgentMoving");
 
 	Factory->AddBelief("Nothing", []() { return false; });
@@ -178,13 +180,25 @@ void UGoapComponent::SetupBeliefs()
 
 	Factory->AddBelief("AgentIsRested", [this]() {return NPC->Stamina > 90.0;});
 
-	Factory->AddLocationBelief("AgentAtRechargeStation", 50.f, RechargeStation);
+	Factory->AddLocationBelief("AgentAtRechargeStation", 5.f, RechargeStation);
+
+	Factory->AddLocationBelief("AgentAtSupplyStation", 5.f, SupplyStation);
+
+	Factory->AddLocationBelief("AgentAtMine", 5.f, Mine);
+
+	Factory->AddLocationBelief("AgentAtOilWell", 5.f, OilWell);
+
+	Factory->AddLocationBelief("AgentAtRefinery", 5.f, Refinery);
+
+	Factory->AddLocationBelief("AgentAtSupplyShipmentStation", 5.f, SupplyShipmentStation);
 
 	Factory->AddBelief("PlayerInChaseRange", [this]() { return AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer"); });
 
 	Factory->AddBelief("PlayerInAttackRange", [this]() { return FVector::Dist(this->GetOwner()->GetActorLocation(), AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation")) < 5.f; });
 
 	Factory->AddBelief("AttackingPlayer", []() { return false; });
+
+	//Factory->AddBelief("OutOfOil")
 }
 
 void UGoapComponent::SetupAction()
@@ -206,6 +220,15 @@ void UGoapComponent::SetupAction()
 
 void UGoapComponent::SetupGoals()
 {
+	for (UGoapGoalObject* uG : uGoals)
+	{
+		if (uG)
+		{
+			Goals.Add(GoapGoal::Builder(uG->Name).WithPriority(uG->Priority).WithDesiredEffect(uG->DesiredEffects).Build());
+		}
+	}
+	
+	
 	Goals.Add(GoapGoal::Builder("ChillOut").WithPriority(1).WithDesiredEffect("Nothing").Build());
 
 	Goals.Add(GoapGoal::Builder("SecureTheArea").WithPriority(2).WithDesiredEffect("AgentMoving").Build());
@@ -213,29 +236,6 @@ void UGoapComponent::SetupGoals()
 	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(3).WithDesiredEffect("AgentIsRested").Build());
 
 	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("PlayerInAttackRange").Build());
-}
-
-//void UGoapComponent::SetupTimers()
-//{
-//	//Update stats every 2 seconds
-//	StatTimer = MakeUnique<CountdownTimer>(1.f);
-//
-//	StatTimer->OnTimerStop.AddLambda([this]() { UpdateStats(); StatTimer->Start(); });
-//
-//	StatTimer->Start();
-//}
-
-void UGoapComponent::UpdateStats()
-{
-	//Stamina += FVector::Dist(this->GetOwner()->GetActorLocation(), RechargeStation) < 200.f ? 5 : -5;
-	//Stamina += CurrentAction == ""
-
-	/*if (Stamina < 10)
-	{
-		RequestReplan();
-	}*/
-
-	
 }
 
 void UGoapComponent::CalculatePlan()
@@ -279,21 +279,15 @@ void UGoapComponent::CalculatePlan()
 	}
 }
 
-void UGoapComponent::RequestReplan()
-{
-	bShouldReplan = true;
-}
-
 void UGoapComponent::UpdateNPCState()
 {
-	LastNPCState.Stamina = Stamina;
+	/*LastNPCState.Stamina = Stamina;*/
 
 	LastNPCState.bCanSeePlayer = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
 }
 
 bool UGoapComponent::HasNPCStateChanged()
 {
-	
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s"), AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer") ? TEXT("True") : TEXT("false"));
