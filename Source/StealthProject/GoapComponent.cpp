@@ -111,32 +111,6 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 				CurrentGoal = nullptr;
 			}
 		}
-		else if (HasNPCStateChanged())
-		{
-			//verify all precondition effects are true
-			bool bAllPreconditionsMet = true;
-
-			for (TSharedPtr<AgentBeliefs>& b : CurrentAction->Preconditions)
-			{
-				if (!b->Evaluate())
-				{
-					bAllPreconditionsMet = false;
-					break;
-				}
-			}
-
-			if (bAllPreconditionsMet)
-			{
-				CurrentAction->Start();
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Preconditions not met"));
-				CurrentAction->Stop();
-				CurrentAction = nullptr;
-				CurrentGoal = nullptr;
-			}
-		}
 
 		UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
 		UpdateNPCState();
@@ -273,6 +247,7 @@ void UGoapComponent::CalculatePlan()
 	if (CurrentGoal.IsValid())
 	{
 		//Current goal exists, checking goals with higher priority
+		//Might need to tweak this. What if state change impacts the current goal?
 		TSet<TSharedPtr<GoapGoal>> filteredGoals;
 
 		for (TSharedPtr<GoapGoal> g : goalsToCheck)
@@ -291,6 +266,16 @@ void UGoapComponent::CalculatePlan()
 	if (potentialPlan.IsValid())
 	{
 		TheActionPlan = potentialPlan;
+	}
+	else
+	{
+		if (CurrentAction.IsValid() && HasNPCStateChanged())
+		{
+			CurrentAction->Stop();
+		}
+		TheActionPlan = nullptr;
+		CurrentAction = nullptr;
+		CurrentGoal = nullptr;
 	}
 }
 
