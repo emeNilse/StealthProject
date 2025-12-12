@@ -25,6 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> DesiredEffects;
 
+	//Not needed I think
 	void InitializeGoal(const FString& InName, float InPriority, const TArray<FString>& InDesiredEffects)
 	{
 		Name = InName;
