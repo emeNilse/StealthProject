@@ -13,7 +13,7 @@
 
 #include "NPC.generated.h"
 
-
+//must this inherit from actionstack???
 UCLASS()
 class STEALTHPROJECT_API ANPC : public ACharacter
 {
