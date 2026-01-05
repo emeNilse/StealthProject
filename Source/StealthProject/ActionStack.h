@@ -27,8 +27,9 @@ public:
 	virtual bool IsTickable() const override { return true; }
 
 
-	//UFUNCTION(BlueprintCallable)
-	void PushAction(TSharedPtr<IActionInterface> Action);
+	UFUNCTION(BlueprintCallable)
+	void PushAction(UObject* Action);
+
 	bool IsEmpty() const;
 
 	const TArray<TSharedPtr<IActionInterface>>& GetStack() const { return ActionStack; }
@@ -38,7 +39,7 @@ private:
 	void UpdateActions();
 
 private:
-	TArray<TSharedPtr<IActionInterface>> ActionStack;
+	TArray<TObjectPtr<UObject>> ActionStack;
 	TSet<IActionInterface*> FirstTimeSet;
-	TSharedPtr<IActionInterface> CurrentAction;
+	TObjectPtr<UObject> CurrentAction;
 };

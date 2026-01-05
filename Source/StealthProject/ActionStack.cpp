@@ -21,17 +21,18 @@ void UActionStack::Tick(float DeltaTime)
 	UpdateActions();
 }
 
-void UActionStack::PushAction(TSharedPtr<IActionInterface> Action)
+void UActionStack::PushAction(UObject* Action)
 {
-	if (!Action.IsValid())
+	if (!Action || !Action->GetClass()->ImplementsInterface(UActionInterface::StaticClass()))
 	{
 		return;
 	}
 
-	ActionStack.RemoveSingle(Action);
+	//ActionStack.RemoveSingle(Action);
+	ActionStack.Remove(Action);
 	ActionStack.Insert(Action, 0);
 
-	if (CurrentAction.IsValid() && CurrentAction != Action)
+	if (CurrentAction && CurrentAction != Action)
 	{
 		CurrentAction.Reset();
 	}
