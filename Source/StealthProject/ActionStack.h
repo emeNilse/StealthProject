@@ -32,14 +32,15 @@ public:
 
 	bool IsEmpty() const;
 
-	const TArray<TSharedPtr<IActionInterface>>& GetStack() const { return ActionStack; }
-	TSharedPtr<IActionInterface> GetCurrentAction() const { return CurrentAction; }
+	const TArray<TObjectPtr<UObject>>& GetStack() const { return ActionStack; }
+	TObjectPtr<UObject> GetCurrentAction() const { return CurrentAction; }
 
 private:
 	void UpdateActions();
 
 private:
 	TArray<TObjectPtr<UObject>> ActionStack;
-	TSet<IActionInterface*> FirstTimeSet;
+	//TSet<IActionInterface*> FirstTimeSet;
+	TSet<TObjectPtr<UObject>> FirstTimeActions;
 	TObjectPtr<UObject> CurrentAction;
 };

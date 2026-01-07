@@ -34,13 +34,13 @@ void UActionStack::PushAction(UObject* Action)
 
 	if (CurrentAction && CurrentAction != Action)
 	{
-		CurrentAction.Reset();
+		CurrentAction = nullptr;
 	}
 }
 
 bool UActionStack::IsEmpty() const
 {
-	return !CurrentAction.IsValid() && ActionStack.Num() == 0;
+	return !CurrentAction && ActionStack.Num() == 0;
 }
 
 void UActionStack::UpdateActions()
@@ -50,37 +50,41 @@ void UActionStack::UpdateActions()
 		return;
 	}
 
-	while (!CurrentAction.IsValid() && ActionStack.Num() > 0)
+	while (!CurrentAction && ActionStack.Num() > 0)
 	{
 		CurrentAction = ActionStack[0];
 
-		bool bFirstTime = !FirstTimeSet.Contains(CurrentAction.Get());
-		FirstTimeSet.Add(CurrentAction.Get());
+		//bool bFirstTime = !FirstTimeSet.Contains(CurrentAction.Get());
+		bool bFirstTime = !FirstTimeActions.Contains(CurrentAction.Get());
+		FirstTimeActions.Add(CurrentAction.Get());
 
-		CurrentAction->OnBegin(bFirstTime);
+		//CurrentAction->OnBegin(bFirstTime);
+		IActionInterface::Execute_OnBegin(CurrentAction, bFirstTime);
 
-		if (CurrentAction.IsValid())
+		if (CurrentAction)
 		{
 			//Did another action get pushed?
 			if (ActionStack.Num() > 0 && CurrentAction != ActionStack[0])
 			{
-				CurrentAction.Reset();
+				CurrentAction = nullptr;
 				UpdateActions();
 				return;
 			}
 		}
 
-		if (CurrentAction.IsValid())
+		if (CurrentAction)
 		{
-			CurrentAction->OnUpdate();
+			//CurrentAction->OnUpdate();
+			IActionInterface::Execute_OnUpdate(CurrentAction);
 
 			if (ActionStack.Num() > 0 && CurrentAction == ActionStack[0])
 			{
-				if (CurrentAction->IsDone())
+				if (IActionInterface::Execute_IsDone(CurrentAction))
 				{
 					ActionStack.RemoveAt(0);
-					CurrentAction->OnEnd();
-					FirstTimeSet.Remove(CurrentAction.Get());
+					//CurrentAction->OnEnd();
+					IActionInterface::Execute_OnEnd(CurrentAction);
+					FirstTimeActions.Remove(CurrentAction.Get());
 					CurrentAction = nullptr;
 				}
 			}
