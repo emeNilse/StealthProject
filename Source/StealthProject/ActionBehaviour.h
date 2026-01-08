@@ -29,4 +29,6 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	virtual bool IsDone_Implementation() const override { return true; }
 
+	UFUNCTION(BlueprintCallable)
+	virtual void RequestDone();
 };

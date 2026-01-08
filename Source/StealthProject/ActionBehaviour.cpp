@@ -10,3 +10,7 @@
 //ActionBehaviour::~ActionBehaviour()
 //{
 //}
+
+void UActionBehaviour::RequestDone()
+{
+}

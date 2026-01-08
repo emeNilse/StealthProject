@@ -7,6 +7,7 @@
 #include "ActionStack.h"
 #include "MyGameInstance.generated.h"
 
+class UActionBehaviour;
 /**
  * 
  */
@@ -16,7 +17,15 @@ class STEALTHPROJECT_API UMyGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+	UMyGameInstance();
+
+	virtual void Init() override;
+
 	UFUNCTION(BlueprintCallable, Category = "Subsystem")
 	UActionStack* GetActionStack() const;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Startup")
+	TSubclassOf<UActionBehaviour> StartupAction;
 
 };
