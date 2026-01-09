@@ -29,7 +29,7 @@ void UMyGameInstance::Init()
 
 	if (!StartupAction)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StartupActionClass is not set!"));
+		UE_LOG(LogTemp, Warning, TEXT("StartupActionClass not found!"));
 		return;
 	}
 

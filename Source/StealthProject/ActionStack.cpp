@@ -71,28 +71,27 @@ void UActionStack::UpdateActions()
 				return;
 			}
 		}
+	}
 
-		if (CurrentAction)
+	if (CurrentAction)
+	{
+		//CurrentAction->OnUpdate();
+		IActionInterface::Execute_OnUpdate(CurrentAction);
+
+		if (ActionStack.Num() > 0 && CurrentAction == ActionStack[0])
 		{
-			//CurrentAction->OnUpdate();
-			IActionInterface::Execute_OnUpdate(CurrentAction);
-
-			if (ActionStack.Num() > 0 && CurrentAction == ActionStack[0])
+			if (IActionInterface::Execute_IsDone(CurrentAction))
 			{
-				if (IActionInterface::Execute_IsDone(CurrentAction))
-				{
-					ActionStack.RemoveAt(0);
-					//CurrentAction->OnEnd();
-					IActionInterface::Execute_OnEnd(CurrentAction);
-					FirstTimeActions.Remove(CurrentAction.Get());
-					CurrentAction = nullptr;
-				}
-			}
-			else
-			{
+				ActionStack.RemoveAt(0);
+				//CurrentAction->OnEnd();
+				IActionInterface::Execute_OnEnd(CurrentAction);
+				FirstTimeActions.Remove(CurrentAction.Get());
 				CurrentAction = nullptr;
 			}
 		}
+		else
+		{
+			CurrentAction = nullptr;
+		}
 	}
-
 }
