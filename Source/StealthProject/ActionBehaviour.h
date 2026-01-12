@@ -16,6 +16,8 @@ class STEALTHPROJECT_API UActionBehaviour : public UObject, public IActionInterf
 public:
 	/*ActionBehaviour();
 	~ActionBehaviour();*/
+	UFUNCTION(BlueprintCallable)
+	void Initialize(APlayerController* InPlayerController);
 
 	//UFUNCTION(BlueprintCallable)
 	virtual void OnBegin_Implementation(bool bFirstTime) override {}
@@ -31,4 +33,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void RequestDone();
+
+protected:
+	UPROPERTY()
+	APlayerController* OwningPlayerController;
 };

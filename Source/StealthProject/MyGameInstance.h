@@ -28,4 +28,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Startup")
 	TSubclassOf<UActionBehaviour> StartupAction;
 
+	UPROPERTY()
+	UActionStack* Stack;
+
+private:
+	void HandlePostLoadMap(UWorld* loadedLevel);
+
+	bool bStartupActionPushed = false;
+
+	void TryPushStartupAction(UWorld* World, ELevelTick TickType, float DeltaSeconds);
+
 };

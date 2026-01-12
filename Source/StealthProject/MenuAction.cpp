@@ -9,15 +9,20 @@ void UMenuAction::OnBegin_Implementation(bool bFirstTime)
 {
 	if (!WidgetInstance && WidgetClass)
 	{
-		UWorld* World = GetWorld();
-		if (!World) return;
+		UWorld* Worlds = GetWorld();
+		UWorld* World = GetTypedOuter<UWorld>();
+		if (!Worlds) return;
 
-		WidgetInstance = CreateWidget<UUserWidget>(World, WidgetClass);
+		//APlayerController* PC = OwningPlayerController;
+		if (!OwningPlayerController) return;
+
+		WidgetInstance = CreateWidget<UUserWidget>(OwningPlayerController, WidgetClass);
 
 		if (WidgetInstance)
 		{
 			WidgetInstance->AddToViewport(100);
-			UGameplayStatics::GetPlayerController(World, 0)->SetInputMode(FInputModeUIOnly());
+			//OwningPlayerController->SetInputMode(FInputModeUIOnly());
+			//OwningPlayerController->bShowMouseCursor = true;
 		}
 
 		if (WidgetInstance->FindFunction(TEXT("SetOwningAction")))
@@ -36,6 +41,12 @@ void UMenuAction::OnEnd_Implementation()
 	{
 		WidgetInstance->RemoveFromParent();
 		WidgetInstance = nullptr;
+	}
+
+	if (OwningPlayerController)
+	{
+		//OwningPlayerController->SetInputMode(FInputModeGameOnly());
+		//OwningPlayerController->bShowMouseCursor = false;
 	}
 }
 

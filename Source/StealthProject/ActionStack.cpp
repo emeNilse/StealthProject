@@ -43,6 +43,18 @@ bool UActionStack::IsEmpty() const
 	return !CurrentAction && ActionStack.Num() == 0;
 }
 
+void UActionStack::ClearStack()
+{
+	if (IsEmpty())
+	{
+		return;
+	}
+
+	ActionStack.Empty();
+	FirstTimeActions.Empty();
+	CurrentAction = nullptr;
+}
+
 void UActionStack::UpdateActions()
 {
 	if (IsEmpty())

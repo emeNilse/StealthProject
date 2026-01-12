@@ -32,6 +32,9 @@ public:
 
 	bool IsEmpty() const;
 
+	UFUNCTION(BlueprintCallable)
+	void ClearStack();
+
 	const TArray<TObjectPtr<UObject>>& GetStack() const { return ActionStack; }
 	TObjectPtr<UObject> GetCurrentAction() const { return CurrentAction; }
 
