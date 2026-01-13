@@ -21,8 +21,8 @@ void UMenuAction::OnBegin_Implementation(bool bFirstTime)
 		if (WidgetInstance)
 		{
 			WidgetInstance->AddToViewport(100);
-			//OwningPlayerController->SetInputMode(FInputModeUIOnly());
-			//OwningPlayerController->bShowMouseCursor = true;
+			OwningPlayerController->SetInputMode(FInputModeUIOnly());
+			OwningPlayerController->bShowMouseCursor = true;
 		}
 
 		if (WidgetInstance->FindFunction(TEXT("SetOwningAction")))
