@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
-#include "IGoapActionStrategy.h"
+//#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
 
 /**
  * 
@@ -27,7 +28,7 @@ public:
 
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
-	TSharedPtr<IGoapActionStrategy> Strategy;
+	TWeakObjectPtr<UGoapActionStrategyBase> Strategy;
 	
 	//only initializes, must use tick to update
 	//bool bComplete = Strategy.IsValid() ? Strategy->Complete() : false;
@@ -55,11 +56,17 @@ public:
 			return *this;
 		}
 
-		Builder& WithStrategy(TSharedPtr<IGoapActionStrategy> strategy)
+		Builder& WithStrategy(UGoapActionStrategyBase* strategy)
 		{
 			action->Strategy = strategy;
 			return *this;
 		}
+
+		/*Builder& WithStrategy(TSharedPtr<UGoapActionStrategyBase> strategy)
+		{
+			action->Strategy = strategy;
+			return *this;
+		}*/
 
 		Builder& AddPrecondition(FString precondition)
 		{

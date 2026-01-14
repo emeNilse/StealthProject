@@ -5,17 +5,23 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-PatrolStrategy::PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld)
+//PatrolStrategy::PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld)
+//{
+//	AI = inAI;
+//	World = inWorld;
+//}
+
+//PatrolStrategy::~PatrolStrategy()
+//{
+//}
+
+void UPatrolStrategy::Initialize(AAI_Controller* inAI)
 {
 	AI = inAI;
-	World = inWorld;
+	World = AI->GetWorld();
 }
 
-PatrolStrategy::~PatrolStrategy()
-{
-}
-
-void PatrolStrategy::Start()
+void UPatrolStrategy::Start()
 {
 	if (!World) return;
 	bPatrolling = true;
@@ -31,7 +37,7 @@ void PatrolStrategy::Start()
 	AI->MoveToLocation(GlobalPoint);
 }
 
-void PatrolStrategy::Tick(float DeltaTime)
+void UPatrolStrategy::Tick(float DeltaTime)
 {
 	DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
 	
@@ -53,7 +59,7 @@ void PatrolStrategy::Tick(float DeltaTime)
 	}
 }
 
-void PatrolStrategy::Stop()
+void UPatrolStrategy::Stop()
 {
 	bPatrolling = false;
 	Index = NOofPoints;
@@ -61,17 +67,17 @@ void PatrolStrategy::Stop()
 }
 
 
-bool PatrolStrategy::Complete() const
+bool UPatrolStrategy::Complete() const
 {
 	return (IndexCounter >= NOofPoints);
 }
 
-float PatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
+float UPatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
 	return 0.0f;
 }
 
-APatrolPath* PatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation)
+APatrolPath* UPatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation)
 {
 	TArray<AActor*> FoundPaths;
 	UGameplayStatics::GetAllActorsOfClass(inWorld, APatrolPath::StaticClass(), FoundPaths);
@@ -96,7 +102,7 @@ APatrolPath* PatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVecto
 	return Closest;
 }
 
-int PatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVector& inNPCLocation)
+int UPatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVector& inNPCLocation)
 {
 	/*TArray<FVector> FoundPoints;
 	float BestDistSq = TNumericLimits<float>::Max();
@@ -119,7 +125,7 @@ int PatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVect
 	return 0;
 }
 
-void PatrolStrategy::IncrementPathIndex()
+void UPatrolStrategy::IncrementPathIndex()
 {
 	
 }

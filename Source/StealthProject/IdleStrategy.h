@@ -3,25 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
 #include "CountdownTimer.h"
+#include "IdleStrategy.generated.h"
 
 
 //class CountdownTimer;
 /**
  * 
  */
-class STEALTHPROJECT_API IdleStrategy : public IGoapActionStrategy
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API UIdleStrategy : public UGoapActionStrategyBase
 {
+	GENERATED_BODY()
+
 private:
+	
 
 	bool bTimerComplete;
 	TUniquePtr<CountdownTimer> Timer;
 
 public:
-	IdleStrategy(float duration);
-	~IdleStrategy();
+	//IdleStrategy(float duration);
+	//~IdleStrategy();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Duration = 1.0f;
 
+	virtual void Initialize(float inDuration);
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;

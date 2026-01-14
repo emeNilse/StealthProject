@@ -3,18 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
 #include "AI_Controller.h"
 #include "NPC.h"
 #include "PatrolPath.h"
+#include "PatrolStrategy.generated.h"
 /**
  * 
  */
-class STEALTHPROJECT_API PatrolStrategy : public IGoapActionStrategy
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API UPatrolStrategy : public UGoapActionStrategyBase
 {
+	GENERATED_BODY()
+
 public:
-	PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld);
-	~PatrolStrategy();
+	/*PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld);
+	~PatrolStrategy();*/
 
 	TFunction<FVector()> Destination;
 
@@ -38,6 +42,7 @@ public:
 
 	int NOofPoints;
 
+	virtual void Initialize(AAI_Controller* inAI);
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;
