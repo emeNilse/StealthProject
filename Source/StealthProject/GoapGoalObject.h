@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "GoapActionStrategyBase.h"
 #include "GoapGoalObject.generated.h"
 
 
@@ -18,41 +17,20 @@ class STEALTHPROJECT_API UGoapGoalObject : public UObject
 
 public:
 
-	//GoapGoal
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Priority;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//int Priority;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FString> DesiredEffects;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//TArray<FString> DesiredEffects;
-
-	////Not needed I think
+	//Not needed I think
 	//void InitializeGoal(const FString& InName, float InPriority, const TArray<FString>& InDesiredEffects)
 	//{
 	//	Name = InName;
 	//	Priority = InPriority;
 	//	DesiredEffects = InDesiredEffects;
 	//}
-
-
-	//GoapAction
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Cost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> PreConditions;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> Effects;
-
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	UGoapActionStrategyBase* StrategyInstance;
-	
 };

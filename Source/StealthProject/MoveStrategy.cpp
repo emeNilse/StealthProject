@@ -7,46 +7,52 @@
 #include "NavigationPath.h"
 #include "GameFramework/Pawn.h"
 
-MoveStrategy::MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination) : AI(inAI), Destination(inDestination)
+//MoveStrategy::MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination) : AI(inAI), Destination(inDestination)
+//{
+//	/*AI = inAI;
+//	Destination = inDestination;*/
+//}
+//
+//MoveStrategy::~MoveStrategy()
+//{
+//}
+
+void UMoveStrategy::Initialize(AAI_Controller* inAI, FVector inDestination)
 {
-	/*AI = inAI;
-	Destination = inDestination;*/
+	AI = inAI;
+	Destination = inDestination;
 }
 
-MoveStrategy::~MoveStrategy()
-{
-}
-
-void MoveStrategy::Start()
+void UMoveStrategy::Start()
 {
 	if (!AI) return;
 
-	FVector Dest = Destination();
+	FVector Dest = Destination;
 	AI->MoveToLocation(Dest);
 }
 
-void MoveStrategy::Tick(float DeltaTime)
+void UMoveStrategy::Tick(float DeltaTime)
 {
 
 }
 
-void MoveStrategy::Stop()
+void UMoveStrategy::Stop()
 {
 	if (!AI) return;
 
 	AI->StopMovement();
 }
 
-bool MoveStrategy::CanPerform() const
+bool UMoveStrategy::CanPerform() const
 {
 	return !Complete();
 }
 
-bool MoveStrategy::Complete() const
+bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
 
-	FVector Dest = Destination();
+	FVector Dest = Destination;
 	float RemainingDistance = GetRemainingDistance(AI, Dest);
 
 	bool bPathPending = AI->GetMoveStatus() == EPathFollowingStatus::Waiting;
@@ -54,7 +60,7 @@ bool MoveStrategy::Complete() const
 	return RemainingDistance < 50.f && !bPathPending;
 }
 
-float MoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
+float UMoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
 	if(!inAI || !inAI->GetPawn()) return 0.0f;
 	

@@ -28,6 +28,7 @@ public:
 
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
+	//TWeakObjectPtr was needed instead of TSharedPtr, to allow for UObjects to make use of it(?)
 	TWeakObjectPtr<UGoapActionStrategyBase> Strategy;
 	
 	//only initializes, must use tick to update
@@ -68,7 +69,7 @@ public:
 			return *this;
 		}*/
 
-		Builder& AddPrecondition(FString precondition)
+		Builder& AddPrecondition(const FString precondition)
 		{
 			//TSet uses hashes, AgentBeliefs is user defined and not primitive like int32 or FString
 			//problem solved by making TSets shared pointers or giving the agent beliefs a key and value for hash conversion
@@ -77,9 +78,27 @@ public:
 			return *this;
 		}
 
-		Builder& AddEffect(FString effect)
+		Builder& AddPreconditions(const TArray<FString> preconditions)
+		{
+			for (const FString& p : preconditions)
+			{
+				AddPrecondition(p);
+			}
+			return *this;
+		}
+
+		Builder& AddEffect(const FString effect)
 		{
 			action->Effects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
+			return *this;
+		}
+
+		Builder& AddEffects(const TArray<FString> effects)
+		{
+			for (const FString& e : effects)
+			{
+				AddEffect(e);
+			}
 			return *this;
 		}
 

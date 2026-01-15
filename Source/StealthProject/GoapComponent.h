@@ -4,7 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GoapBelief.h"
+#include "GoapBeliefSet.h"
+#include "BooleanBelief.h"
+#include "BlackboardBoolBelief.h"
+#include "LocationBelief.h"
+#include "MovementStatusBelief.h"
+#include "DistanceToActorBelief.h"
 #include "GoapAction.h"
+#include "GoapActionsSet.h"
 #include "GoapGoal.h"
 #include "GoapGoalObject.h"
 #include "CountdownTimer.h"
@@ -64,6 +72,12 @@ public:
 	TUniquePtr<BeliefFactory> Factory;
 
 	NPCState LastNPCState;
+
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
+	TArray<UGoapBelief*> uBeliefs;
+
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
+	TArray<UGoapActionsSet*> uActions;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TArray<UGoapGoalObject*> uGoals;

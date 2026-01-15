@@ -7,15 +7,21 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationPath.h"
 
-ChasePlayerStrategy::ChasePlayerStrategy(AAI_Controller* inAI) : AI(inAI)
+//ChasePlayerStrategy::ChasePlayerStrategy(AAI_Controller* inAI) : AI(inAI)
+//{
+//}
+//
+//ChasePlayerStrategy::~ChasePlayerStrategy()
+//{
+//}
+
+void UChasePlayerStrategy::Initialize(AAI_Controller* inAI)
 {
+	AI = inAI;
 }
 
-ChasePlayerStrategy::~ChasePlayerStrategy()
-{
-}
 
-void ChasePlayerStrategy::Start()
+void UChasePlayerStrategy::Start()
 {
 	if (!AI) return;
 
@@ -26,25 +32,25 @@ void ChasePlayerStrategy::Start()
 	AI->MoveToActor(Player);
 }
 
-void ChasePlayerStrategy::Tick(float DeltaTime)
+void UChasePlayerStrategy::Tick(float DeltaTime)
 {
 	//Target = Player->GetActorLocation();
 	AI->MoveToActor(Player);
 }
 
-void ChasePlayerStrategy::Stop()
+void UChasePlayerStrategy::Stop()
 {
 	if (!AI) return;
 
 	AI->StopMovement();
 }
 
-bool ChasePlayerStrategy::CanPerform() const
+bool UChasePlayerStrategy::CanPerform() const
 {
 	return !Complete();
 }
 
-bool ChasePlayerStrategy::Complete() const
+bool UChasePlayerStrategy::Complete() const
 {
 	if (!AI) return false;
 	
@@ -53,7 +59,7 @@ bool ChasePlayerStrategy::Complete() const
 	return remainingDistance < 50.f;
 }
 
-float ChasePlayerStrategy::GetRemainingDistance(AAI_Controller* inAI, AStealthProjectCharacter* inPlayer) const
+float UChasePlayerStrategy::GetRemainingDistance(AAI_Controller* inAI, AStealthProjectCharacter* inPlayer) const
 {
 	if (!inAI || !inAI->GetPawn()) return 0.0f;
 

@@ -3,21 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
 #include "AI_Controller.h"
+#include "MoveStrategy.generated.h"
 
 /**
  * 
  */
-class STEALTHPROJECT_API MoveStrategy : public IGoapActionStrategy
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API UMoveStrategy : public UGoapActionStrategyBase
 {
-public:
-	MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination);
-	~MoveStrategy();
+	GENERATED_BODY()
 
-	TFunction<FVector()> Destination;
+public:
+	/*MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination);
+	~MoveStrategy();*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Destination;
+
+	//TFunction was for the pure C++ Goap, not supported by "Unreal's reflection system"(?)
+	//TFunction<FVector()> Destination;
 
 	AAI_Controller* AI;
+
+	virtual void Initialize(AAI_Controller* inAI, FVector inDestination);
 
 	virtual void Start() override;
 

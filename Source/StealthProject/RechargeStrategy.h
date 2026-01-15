@@ -3,24 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
+#include "RechargeStrategy.generated.h"
 
 class AAI_Controller;
 class ANPC;
 /**
  * 
  */
-class STEALTHPROJECT_API RechargeStrategy : public IGoapActionStrategy
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API URechargeStrategy : public UGoapActionStrategyBase
 {
+	GENERATED_BODY()
 
 private:
 	AAI_Controller* AI;
 	ANPC* NPC;
-	float StaminaGoal;
+	
 
 public:
-	RechargeStrategy(AAI_Controller* inAI, float inGoal);
-	~RechargeStrategy();
+	/*RechargeStrategy(AAI_Controller* inAI, float inGoal);
+	~RechargeStrategy();*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float StaminaGoal;
+
+	virtual void Initialize(AAI_Controller* inAI, float inGoal);
 
 	virtual void Start() override;
 

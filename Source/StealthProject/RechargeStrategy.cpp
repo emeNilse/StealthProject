@@ -6,22 +6,29 @@
 #include "NPC.h"
 
 
-RechargeStrategy::RechargeStrategy(AAI_Controller* inAI, float inGoal) : AI(inAI), StaminaGoal(inGoal)
+//RechargeStrategy::RechargeStrategy(AAI_Controller* inAI, float inGoal) : AI(inAI), StaminaGoal(inGoal)
+//{
+//}
+//
+//RechargeStrategy::~RechargeStrategy()
+//{
+//}
+
+
+void URechargeStrategy::Initialize(AAI_Controller* inAI, float inGoal)
 {
+	AI = inAI;
+	StaminaGoal = inGoal;
 }
 
-RechargeStrategy::~RechargeStrategy()
-{
-}
-
-void RechargeStrategy::Start()
+void URechargeStrategy::Start()
 {
 	NPC = Cast<ANPC>(AI->GetPawn());
 	NPC->bRecharging = true;
 
 }
 
-void RechargeStrategy::Tick(float DeltaTime)
+void URechargeStrategy::Tick(float DeltaTime)
 {
 	if (!NPC)
 	{
@@ -36,17 +43,18 @@ void RechargeStrategy::Tick(float DeltaTime)
 	}
 }
 
-void RechargeStrategy::Stop()
+void URechargeStrategy::Stop()
 {
 	NPC->bRecharging = false;
 }
 
-bool RechargeStrategy::CanPerform() const
+bool URechargeStrategy::CanPerform() const
 {
 	return !Complete();
 }
 
-bool RechargeStrategy::Complete() const
+bool URechargeStrategy::Complete() const
 {
 	return NPC->Stamina >= StaminaGoal;
 }
+

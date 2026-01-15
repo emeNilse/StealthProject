@@ -3,22 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IGoapActionStrategy.h"
+#include "GoapActionStrategyBase.h"
 #include "AI_Controller.h"
 #include "StealthProjectCharacter.h"
+#include "ChasePlayerStrategy.generated.h"
 /**
  * 
  */
-class STEALTHPROJECT_API ChasePlayerStrategy : public IGoapActionStrategy
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API UChasePlayerStrategy : public UGoapActionStrategyBase
 {
+	GENERATED_BODY()
+
 public:
 
 	AAI_Controller* AI;
 
 	AStealthProjectCharacter* Player;
 
-	ChasePlayerStrategy(AAI_Controller* inAI);
-	~ChasePlayerStrategy();
+	/*ChasePlayerStrategy(AAI_Controller* inAI);
+	~ChasePlayerStrategy();*/
+	virtual void Initialize(AAI_Controller* inAI);
 
 	virtual void Start() override;
 
