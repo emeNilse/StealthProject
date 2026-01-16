@@ -10,6 +10,17 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EFloatComparison : uint8
+{
+	Less,
+	LessOrEqual,
+	Greater,
+	GreaterOrEqual,
+	Equal
+};
+
 UCLASS(Abstract, Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UGoapBelief : public UObject
 {

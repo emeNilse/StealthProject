@@ -1,0 +1,42 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GoapBelief.h"
+#include "NPC.h"
+#include "StatBelief.generated.h"
+
+/**
+ * 
+ */
+UCLASS(Blueprintable, EditInlineNew)
+class STEALTHPROJECT_API UStatBelief : public UGoapBelief
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere)
+	FName StatName;
+
+	UPROPERTY(EditAnywhere)
+	EFloatComparison Comparison = EFloatComparison::Less;
+
+	UPROPERTY(EditAnywhere)
+	float Value = 0.f;
+
+	const float GetStatValue(APawn* pawn) const;
+
+	bool Compare(float stat) const;
+
+	virtual bool Evaluate(AAI_Controller* AI) const override
+	{
+		APawn* Pawn = AI->GetPawn();
+		if (!Pawn) return false;
+
+		const float Stat = GetStatValue(Pawn);
+		if (!Stat) return false;
+
+		return Compare(Stat);
+	}
+};

@@ -42,6 +42,18 @@ public:
 
 	void UpdateStats();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, float> Stats;
+
+	UFUNCTION(BlueprintCallable)
+	float GetStat(FName StatName) const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetStat(FName StatName, float NewValue);
+
+	UFUNCTION(BlueprintCallable)
+	void ModifyStat(FName StatName, float Delta);
+
 	bool bRecharging = false;
 
 	float Stamina;

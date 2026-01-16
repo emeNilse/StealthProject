@@ -88,6 +88,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AActor* Target;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* RechargeStationActor;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector RechargeStation;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector SupplyStation;

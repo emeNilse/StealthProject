@@ -239,7 +239,7 @@ void UGoapComponent::SetupAction()
 				}
 				else if (UMoveStrategy* MoveStrategy = Cast<UMoveStrategy>(Strategy))
 				{
-					UMoveStrategy* RuntimeMove = MakeStrategy<UMoveStrategy>(this, AI, MoveStrategy->Destination);
+					UMoveStrategy* RuntimeMove = MakeStrategy<UMoveStrategy>(this, AI, MoveStrategy->TargetActor);
 					Actions.Add(GoapAction::Builder(uA->Name).WithStrategy(RuntimeMove).WithCost(uA->Cost).AddPreconditions(uA->PreConditions).AddEffects(uA->Effects).Build());
 				}
 				else if (UPatrolStrategy* PatrolStrategy = Cast<UPatrolStrategy>(Strategy))
@@ -269,7 +269,7 @@ void UGoapComponent::SetupAction()
 	Actions.Add(GoapAction::Builder("Patrol").WithStrategy(Patrolthis).AddEffect("AgentMoving").Build());
 
 	//Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
-	UMoveStrategy* Movethis = MakeStrategy<UMoveStrategy>(this, AI, RechargeStation);
+	UMoveStrategy* Movethis = MakeStrategy<UMoveStrategy>(this, AI, RechargeStationActor);
 	Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(Movethis).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
 
 	//Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());

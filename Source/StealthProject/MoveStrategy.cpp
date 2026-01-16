@@ -17,18 +17,18 @@
 //{
 //}
 
-void UMoveStrategy::Initialize(AAI_Controller* inAI, FVector inDestination)
+void UMoveStrategy::Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor)
 {
 	AI = inAI;
-	Destination = inDestination;
+	Destination = inActor->GetActorLocation();
 }
 
 void UMoveStrategy::Start()
 {
 	if (!AI) return;
 
-	FVector Dest = Destination;
-	AI->MoveToLocation(Dest);
+	/*FVector Dest = Destination;*/
+	AI->MoveToLocation(Destination);
 }
 
 void UMoveStrategy::Tick(float DeltaTime)
@@ -52,8 +52,8 @@ bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
 
-	FVector Dest = Destination;
-	float RemainingDistance = GetRemainingDistance(AI, Dest);
+	//FVector Dest = Destination;
+	float RemainingDistance = GetRemainingDistance(AI, Destination);
 
 	bool bPathPending = AI->GetMoveStatus() == EPathFollowingStatus::Waiting;
 

@@ -35,11 +35,16 @@ void URechargeStrategy::Tick(float DeltaTime)
 		return;
 	}
 
-	NPC->Stamina += 5.f * DeltaTime;
+	//NPC->Stamina += 5.f * DeltaTime;
+	NPC->ModifyStat("Stamina", 5.f * DeltaTime);
 
-	if (NPC->Stamina > StaminaGoal)
+	/*if (NPC->Stamina > StaminaGoal)
 	{
 		NPC->Stamina = StaminaGoal;
+	}*/
+	if (NPC->GetStat("Stamina") > StaminaGoal)
+	{
+		NPC->SetStat("Stamina", StaminaGoal);
 	}
 }
 
@@ -55,6 +60,7 @@ bool URechargeStrategy::CanPerform() const
 
 bool URechargeStrategy::Complete() const
 {
-	return NPC->Stamina >= StaminaGoal;
+	//return NPC->Stamina >= StaminaGoal;
+	return NPC->GetStat("Stamina") >= StaminaGoal;
 }
 

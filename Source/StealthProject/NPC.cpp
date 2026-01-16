@@ -76,11 +76,40 @@ void ANPC::UpdateStats()
 	if (!bRecharging)
 	{
 		Stamina -= 5.f;
+		ModifyStat("Stamina", -5.f);
 	}
 
 	Stamina = FMath::Clamp(Stamina, 0, 100);
 
 	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), Stamina);
+}
+
+float ANPC::GetStat(FName StatName) const
+{
+	if (const float* Value = Stats.Find(StatName))
+	{
+		return *Value;
+	}
+	
+	return 0.f;
+}
+
+void ANPC::SetStat(FName StatName, float NewValue)
+{
+	if (float* Value = Stats.Find(StatName))
+	{
+		//*Value = NewValue;
+		*Value = FMath::Clamp(NewValue, 0.f, 100.f);
+	}
+}
+
+void ANPC::ModifyStat(FName StatName, float Delta)
+{
+	if (float* Value = Stats.Find(StatName))
+	{
+		*Value += Delta;
+		*Value = FMath::Clamp(*Value, 0.f, 100.f);
+	}
 }
 
 // Called every frame

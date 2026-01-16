@@ -19,6 +19,8 @@ public:
 	/*MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination);
 	~MoveStrategy();*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr <AActor> TargetActor;
+
 	FVector Destination;
 
 	//TFunction was for the pure C++ Goap, not supported by "Unreal's reflection system"(?)
@@ -26,7 +28,7 @@ public:
 
 	AAI_Controller* AI;
 
-	virtual void Initialize(AAI_Controller* inAI, FVector inDestination);
+	virtual void Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor);
 
 	virtual void Start() override;
 
