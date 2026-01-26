@@ -31,9 +31,6 @@ void UGoapComponent::BeginPlay()
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
 	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
-	SetupBeliefs();
-	SetupAction();
-	SetupGoals();
 
 	if (GetWorld())
 	{
@@ -48,6 +45,10 @@ void UGoapComponent::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("GoapFactorySubsystem is missing"));
 		}
 	}
+
+	SetupBeliefs();
+	SetupAction();
+	SetupGoals();
 }
 
 
@@ -160,9 +161,13 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UGoapComponent::SetupBeliefs()
 {
+
 	for (UGoapBelief* uB : uBeliefs)
 	{
-		Factory->AddBelief(uB->Name, [uB, this]() { return uB->Evaluate(AI); });
+		if (uB)
+		{
+			Factory->AddBelief(uB->Name, [uB, this]() { return uB->Evaluate(AI); });
+		}
 
 		/*if (UBooleanBelief* BB = Cast<UBooleanBelief>(uB))
 		{
@@ -179,17 +184,18 @@ void UGoapComponent::SetupBeliefs()
 	}
 	
 	
+	
 	//auto AgentMoving = MakeShared<AgentBeliefs>("AgentMoving");
 
-	Factory->AddBelief("Nothing", []() { return false; });
+	//Factory->AddBelief("Nothing", []() { return false; });
 
-	/*Factory->AddBelief("AgentIdle", [this]()
-		{
-			if (!AI) return false;
-			return AI->GetMoveStatus() == EPathFollowingStatus::Idle;
-		});*/
+	///*Factory->AddBelief("AgentIdle", [this]()
+	//	{
+	//		if (!AI) return false;
+	//		return AI->GetMoveStatus() == EPathFollowingStatus::Idle;
+	//	});*/
 
-	Factory->AddBelief("AgentMoving", [this]()
+	/*Factory->AddBelief("AgentMoving", [this]()
 		{
 			if (!AI) return false;
 			return AI->GetMoveStatus() == EPathFollowingStatus::Moving;
@@ -215,7 +221,7 @@ void UGoapComponent::SetupBeliefs()
 
 	Factory->AddBelief("PlayerInAttackRange", [this]() { return FVector::Dist(this->GetOwner()->GetActorLocation(), AI->GetBlackboardComponent()->GetValueAsVector("PlayerLocation")) < 5.f; });
 
-	Factory->AddBelief("AttackingPlayer", []() { return false; });
+	Factory->AddBelief("AttackingPlayer", []() { return false; });*/
 
 	//Factory->AddBelief("OutOfOil")
 }
@@ -261,24 +267,24 @@ void UGoapComponent::SetupAction()
 		}
 	}
 	
-	UIdleStrategy* Idlethis = MakeStrategy<UIdleStrategy>(this, 1);
-	Actions.Add(GoapAction::Builder("Relax").WithStrategy(Idlethis).AddEffect("Nothing").Build());
+	//UIdleStrategy* Idlethis = MakeStrategy<UIdleStrategy>(this, 1);
+	//Actions.Add(GoapAction::Builder("Relax").WithStrategy(Idlethis).AddEffect("Nothing").Build());
 
-	//Actions.Add(GoapAction::Builder("Patrol").WithStrategy(MakeShared<UPatrolStrategy>(AI, this->GetWorld())).AddEffect("AgentMoving").Build());
-	UPatrolStrategy* Patrolthis = MakeStrategy<UPatrolStrategy>(this, AI);
-	Actions.Add(GoapAction::Builder("Patrol").WithStrategy(Patrolthis).AddEffect("AgentMoving").Build());
+	////Actions.Add(GoapAction::Builder("Patrol").WithStrategy(MakeShared<UPatrolStrategy>(AI, this->GetWorld())).AddEffect("AgentMoving").Build());
+	//UPatrolStrategy* Patrolthis = MakeStrategy<UPatrolStrategy>(this, AI);
+	//Actions.Add(GoapAction::Builder("Patrol").WithStrategy(Patrolthis).AddEffect("AgentMoving").Build());
 
-	//Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
-	UMoveStrategy* Movethis = MakeStrategy<UMoveStrategy>(this, AI, RechargeStationActor);
-	Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(Movethis).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
+	////Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(MakeShared<MoveStrategy>(AI, [this]() -> FVector { return RechargeStation; })).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
+	//UMoveStrategy* Movethis = MakeStrategy<UMoveStrategy>(this, AI, RechargeStationActor);
+	//Actions.Add(GoapAction::Builder("MoveToRestArea").WithStrategy(Movethis).AddPrecondition("AgentStaminaLow").AddEffect("AgentAtRechargeStation").Build());
 
-	//Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
-	URechargeStrategy* Rechargethis = MakeStrategy<URechargeStrategy>(this, AI, 100.f);
-	Actions.Add(GoapAction::Builder("Recharge").WithStrategy(Rechargethis).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
+	////Actions.Add(GoapAction::Builder("Recharge").WithStrategy(MakeShared<RechargeStrategy>(AI, 100.f)).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
+	//URechargeStrategy* Rechargethis = MakeStrategy<URechargeStrategy>(this, AI, 100.f);
+	//Actions.Add(GoapAction::Builder("Recharge").WithStrategy(Rechargethis).AddPrecondition("AgentAtRechargeStation").AddEffect("AgentIsRested").Build());
 
-	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<ChasePlayerStrategy>(AI)).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
-	UChasePlayerStrategy* Chasethis = MakeStrategy<UChasePlayerStrategy>(this, AI);
-	Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(Chasethis).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
+	////Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(MakeShared<ChasePlayerStrategy>(AI)).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
+	//UChasePlayerStrategy* Chasethis = MakeStrategy<UChasePlayerStrategy>(this, AI);
+	//Actions.Add(GoapAction::Builder("ChasePlayer").WithStrategy(Chasethis).AddPrecondition("PlayerInChaseRange").AddEffect("PlayerInAttackRange").Build());
 
 	/*Actions.Add(GoapAction::Builder("AttackPlayer").WithStrategy(MakeShared<UIdleStrategy>()).AddPrecondition("PlayerInAttackRange").AddEffect("AttackingPlayer").Build());*/
 }
@@ -293,13 +299,13 @@ void UGoapComponent::SetupGoals()
 		}
 	}
 	
-	Goals.Add(GoapGoal::Builder("ChillOut").WithPriority(1).WithDesiredEffect("Nothing").Build());
+	/*Goals.Add(GoapGoal::Builder("ChillOut").WithPriority(1).WithDesiredEffect("Nothing").Build());
 
 	Goals.Add(GoapGoal::Builder("SecureTheArea").WithPriority(2).WithDesiredEffect("AgentMoving").Build());
 
 	Goals.Add(GoapGoal::Builder("KeepStaminaUp").WithPriority(3).WithDesiredEffect("AgentIsRested").Build());
 
-	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("PlayerInAttackRange").Build());
+	Goals.Add(GoapGoal::Builder("SeekAndDestroy").WithPriority(4).WithDesiredEffect("PlayerInAttackRange").Build());*/
 }
 
 void UGoapComponent::CalculatePlan()
@@ -354,7 +360,7 @@ bool UGoapComponent::HasNPCStateChanged()
 {
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s"), AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer") ? TEXT("True") : TEXT("false"));
+		//UE_LOG(LogTemp, Warning, TEXT("%s"), AI->GetBlackboardComponent()->GetValueAsBool("bCanSeePlayer") ? TEXT("True") : TEXT("false"));
 		return true;
 	}
 

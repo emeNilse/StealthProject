@@ -35,8 +35,8 @@ public:
 		if (!Pawn) return false;
 
 		const float Stat = GetStatValue(Pawn);
-		if (!Stat) return false;
-
+		if (!FMath::IsFinite(Stat)) return false;
+		
 		return Compare(Stat);
 	}
 };

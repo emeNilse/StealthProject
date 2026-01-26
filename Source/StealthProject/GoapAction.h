@@ -10,7 +10,7 @@
 /**
  * 
  */
-class STEALTHPROJECT_API GoapAction
+class STEALTHPROJECT_API GoapAction : public FGCObject
 {
 public:
 	GoapAction(FString name);
@@ -29,7 +29,10 @@ public:
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
 	//TWeakObjectPtr was needed instead of TSharedPtr, to allow for UObjects to make use of it(?)
-	TWeakObjectPtr<UGoapActionStrategyBase> Strategy;
+	UGoapActionStrategyBase* Strategy;
+
+	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual FString GetReferencerName() const override;
 	
 	//only initializes, must use tick to update
 	//bool bComplete = Strategy.IsValid() ? Strategy->Complete() : false;

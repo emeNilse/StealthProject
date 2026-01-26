@@ -17,7 +17,7 @@ void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Stamina = 100.f;
+	//Stamina = 100.f;
 	StatTimerInterval = 1.f;
 	StatTimerRemaining = 1.f;
 }
@@ -75,13 +75,13 @@ void ANPC::UpdateStats()
 {
 	if (!bRecharging)
 	{
-		Stamina -= 5.f;
+		//Stamina -= 5.f;
 		ModifyStat("Stamina", -5.f);
 	}
 
-	Stamina = FMath::Clamp(Stamina, 0, 100);
+	//Stamina = FMath::Clamp(Stamina, 0, 100);
 
-	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), Stamina);
+	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));
 }
 
 float ANPC::GetStat(FName StatName) const

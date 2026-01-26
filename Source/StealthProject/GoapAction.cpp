@@ -13,6 +13,17 @@ GoapAction::~GoapAction()
 {
 }
 
+//telling the garbage collector to not touch Strategy
+void GoapAction::AddReferencedObjects(FReferenceCollector& Collector)
+{
+	Collector.AddReferencedObject(Strategy);
+}
+
+FString GoapAction::GetReferencerName() const
+{
+	return TEXT("GoapAction");
+}
+
 void GoapAction::Start()
 {
 	Strategy->Start();
