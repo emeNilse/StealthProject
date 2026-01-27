@@ -19,11 +19,9 @@ class STEALTHPROJECT_API URechargeStrategy : public UGoapActionStrategyBase
 private:
 	AAI_Controller* AI;
 	ANPC* NPC;
-	
+	float PowerDrainRate = 10.f;
 
 public:
-	/*RechargeStrategy(AAI_Controller* inAI, float inGoal);
-	~RechargeStrategy();*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StaminaGoal;
 
@@ -39,4 +37,5 @@ public:
 
 	virtual bool Complete() const override;
 
+	float GetPowerDrainRate() const { return PowerDrainRate; }
 };

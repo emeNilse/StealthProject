@@ -135,7 +135,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Plan complete"));
 				LastGoal = CurrentGoal;
-				CurrentGoal = nullptr;
+				//CurrentGoal = nullptr;
 			}
 		}
 	}

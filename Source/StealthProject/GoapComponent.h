@@ -19,6 +19,7 @@
 #include "ActionPlan.h"
 #include "GoapPlanner.h"
 #include "AgentBeliefs.h"
+#include "GoapActionStrategyBase.h"
 #include "IdleStrategy.h"
 #include "MoveStrategy.h"
 #include "RechargeStrategy.h"
@@ -126,6 +127,12 @@ public:
 	void UpdateNPCState();
 
 	bool HasNPCStateChanged();
+
+	UFUNCTION(BlueprintCallable)
+	UGoapActionStrategyBase* GetCurrentStrategy() const { return CurrentAction->Strategy; }
+
+	UFUNCTION(BlueprintCallable)
+	FString GetCurrentGoal() const { return CurrentGoal->Name; }
 
 private:
 
