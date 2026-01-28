@@ -18,6 +18,8 @@ public:
 
 	void DrainPower(float drainrate);
 
+	void ReFuel(float fuelrate);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDrainPower();
 
