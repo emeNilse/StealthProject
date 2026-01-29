@@ -30,6 +30,10 @@ void UGoapComponent::BeginPlay()
 	NPC = Cast<ANPC>(AI->GetPawn());
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
+	ActionStackComponent = GetOwner()->FindComponentByClass<UActionStackComponent>();
+	ActionStackComponent->OnStackFailed.AddUObject(this, &UGoapComponent::HandlePlanFailed);
+	ActionStackComponent->OnStackFinished.AddUObject(this, &UGoapComponent::HandlePlanFinished);
+
 	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
 
 	if (GetWorld())
@@ -49,6 +53,7 @@ void UGoapComponent::BeginPlay()
 	SetupBeliefs();
 	SetupAction();
 	SetupGoals();
+	MakeAPlanForActionStack();
 }
 
 
@@ -57,106 +62,152 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!CurrentAction.IsValid() || HasNPCStateChanged())
+	if (!TheActionPlan.IsValid() || HasNPCStateChanged())
 	{
-		//Temp fix
-		if (CurrentAction.IsValid() && HasNPCStateChanged())
+		if (ActionStackComponent->IsExecuting())
 		{
-			CurrentAction->Stop();
+			ActionStackComponent->AbortCurrentAction();
 		}
-		//Need figure out why CalculatePlan() doesn't check if current action plan's preconditions are met
-		CalculatePlan();
-
-		if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
-		{
-			CurrentGoal = TheActionPlan->AgentGoal;
-			UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
-			CurrentAction = TheActionPlan->AgentActions[0];
-			TheActionPlan->AgentActions.RemoveAt(0);
-			UE_LOG(LogTemp, Warning, TEXT("Popped action: %s"), *CurrentAction->Name);
-
-			//verify all precondition effects are true
-			bool bAllPreconditionsMet = true;
-
-			for (TSharedPtr<AgentBeliefs>& b : CurrentAction->Preconditions)
-			{
-				if (!b->Evaluate())
-				{
-					bAllPreconditionsMet = false;
-					break;
-				}
-			}
-
-			if (bAllPreconditionsMet)
-			{
-				CurrentAction->Start();
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Preconditions not met"));
-				CurrentAction = nullptr;
-				CurrentGoal = nullptr;
-			}
-		}
-
-		UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
-		UpdateNPCState();
+		UE_LOG(LogTemp, Warning, TEXT("new plan here"));
+		MakeAPlanForActionStack();
 	}
+
+	//if (!CurrentAction.IsValid() || HasNPCStateChanged())
+	//{
+	//	//Temp fix
+	//	if (CurrentAction.IsValid() && HasNPCStateChanged())
+	//	{
+	//		CurrentAction->Stop();
+	//	}
+	//	//Need figure out why CalculatePlan() doesn't check if current action plan's preconditions are met
+	//	CalculatePlan();
+
+	//	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
+	//	{
+	//		CurrentGoal = TheActionPlan->AgentGoal;
+	//		UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
+	//		CurrentAction = TheActionPlan->AgentActions[0];
+	//		TheActionPlan->AgentActions.RemoveAt(0);
+	//		UE_LOG(LogTemp, Warning, TEXT("Popped action: %s"), *CurrentAction->Name);
+
+	//		//verify all precondition effects are true
+	//		bool bAllPreconditionsMet = true;
+
+	//		for (TSharedPtr<AgentBeliefs>& b : CurrentAction->Preconditions)
+	//		{
+	//			if (!b->Evaluate())
+	//			{
+	//				bAllPreconditionsMet = false;
+	//				break;
+	//			}
+	//		}
+
+	//		if (bAllPreconditionsMet)
+	//		{
+	//			CurrentAction->Start();
+	//		}
+	//		else
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("Preconditions not met"));
+	//			CurrentAction = nullptr;
+	//			CurrentGoal = nullptr;
+	//		}
+	//	}
+
+	//	UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
+	//	UpdateNPCState();
+	//}
+	//
+	////if there is a currentaction, execute
+	//if (TheActionPlan.IsValid() && CurrentAction.IsValid())
+	//{
+	//	CurrentAction->Tick(DeltaTime);
+
+	//	/*if (CurrentAction->Strategy.IsValid())
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("strat is valid"));
+	//		UE_LOG(LogTemp, Warning, TEXT("%s"), CurrentAction->Strategy->Complete() ? TEXT("true") : TEXT("false"));
+	//	}*/
+
+	//	if (CurrentAction->Strategy->Complete())
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("%s complete"), *CurrentAction->Name);
+	//		CurrentAction->Stop();
+	//		CurrentAction->EvaluateEffects();
+	//		
+	//		if (TheActionPlan->AgentActions.Num() > 0)
+	//		{
+	//			CurrentAction = TheActionPlan->AgentActions[0];
+	//			TheActionPlan->AgentActions.RemoveAt(0);
+	//			CurrentAction->Start();
+	//		}
+	//		else
+	//		{
+	//			CurrentAction = nullptr;
+	//		}
+
+	//		if (TheActionPlan->AgentActions.Num() == 0)
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("Plan complete"));
+	//			LastGoal = CurrentGoal;
+	//			//CurrentGoal = nullptr;
+	//		}
+	//	}
+	//}
 	
-	//if there is a currentaction, execute
-	if (TheActionPlan.IsValid() && CurrentAction.IsValid())
+	/*if (CurrentAction.IsValid())
 	{
-		CurrentAction->Tick(DeltaTime);
-
-		/*if (CurrentAction->Strategy.IsValid())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("strat is valid"));
-			UE_LOG(LogTemp, Warning, TEXT("%s"), CurrentAction->Strategy->Complete() ? TEXT("true") : TEXT("false"));
-		}*/
-
-		if (CurrentAction->Strategy->Complete())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s complete"), *CurrentAction->Name);
-			CurrentAction->Stop();
-			CurrentAction->EvaluateEffects();
-			
-			if (TheActionPlan->AgentActions.Num() > 0)
-			{
-				CurrentAction = TheActionPlan->AgentActions[0];
-				TheActionPlan->AgentActions.RemoveAt(0);
-				CurrentAction->Start();
-			}
-			else
-			{
-				CurrentAction = nullptr;
-			}
-
-			if (TheActionPlan->AgentActions.Num() == 0)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Plan complete"));
-				LastGoal = CurrentGoal;
-				//CurrentGoal = nullptr;
-			}
-		}
-	}
-	
-	if (CurrentAction.IsValid())
-	{
-		CurrentActionText = "Action: " + CurrentAction->Name;
+		CurrentActionText = "Action: " + ActionStackComponent->GetCurrentAction()->Name;
 	}
 	else
 	{
 		CurrentActionText = "Action: ";
-	}
-	if (CurrentGoal.IsValid())
+	}*/
+	if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
 	{
 		CurrentGoalText = "Goal: " + CurrentGoal->Name;
+		CurrentActionText = "Action: " + ActionStackComponent->GetCurrentAction()->Name;
 	} 
 	else
 	{
 		CurrentGoalText = "Goal: ";
+		CurrentActionText = "Action: ";
 	}
 	
+}
+
+void UGoapComponent::MakeAPlanForActionStack()
+{
+	CalculatePlan();
+
+	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
+	{
+		CurrentGoal = TheActionPlan->AgentGoal;
+		//UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
+		Algo::Reverse(TheActionPlan->AgentActions);
+		for (TSharedPtr<GoapAction> ga : TheActionPlan->AgentActions)
+		{
+			ActionStackComponent->PushAction(ga);
+		}
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
+	UpdateNPCState();
+}
+
+void UGoapComponent::HandlePlanFailed()
+{
+	TheActionPlan = nullptr;
+	/*CurrentAction = nullptr;
+	CurrentGoal = nullptr;*/
+	MakeAPlanForActionStack();
+}
+
+void UGoapComponent::HandlePlanFinished()
+{
+	LastGoal = CurrentGoal;
+	TheActionPlan = nullptr;
+	MakeAPlanForActionStack();
 }
 
 void UGoapComponent::SetupBeliefs()
@@ -339,13 +390,10 @@ void UGoapComponent::CalculatePlan()
 	}
 	else
 	{
-		if (CurrentAction.IsValid() && HasNPCStateChanged())
-		{
-			CurrentAction->Stop();
-		}
 		TheActionPlan = nullptr;
 		CurrentAction = nullptr;
 		CurrentGoal = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT("something strange with this place"));
 	}
 }
 

@@ -36,15 +36,20 @@ void GoapAction::Tick(float deltaTime)
 		Strategy->Tick(deltaTime);
 	}
 
-	if (Strategy->Complete())
+	/*if (Strategy->Complete())
 	{
 		EvaluateEffects();
-	}
+	}*/
 
 	/*for (TSharedPtr<AgentBeliefs> effect : Effects)
 	{
 		effect->Evaluate();
 	}*/
+}
+
+bool GoapAction::IsDone()
+{
+	return Strategy->Complete();
 }
 
 void GoapAction::Stop()

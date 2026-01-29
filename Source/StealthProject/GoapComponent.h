@@ -16,6 +16,7 @@
 #include "GoapGoal.h"
 #include "GoapGoalObject.h"
 #include "CountdownTimer.h"
+#include "ActionStackComponent.h"
 #include "ActionPlan.h"
 #include "GoapPlanner.h"
 #include "AgentBeliefs.h"
@@ -56,7 +57,8 @@ public:
 	AAI_Controller* AI;
 	ANPC* NPC;
 	UBlackboardComponent* AI_BlackBoard;
-	
+	UActionStackComponent* ActionStackComponent;
+
 	TSharedPtr<GoapAction> CurrentAction;
 
 	TSet<TSharedPtr<GoapAction>> Actions;
@@ -115,6 +117,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void MakeAPlanForActionStack();
+
+	void HandlePlanFailed();
+
+	void HandlePlanFinished();
 
 	void SetupBeliefs();
 

@@ -51,7 +51,7 @@ bool UMoveStrategy::CanPerform() const
 bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
-
+	
 	//FVector Dest = Destination;
 	float RemainingDistance = GetRemainingDistance(AI, Destination);
 

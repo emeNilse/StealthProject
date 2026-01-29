@@ -42,6 +42,8 @@ public:
 	//A manual tick function, needs to be called somewhere else
 	void Tick(float deltaTime);
 
+	bool IsDone();
+
 	void Stop();
 
 	void EvaluateEffects();
