@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	ALumberStorage();
 
+	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
+
 	virtual void GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts) override;
 
 protected:

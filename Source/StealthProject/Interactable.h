@@ -6,6 +6,22 @@
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
+UENUM()
+enum class EInteractionStatus : uint8
+{
+	InProgress,
+	Succeeded,
+	Failed
+};
+
+UENUM()
+enum class EInteractionType : uint8
+{
+	Default,
+	Storage_Check,
+	Storage_Take,
+	Storage_Refill
+};
 
 UINTERFACE(MinimalAPI)
 class UInteractable : public UInterface
@@ -22,5 +38,8 @@ class STEALTHPROJECT_API IInteractable
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool Interact(AActor* interactor);
+	bool Interact(AActor* interactor, EInteractionType type);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsInteractionComplete();
 };

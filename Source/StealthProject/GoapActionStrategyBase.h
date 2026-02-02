@@ -7,9 +7,15 @@
 //#include "IGoapActionStrategy.h"
 #include "GoapActionStrategyBase.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class EStrategyStatus : uint8
+{
+	Running,
+	Succeeded,
+	Failed
+};
+
+
 UCLASS(Abstract, Blueprintable)
 class STEALTHPROJECT_API UGoapActionStrategyBase : public UObject
 {
@@ -17,6 +23,7 @@ class STEALTHPROJECT_API UGoapActionStrategyBase : public UObject
 
 public:
 
+	//Why is this not allowed?? All strategies need an initialize, but heaven forbid, all inheritance logic demands they have their own... 
 	//virtual void Initialize() {}
 
 	virtual void Start() {}
@@ -28,6 +35,8 @@ public:
 	virtual bool CanPerform() const { return true; }
 
 	virtual bool Complete() const { return false; }
+
+	virtual EStrategyStatus TickStatus() { return EStrategyStatus::Running; }
 
 };
 

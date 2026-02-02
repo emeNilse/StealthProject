@@ -13,13 +13,13 @@ UInteractionComponent::UInteractionComponent()
 	// ...
 }
 
-bool UInteractionComponent::TryInteract(AActor* target)
+bool UInteractionComponent::TryInteract(AActor* target, EInteractionType type)
 {
 	if (!target) return false;
 
 	if (target->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 	{
-		return IInteractable::Execute_Interact(target, GetOwner());
+		return IInteractable::Execute_Interact(target, GetOwner(), type);
 	}
 
 	return false;

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
+#include "Interactable.h"
 #include "BaseStation.generated.h"
 
 UCLASS()
-class STEALTHPROJECT_API ABaseStation : public AActor
+class STEALTHPROJECT_API ABaseStation : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	

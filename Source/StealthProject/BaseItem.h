@@ -17,5 +17,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	EItemType ItemType;
 
-	virtual bool Interact_Implementation(AActor* interactor) override;
+	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
 };

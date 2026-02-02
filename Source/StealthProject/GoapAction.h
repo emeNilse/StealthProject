@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
-//#include "IGoapActionStrategy.h"
 #include "GoapActionStrategyBase.h"
 
 /**

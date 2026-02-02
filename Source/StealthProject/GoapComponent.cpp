@@ -30,6 +30,10 @@ void UGoapComponent::BeginPlay()
 	NPC = Cast<ANPC>(AI->GetPawn());
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
+	UWorld* World = GetWorld();
+	UGameInstance* GI = World->GetGameInstance();
+	WorldState = GI->GetSubsystem<UWorldStateSubsystem>();
+
 	ActionStackComponent = GetOwner()->FindComponentByClass<UActionStackComponent>();
 	ActionStackComponent->OnStackFailed.AddUObject(this, &UGoapComponent::HandlePlanFailed);
 	ActionStackComponent->OnStackFinished.AddUObject(this, &UGoapComponent::HandlePlanFinished);
@@ -178,6 +182,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UGoapComponent::MakeAPlanForActionStack()
 {
+	WorldState->RebuildWorldFacts();
 	CalculatePlan();
 
 	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)

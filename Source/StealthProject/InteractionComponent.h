@@ -17,6 +17,6 @@ public:
 	
 	UInteractionComponent();
 
-	bool TryInteract(AActor* target);
+	bool TryInteract(AActor* target, EInteractionType type);
 		
 };

@@ -3,7 +3,7 @@
 
 #include "BaseItem.h"
 
-bool ABaseItem::Interact_Implementation(AActor* interactor)
+bool ABaseItem::Interact_Implementation(AActor* interactor, EInteractionType type)
 {
 	if (!interactor) return false;
 

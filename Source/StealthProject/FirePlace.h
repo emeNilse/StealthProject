@@ -7,6 +7,7 @@
 #include "BaseStation.h"
 #include "WorldFactProvider.h"
 #include "WorldStateSubsystem.h"
+
 #include "FirePlace.generated.h"
 
 UCLASS()
@@ -16,6 +17,8 @@ class STEALTHPROJECT_API AFirePlace : public ABaseStation, public IWorldFactProv
 	
 public:	
 	AFirePlace();
+
+	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
 
 	virtual void GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts) override;
 

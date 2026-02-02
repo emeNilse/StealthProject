@@ -11,6 +11,14 @@ AFirePlace::AFirePlace()
 
 }
 
+bool AFirePlace::Interact_Implementation(AActor* interactor, EInteractionType type)
+{
+	if (bFireActive) return false;
+
+	IgniteFire();
+	return true;
+}
+
 void AFirePlace::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	FWorldFact FireFact;
@@ -23,7 +31,6 @@ void AFirePlace::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 	OutFacts.Add(FireFact);
 }
 
-// Called when the game starts or when spawned
 void AFirePlace::BeginPlay()
 {
 	Super::BeginPlay();
@@ -34,18 +41,18 @@ void AFirePlace::BeginPlay()
 	}
 }
 
-// Called every frame
 void AFirePlace::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TimeActive -= DeltaTime;
-
-	TimeActive = FMath::Clamp(TimeActive, -10.f, 100.f);
-
-	if (TimeActive <= 0.f)
+	if (bFireActive)
 	{
-		bFireActive = false;
+		TimeActive -= DeltaTime;
+
+		if (TimeActive <= 0.f)
+		{
+			bFireActive = false;
+		}
 	}
 }
 
