@@ -14,10 +14,20 @@ void UInteractionStrategy::Start()
 {
 	if (!Target || !Target->Implements<UInteractable>())
 	{
+		Status = EStrategyStatus::Failed;
 		return;
 	}
 
 	bInteractionResult = IInteractable::Execute_Interact(Target, AI->GetPawn(), InteractionType);
+
+	if (!bInteractionResult)
+	{
+		Status = EStrategyStatus::Failed;
+	}
+	else
+	{
+		Status = EStrategyStatus::Running;
+	}
 }
 
 bool UInteractionStrategy::CanPerform() const
@@ -27,11 +37,5 @@ bool UInteractionStrategy::CanPerform() const
 
 bool UInteractionStrategy::Complete() const
 {
-	//need to improve this
-	if (!bInteractionResult)
-	{
-		return true;
-	}
-
 	return IInteractable::Execute_IsInteractionComplete(Target);
 }

@@ -5,13 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BaseStation.h"
-#include "WorldFactProvider.h"
 #include "WorldStateSubsystem.h"
-
 #include "FirePlace.generated.h"
 
 UCLASS()
-class STEALTHPROJECT_API AFirePlace : public ABaseStation, public IWorldFactProvider
+class STEALTHPROJECT_API AFirePlace : public ABaseStation
 {
 	GENERATED_BODY()
 	

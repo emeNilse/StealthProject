@@ -31,8 +31,13 @@ void GoapAction::Start()
 
 void GoapAction::Tick(float deltaTime)
 {
-	if(Strategy->CanPerform())
+	if(!Strategy->CanPerform())
 	{ 
+		/*Strategy->Tick(deltaTime);*/
+	}
+
+	if (Strategy->Status == EStrategyStatus::Running)
+	{
 		Strategy->Tick(deltaTime);
 	}
 }
@@ -40,6 +45,11 @@ void GoapAction::Tick(float deltaTime)
 bool GoapAction::IsDone()
 {
 	return Strategy->Complete();
+}
+
+EStrategyStatus GoapAction::StatusCheck()
+{
+	return Strategy->TickStatus();
 }
 
 void GoapAction::Stop()

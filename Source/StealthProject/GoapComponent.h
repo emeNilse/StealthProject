@@ -79,13 +79,13 @@ public:
 	NPCState LastNPCState;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TArray<UGoapBelief*> uBeliefs;
+	TArray<UGoapBelief*> BeliefSet;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TArray<UGoapActionsSet*> uActions;
+	TArray<UGoapActionsSet*> ActionSets;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TArray<UGoapGoalObject*> uGoals;
+	TArray<UGoapGoalObject*> GoalSet;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

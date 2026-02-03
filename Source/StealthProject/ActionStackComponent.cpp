@@ -3,13 +3,9 @@
 
 #include "ActionStackComponent.h"
 
-// Sets default values for this component's properties
 UActionStackComponent::UActionStackComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 void UActionStackComponent::PushAction(TSharedPtr<GoapAction> Action)
@@ -97,7 +93,22 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 
 		if (ActionStack.Num() > 0 && CurrentStackAction == ActionStack[0])
 		{
-			if (CurrentStackAction->IsDone())
+			/*if (CurrentStackAction->IsDone())
+			{
+				ActionStack.RemoveAt(0);
+				CurrentStackAction->Stop();
+				CurrentStackAction->EvaluateEffects();
+				FirstTimeActions.Remove(CurrentStackAction);
+				CurrentStackAction = nullptr;
+
+				if (IsEmpty())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("stack is empty now"));
+					OnStackFinished.Broadcast();
+				}
+			}*/
+
+			if (CurrentStackAction->StatusCheck() == EStrategyStatus::Succeeded)
 			{
 				ActionStack.RemoveAt(0);
 				CurrentStackAction->Stop();
@@ -111,6 +122,11 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 					OnStackFinished.Broadcast();
 				}
 			}
+			else if (CurrentStackAction->StatusCheck() == EStrategyStatus::Failed)
+			{
+				AbortCurrentAction();
+			}
+
 		}
 		else
 		{

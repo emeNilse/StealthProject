@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "AI_Controller.h"
 //#include "IGoapActionStrategy.h"
 #include "GoapActionStrategyBase.generated.h"
 
@@ -23,8 +24,12 @@ class STEALTHPROJECT_API UGoapActionStrategyBase : public UObject
 
 public:
 
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, class AAI_Controller* inAI) const PURE_VIRTUAL(UGoapActionStrategyBase::CreateRunTimeInstance, return nullptr;);
+
 	//Why is this not allowed?? All strategies need an initialize, but heaven forbid, all inheritance logic demands they have their own... 
 	//virtual void Initialize() {}
+
+	EStrategyStatus Status = EStrategyStatus::Running;
 
 	virtual void Start() {}
 
@@ -34,9 +39,11 @@ public:
 
 	virtual bool CanPerform() const { return true; }
 
+	virtual bool HasFailed() const { return false; }
+
 	virtual bool Complete() const { return false; }
 
-	virtual EStrategyStatus TickStatus() { return EStrategyStatus::Running; }
+	virtual EStrategyStatus TickStatus() { return Status; }
 
 };
 

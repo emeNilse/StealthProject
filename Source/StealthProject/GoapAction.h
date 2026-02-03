@@ -28,6 +28,7 @@ public:
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
 	//TWeakObjectPtr was needed instead of TSharedPtr, to allow for UObjects to make use of it(?)
+	//GoapAction is not a UObject, UGoapActionStrategyBase is. To protect Strategy needed to make GoapAction : FCGObject and add reference below
 	UGoapActionStrategyBase* Strategy;
 
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
@@ -42,6 +43,8 @@ public:
 	void Tick(float deltaTime);
 
 	bool IsDone();
+
+	EStrategyStatus StatusCheck();
 
 	void Stop();
 

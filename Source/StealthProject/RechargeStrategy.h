@@ -22,10 +22,18 @@ private:
 	float PowerDrainRate = 10.f;
 
 public:
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		URechargeStrategy* Runtime = NewObject<URechargeStrategy>(Outer);
+		Runtime->AI = inAI;
+		Runtime->StaminaGoal = StaminaGoal;
+		return Runtime;
+	}
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StaminaGoal;
 
-	virtual void Initialize(AAI_Controller* inAI, float inGoal);
+	//virtual void Initialize(AAI_Controller* inAI, float inGoal);
 
 	virtual void Start() override;
 

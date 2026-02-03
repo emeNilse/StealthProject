@@ -7,33 +7,42 @@
 #include "NavigationPath.h"
 #include "GameFramework/Pawn.h"
 
-//MoveStrategy::MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination) : AI(inAI), Destination(inDestination)
+//void UMoveStrategy::Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor)
 //{
-//	/*AI = inAI;
-//	Destination = inDestination;*/
+//	AI = inAI;
+//	Destination = inActor->GetActorLocation();
 //}
-//
-//MoveStrategy::~MoveStrategy()
-//{
-//}
-
-void UMoveStrategy::Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor)
-{
-	AI = inAI;
-	Destination = inActor->GetActorLocation();
-}
 
 void UMoveStrategy::Start()
 {
-	if (!AI) return;
+	if (!AI)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
 
-	/*FVector Dest = Destination;*/
+	AActor* RuntimeTarget = TargetActor.Get();
+	if (!RuntimeTarget)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
+
+	Destination = RuntimeTarget->GetActorLocation();
 	AI->MoveToLocation(Destination);
+	Status = EStrategyStatus::Running;
 }
 
 void UMoveStrategy::Tick(float DeltaTime)
 {
-
+	if (Complete())
+	{
+		Status = EStrategyStatus::Succeeded;
+	}
+	else if (!CanPerform())
+	{
+		Status = EStrategyStatus::Failed;
+	}
 }
 
 void UMoveStrategy::Stop()
@@ -45,19 +54,36 @@ void UMoveStrategy::Stop()
 
 bool UMoveStrategy::CanPerform() const
 {
-	return !Complete();
+	return true;
+}
+
+bool UMoveStrategy::HasFailed() const
+{
+	int timer = 0;
+	if (AI->GetMoveStatus() == EPathFollowingStatus::Moving)
+	{
+		timer = 0;
+	}
+	else if (AI->GetMoveStatus() == EPathFollowingStatus::Waiting)
+	{
+		timer += 1;
+	}
+	
+	return false;
 }
 
 bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
 	
-	//FVector Dest = Destination;
-	float RemainingDistance = GetRemainingDistance(AI, Destination);
+	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < 50.f;
+
+
+	/*float RemainingDistance = GetRemainingDistance(AI, Destination);
 
 	bool bPathPending = AI->GetMoveStatus() == EPathFollowingStatus::Waiting;
 
-	return RemainingDistance < 50.f && !bPathPending;
+	return RemainingDistance < 50.f && !bPathPending;*/
 }
 
 float UMoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const

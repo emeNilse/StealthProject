@@ -18,6 +18,18 @@ ABaseStation::ABaseStation()
 	DisplayName = TEXT("Station name");
 }
 
+void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
+{
+	FWorldFact Fact;
+	Fact.Key = "IsStation";
+	Fact.Type = EWorldFactType::Bool;
+	Fact.IntValue = true;
+	Fact.Location = GetActorLocation();
+	Fact.Source = TWeakObjectPtr<AActor>(this);
+
+	OutFacts.Add(Fact);
+}
+
 // Called when the game starts or when spawned
 void ABaseStation::BeginPlay()
 {

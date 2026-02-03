@@ -16,8 +16,15 @@ class STEALTHPROJECT_API UMoveStrategy : public UGoapActionStrategyBase
 	GENERATED_BODY()
 
 public:
-	/*MoveStrategy(AAI_Controller* inAI, TFunction<FVector()> inDestination);
-	~MoveStrategy();*/
+	
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		UMoveStrategy* Runtime = NewObject<UMoveStrategy>(Outer);
+		Runtime->TargetActor = TargetActor;
+		Runtime->AI = inAI;
+		return Runtime;
+	}
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr <AActor> TargetActor;
 
@@ -28,7 +35,7 @@ public:
 
 	AAI_Controller* AI;
 
-	virtual void Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor);
+	//virtual void Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor);
 
 	virtual void Start() override;
 
@@ -38,6 +45,7 @@ public:
 
 	virtual bool CanPerform() const override;
 
+	virtual bool HasFailed() const override;
 	virtual bool Complete() const override;
 
 	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;

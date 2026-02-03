@@ -6,23 +6,30 @@
 #include "NPC.h"
 
 
-void URechargeStrategy::Initialize(AAI_Controller* inAI, float inGoal)
-{
-	AI = inAI;
-	StaminaGoal = inGoal;
-}
+//void URechargeStrategy::Initialize(AAI_Controller* inAI, float inGoal)
+//{
+//	AI = inAI;
+//	StaminaGoal = inGoal;
+//}
 
 void URechargeStrategy::Start()
 {
 	NPC = Cast<ANPC>(AI->GetPawn());
 	NPC->bRecharging = true;
+	Status = EStrategyStatus::Running;
 }
 
 void URechargeStrategy::Tick(float DeltaTime)
 {
 	if (!NPC)
 	{
+		Status = EStrategyStatus::Failed;
 		return;
+	}
+
+	if (Complete())
+	{
+		Status = EStrategyStatus::Succeeded;
 	}
 
 	NPC->ModifyStat("Stamina", 5.f * DeltaTime);

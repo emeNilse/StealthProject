@@ -17,8 +17,12 @@ class STEALTHPROJECT_API UPatrolStrategy : public UGoapActionStrategyBase
 	GENERATED_BODY()
 
 public:
-	/*PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld);
-	~PatrolStrategy();*/
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		UPatrolStrategy* Runtime = NewObject<UPatrolStrategy>(Outer);
+		Runtime->AI = inAI;
+		return Runtime;
+	}
 
 	TFunction<FVector()> Destination;
 
@@ -42,7 +46,7 @@ public:
 
 	int NOofPoints;
 
-	virtual void Initialize(AAI_Controller* inAI);
+	//virtual void Initialize(AAI_Controller* inAI);
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;

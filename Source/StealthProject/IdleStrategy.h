@@ -8,10 +8,7 @@
 #include "IdleStrategy.generated.h"
 
 
-//class CountdownTimer;
-/**
- * 
- */
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UIdleStrategy : public UGoapActionStrategyBase
 {
@@ -19,17 +16,22 @@ class STEALTHPROJECT_API UIdleStrategy : public UGoapActionStrategyBase
 
 private:
 	
-
 	bool bTimerComplete;
 	TUniquePtr<CountdownTimer> Timer;
 
 public:
-	//IdleStrategy(float duration);
-	//~IdleStrategy();
+
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		UIdleStrategy* Runtime = NewObject<UIdleStrategy>(Outer);
+		Runtime->Duration = Duration;
+		return Runtime;
+	}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Duration = 1.0f;
 
-	virtual void Initialize(float inDuration);
+	//virtual void Initialize(float inDuration);
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;

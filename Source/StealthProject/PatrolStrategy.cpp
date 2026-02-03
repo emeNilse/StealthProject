@@ -15,15 +15,20 @@
 //{
 //}
 
-void UPatrolStrategy::Initialize(AAI_Controller* inAI)
-{
-	AI = inAI;
-	World = AI->GetWorld();
-}
+//void UPatrolStrategy::Initialize(AAI_Controller* inAI)
+//{
+//	AI = inAI;
+//	World = AI->GetWorld();
+//}
 
 void UPatrolStrategy::Start()
 {
-	if (!World) return;
+	World = AI->GetWorld();
+	if (!World)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
 	bPatrolling = true;
 	NPC = Cast<ANPC>(AI->GetPawn());
 	FVector currentLocation = NPC->GetActorLocation();
@@ -35,10 +40,17 @@ void UPatrolStrategy::Start()
 	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 	IndexCounter = 0;
 	AI->MoveToLocation(GlobalPoint);
+
+	Status = EStrategyStatus::Running;
 }
 
 void UPatrolStrategy::Tick(float DeltaTime)
 {
+	if (Complete())
+	{
+		Status = EStrategyStatus::Succeeded;
+	}
+
 	DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
 	
 	if (bPatrolling && DistanceToTarget < 100.f)

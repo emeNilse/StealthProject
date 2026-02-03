@@ -16,14 +16,19 @@ class STEALTHPROJECT_API UChasePlayerStrategy : public UGoapActionStrategyBase
 	GENERATED_BODY()
 
 public:
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		UChasePlayerStrategy* Runtime = NewObject<UChasePlayerStrategy>(Outer);
+		Runtime->AI = inAI;
+		return Runtime;
+	}
 
 	AAI_Controller* AI;
 
 	AStealthProjectCharacter* Player;
 
-	/*ChasePlayerStrategy(AAI_Controller* inAI);
-	~ChasePlayerStrategy();*/
-	virtual void Initialize(AAI_Controller* inAI);
+
+	//virtual void Initialize(AAI_Controller* inAI);
 
 	virtual void Start() override;
 

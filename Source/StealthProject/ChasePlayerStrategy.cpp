@@ -7,35 +7,43 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationPath.h"
 
-//ChasePlayerStrategy::ChasePlayerStrategy(AAI_Controller* inAI) : AI(inAI)
-//{
-//}
-//
-//ChasePlayerStrategy::~ChasePlayerStrategy()
-//{
-//}
 
-void UChasePlayerStrategy::Initialize(AAI_Controller* inAI)
-{
-	AI = inAI;
-}
+//void UChasePlayerStrategy::Initialize(AAI_Controller* inAI)
+//{
+//	AI = inAI;
+//}
 
 
 void UChasePlayerStrategy::Start()
 {
-	if (!AI) return;
+	if (!AI)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
+		
 
 	Player = Cast<AStealthProjectCharacter>(AI->GetBlackboardComponent()->GetValueAsObject("PlayerActor"));
 
-	if (!Player) return;
+	if (!Player)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
 
 	AI->MoveToActor(Player);
+	Status = EStrategyStatus::Running;
 }
 
 void UChasePlayerStrategy::Tick(float DeltaTime)
 {
 	//Target = Player->GetActorLocation();
 	AI->MoveToActor(Player);
+
+	if (Complete())
+	{
+		Status = EStrategyStatus::Succeeded;
+	}
 }
 
 void UChasePlayerStrategy::Stop()

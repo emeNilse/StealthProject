@@ -8,6 +8,8 @@ ALumberStorage::ALumberStorage()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	StationTag = "Storage";
+
 }
 
 bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionType type)
@@ -19,10 +21,10 @@ bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionTyp
 	case EInteractionType::Storage_Check:
 		return true;
 	case EInteractionType::Storage_Take:
-		TakeLumber(10);
+		Take(LumberResource, 10);
 		return true;
 	case EInteractionType::Storage_Refill:
-		RefillStorage(100);
+		Deposit(LumberResource, 10);
 		return true;
 	}
 
@@ -31,6 +33,8 @@ bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionTyp
 
 void ALumberStorage::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
+	Super::GatherWorldFacts_Implementation(OutFacts);
+	
 	FWorldFact LumberFact;
 	LumberFact.Key = "LumberStorage";
 	LumberFact.Type = EWorldFactType::Int;
@@ -39,6 +43,40 @@ void ALumberStorage::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFact
 	LumberFact.Source = TWeakObjectPtr<AActor>(this);
 
 	OutFacts.Add(LumberFact);
+}
+
+int32 ALumberStorage::GetAmount(FName Resource) const
+{
+	return Resource == LumberResource ? CurrentLumberAmount : 0;
+}
+
+int32 ALumberStorage::GetCapacity(FName Resource) const
+{
+	return Resource == LumberResource ? MaxLumberAmount : 0;
+}
+
+bool ALumberStorage::CanTake(FName Resource, int32 Amount) const
+{
+	return Resource == LumberResource && CurrentLumberAmount > Amount;
+}
+
+bool ALumberStorage::CanDeposit(FName Resource, int32 Amount) const
+{
+	return Resource == LumberResource && CurrentLumberAmount + Amount <= MaxLumberAmount;
+}
+
+void ALumberStorage::Take(FName Resource, int32 Amount)
+{
+	if (!CanTake(Resource, Amount)) return;
+
+	CurrentLumberAmount -= Amount;
+}
+
+void ALumberStorage::Deposit(FName Resource, int32 Amount)
+{
+	if (!CanDeposit(Resource, Amount)) return;
+
+	CurrentLumberAmount += Amount;
 }
 
 void ALumberStorage::BeginPlay()
@@ -54,17 +92,17 @@ void ALumberStorage::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ALumberStorage::TakeLumber(int amount)
-{
-	CurrentLumberAmount -= amount;
-
-	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
-}
-
-void ALumberStorage::RefillStorage(int amount)
-{
-	CurrentLumberAmount += amount;
-
-	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
-}
+//void ALumberStorage::TakeLumber(int amount)
+//{
+//	CurrentLumberAmount -= amount;
+//
+//	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
+//}
+//
+//void ALumberStorage::RefillStorage(int amount)
+//{
+//	CurrentLumberAmount += amount;
+//
+//	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
+//}
 

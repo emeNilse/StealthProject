@@ -3,27 +3,18 @@
 
 #include "IdleStrategy.h"
 
-//IdleStrategy::IdleStrategy(float duration) : bTimerComplete(false)
-//{
-//	Timer = MakeUnique<CountdownTimer>(duration);
-//	UE_LOG(LogTemp, Warning, TEXT("bRunning at construct ="), bTimerComplete ? TEXT("true") : TEXT("false"));
-//	/*Timer->OnTimerStart.AddLambda([this]() { bTimerComplete = false; });
-//
-//	Timer->OnTimerStop.AddLambda([this]() { bTimerComplete = true; });*/
-//}
-//
-//IdleStrategy::~IdleStrategy()
-//{
-//}
 
-void UIdleStrategy::Initialize(float inDuration)
-{
-	Timer = MakeUnique<CountdownTimer>(inDuration);
-	UE_LOG(LogTemp, Warning, TEXT("bRunning at construct ="), bTimerComplete ? TEXT("true") : TEXT("false"));
-}
+//void UIdleStrategy::Initialize(float inDuration)
+//{
+//	Timer = MakeUnique<CountdownTimer>(inDuration);
+//	UE_LOG(LogTemp, Warning, TEXT("bRunning at construct ="), bTimerComplete ? TEXT("true") : TEXT("false"));
+//}
 
 void UIdleStrategy::Start()
 {
+	Timer = MakeUnique<CountdownTimer>(Duration);
+	UE_LOG(LogTemp, Warning, TEXT("bRunning at construct ="), bTimerComplete ? TEXT("true") : TEXT("false"));
+
 	bTimerComplete = false;
 	
 	UE_LOG(LogTemp, Warning, TEXT("IdleStrategy start called"));
@@ -34,12 +25,11 @@ void UIdleStrategy::Start()
 void UIdleStrategy::Tick(float DeltaTime)
 {
 	Timer->Tick(DeltaTime);
-	//UE_LOG(LogTemp, Warning, TEXT("IdleStrategy Tick: Current=%.2f, bRunning=%d, dt = %.2f"), Timer->GetDuration(), Timer->IsRunning(), DeltaTime);
 
 	if (Timer->IsFinished())
 	{
 		bTimerComplete = true;
-		//UE_LOG(LogTemp, Warning, TEXT("IdleStrategy COMPLETE!"));
+		Status = EStrategyStatus::Succeeded;
 	}
 }
 

@@ -20,10 +20,13 @@ private:
 	AAI_Controller* AI = nullptr;
 
 	//make target public?
-	AActor* Target = nullptr;
+	
 	bool bInteractionResult;
 
 public:
+	UPROPERTY(EditAnywhere)
+	AActor* Target;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInteractionType InteractionType;
 	
