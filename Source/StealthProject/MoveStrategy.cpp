@@ -76,7 +76,7 @@ bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
 	
-	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < 50.f;
+	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
 
 
 	/*float RemainingDistance = GetRemainingDistance(AI, Destination);

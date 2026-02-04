@@ -22,11 +22,15 @@ public:
 		UMoveStrategy* Runtime = NewObject<UMoveStrategy>(Outer);
 		Runtime->TargetActor = TargetActor;
 		Runtime->AI = inAI;
+		Runtime->WithinMinimumRange = WithinMinimumRange;
 		return Runtime;
 	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr <AActor> TargetActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float WithinMinimumRange;
 
 	FVector Destination;
 
