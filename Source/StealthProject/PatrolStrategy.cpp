@@ -5,22 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-//PatrolStrategy::PatrolStrategy(AAI_Controller* inAI, UWorld* inWorld)
-//{
-//	AI = inAI;
-//	World = inWorld;
-//}
-
-//PatrolStrategy::~PatrolStrategy()
-//{
-//}
-
-//void UPatrolStrategy::Initialize(AAI_Controller* inAI)
-//{
-//	AI = inAI;
-//	World = AI->GetWorld();
-//}
-
 void UPatrolStrategy::Start()
 {
 	World = AI->GetWorld();
@@ -55,7 +39,6 @@ void UPatrolStrategy::Tick(float DeltaTime)
 	
 	if (bPatrolling && DistanceToTarget < 100.f)
 	{
-		//IncrementPathIndex();
 		Index = ++Index % NOofPoints;
 		IndexCounter++;
 		if (IndexCounter >= NOofPoints)
@@ -66,7 +49,7 @@ void UPatrolStrategy::Tick(float DeltaTime)
 
 		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
 		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
-
+	
 		AI->MoveToLocation(GlobalPoint);
 	}
 }
@@ -82,11 +65,6 @@ void UPatrolStrategy::Stop()
 bool UPatrolStrategy::Complete() const
 {
 	return (IndexCounter >= NOofPoints);
-}
-
-float UPatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
-{
-	return 0.0f;
 }
 
 APatrolPath* UPatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation)
@@ -137,7 +115,3 @@ int UPatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVec
 	return 0;
 }
 
-void UPatrolStrategy::IncrementPathIndex()
-{
-	
-}

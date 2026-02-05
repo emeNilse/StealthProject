@@ -46,6 +46,9 @@ public:
 	TMap<FName, float> Stats;
 
 	UFUNCTION(BlueprintCallable)
+	void SetDestination(FVector TargetDestination);
+
+	UFUNCTION(BlueprintCallable)
 	float GetStat(FName StatName) const;
 
 	UFUNCTION(BlueprintCallable)
@@ -57,6 +60,8 @@ public:
 	bool bRecharging = false;
 
 	float Stamina;
+
+	FVector GlobalDestination;
 
 protected:
 	// Called when the game starts or when spawned

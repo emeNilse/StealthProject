@@ -57,14 +57,8 @@ public:
 
 	virtual bool Complete() const override;
 
-	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;
-
 	APatrolPath* FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation);
 
 	int FindClostestPatrolPathPoint(APatrolPath* inPath, const FVector& inNPCLocation);
-
-	FVector FindPathPoint();
-
-	void IncrementPathIndex();
 
 };

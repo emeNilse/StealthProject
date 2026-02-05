@@ -2,6 +2,7 @@
 
 
 #include "NPC.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -10,6 +11,9 @@ ANPC::ANPC()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	/*GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);*/
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +24,8 @@ void ANPC::BeginPlay()
 	//Stamina = 100.f;
 	StatTimerInterval = 1.f;
 	StatTimerRemaining = 1.f;
+
+	GlobalDestination = GetActorLocation();
 }
 
 void ANPC::RayCast()
@@ -84,6 +90,11 @@ void ANPC::UpdateStats()
 	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));
 }
 
+void ANPC::SetDestination(FVector TargetDestination)
+{
+	GlobalDestination = TargetDestination;
+}
+
 float ANPC::GetStat(FName StatName) const
 {
 	if (const float* Value = Stats.Find(StatName))
@@ -117,13 +128,24 @@ void ANPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//RayCast();
-
+	
 	StatTimerRemaining -= DeltaTime;
 	if (StatTimerRemaining <= 0.f)
 	{
 		UpdateStats();
 		StatTimerRemaining = StatTimerInterval;
 	}
+
+	/*FVector ToTarget = GlobalDestination - GetActorLocation();
+
+	FRotator CurrentRotation = GetActorRotation();
+	FRotator TargetRotation = ToTarget.Rotation();
+	float Angle = FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw));
+	float TurnSpeed = FMath::GetMappedRangeValueClamped(FVector2D(0.f, 180.f), FVector2D(8.f, 3.f), Angle);
+
+	const FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, TurnSpeed);
+
+	SetActorRotation(NewRotation);*/
 }
 
 // Called to bind functionality to input
