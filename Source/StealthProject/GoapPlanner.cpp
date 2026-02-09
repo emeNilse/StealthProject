@@ -15,15 +15,15 @@ GoapPlanner::~GoapPlanner()
 {
 }
 
-TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
+TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* inAI, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
 {
 	TArray<TSharedPtr<GoapGoal>> orderdGoals = goals.Array();
 
-	orderdGoals = orderdGoals.FilterByPredicate([](TSharedPtr<GoapGoal> G)
+	orderdGoals = orderdGoals.FilterByPredicate([inAI](TSharedPtr<GoapGoal> G)
 		{
 			for (TSharedPtr<AgentBeliefs> belief : G->DesiredEffects)
 			{
-				if (!belief->Evaluate())
+				if (!belief->Evaluate(inAI))
 				{
 					return true;
 				}
@@ -44,7 +44,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<
 	{
 		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 
-		if (FindPath(goalNode, agent->Actions))
+		if (FindPath(goalNode, inAI, agent->Actions))
 		{
 			if (goalNode->IsLeafDead())
 			{
@@ -78,7 +78,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, TSet<TSharedPtr<
 	return nullptr;
 }
 
-bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
+bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
 {
 	TArray<TSharedPtr<GoapAction>> orderdActions = actions.Array();
 
@@ -95,7 +95,7 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 
 		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
 		{
-			if (belief->Evaluate())
+			if (belief->Evaluate(inAI))
 			{
 				removeList.Add(belief);
 			}
@@ -126,7 +126,7 @@ bool GoapPlanner::FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions)
 
 				Node* newNode = new Node(parent, action, newRequiredEffects, parent->Cost + action->Cost);
 
-				if (FindPath(newNode, newAvailableActions))
+				if (FindPath(newNode, inAI, newAvailableActions))
 				{
 					parent->Leaves.Add(newNode);
 					//newRequiredEffects.Difference(newNode->Action->Preconditions);

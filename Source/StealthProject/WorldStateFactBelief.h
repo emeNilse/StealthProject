@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GoapBelief.h"
-#include "WorldStateSubsystem.h"
+#include "GoapWorldStateComponent.h"
 
 #include "WorldStateFactBelief.generated.h"
 
@@ -49,9 +49,9 @@ public:
 
 		FVector AgentLocation = AI->GetPawn()->GetActorLocation();
 
-		if (UWorldStateSubsystem* wss = world->GetGameInstance()->GetSubsystem<UWorldStateSubsystem>())
+		if (UGoapWorldStateComponent* WorldState = AI->GetOwner()->FindComponentByClass<UGoapWorldStateComponent>())
 		{
-			TArray<FWorldFact> facts = wss->GetFacts();
+			TArray<FWorldFact> facts = WorldState->GetFacts();
 
 			for (const FWorldFact& fact : facts)
 			{

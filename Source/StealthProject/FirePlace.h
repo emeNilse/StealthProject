@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BaseStation.h"
-#include "WorldStateSubsystem.h"
+#include "GoapWorldStateComponent.h"
+#include "WorldFactRegistry.h"
 #include "FirePlace.generated.h"
 
 UCLASS()

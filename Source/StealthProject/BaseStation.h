@@ -7,7 +7,7 @@
 #include "Components/TextRenderComponent.h"
 #include "Interactable.h"
 #include "WorldFactProvider.h"
-#include "WorldStateSubsystem.h"
+#include "GoapWorldStateComponent.h"
 #include "BaseStation.generated.h"
 
 UCLASS()

@@ -2,6 +2,7 @@
 
 
 #include "ActionStackComponent.h"
+#include "AI_Controller.h"
 
 UActionStackComponent::UActionStackComponent()
 {
@@ -28,6 +29,7 @@ void UActionStackComponent::ClearStack()
 
 	ActionStack.Empty();
 	FirstTimeActions.Empty();
+	bIsExecuting = false;
 	CurrentStackAction = nullptr;
 }
 
@@ -40,7 +42,7 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 {
 	if (IsEmpty())
 	{
-		
+		//AbortCurrentAction();
 		return;
 	}
 
@@ -56,9 +58,10 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 		bool bAllPreconditionsMet = true;
 		for (TSharedPtr<AgentBeliefs>& b : CurrentStackAction->Preconditions)
 		{
-			if (!b->Evaluate())
+			if (!b->Evaluate(OwnerAI))
 			{
 				bAllPreconditionsMet = false;
+				UE_LOG(LogTemp, Warning, TEXT("precondition %s failed"), *b->Name);
 				break;
 			}
 		}
@@ -69,7 +72,6 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("preconditions fail"));
 			OnStackFailed.Broadcast();
 			ClearStack();
 		}
@@ -112,7 +114,7 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 			{
 				ActionStack.RemoveAt(0);
 				CurrentStackAction->Stop();
-				CurrentStackAction->EvaluateEffects();
+				CurrentStackAction->EvaluateEffects(OwnerAI);
 				FirstTimeActions.Remove(CurrentStackAction);
 				CurrentStackAction = nullptr;
 
@@ -120,6 +122,7 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("stack is empty now"));
 					OnStackFinished.Broadcast();
+					bIsExecuting = false;
 				}
 			}
 			else if (CurrentStackAction->StatusCheck() == EStrategyStatus::Failed)
@@ -141,6 +144,7 @@ void UActionStackComponent::AbortCurrentAction()
 	{
 		CurrentStackAction->Stop();
 	}
+	bIsExecuting = false;
 	OnStackFailed.Broadcast();
 	ClearStack();
 }
@@ -149,6 +153,8 @@ void UActionStackComponent::AbortCurrentAction()
 void UActionStackComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	OwnerAI = Cast<AAI_Controller>(OwnerPawn->GetController());
 }
 
 

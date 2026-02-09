@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 //#include "UObject/NoExportTypes.h"
 //#include "AgentBeliefs.generated.h"
-
+class AAI_Controller;
 /**
  * 
  */
@@ -21,7 +21,7 @@ public:
 	TFunction<bool()> ConditionFunc;
 	TFunction<FVector()> ObservedLocation;
 
-	bool const Evaluate();
+	bool const Evaluate(AAI_Controller* inAI);
 
 	bool Equals(TSharedPtr<AgentBeliefs> comparison);
 

@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Subsystems/GameInstanceSubsystem.h"
+//#include "Subsystems/GameInstanceSubsystem.h"
+#include "Components/ActorComponent.h"
 #include "WorldFactProvider.h"
-#include "WorldStateSubsystem.generated.h"
+#include "GoapWorldStateComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STEALTHPROJECT_API UWorldStateSubsystem : public UGameInstanceSubsystem
+class STEALTHPROJECT_API UGoapWorldStateComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	

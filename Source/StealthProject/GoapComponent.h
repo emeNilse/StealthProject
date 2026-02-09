@@ -29,7 +29,8 @@
 #include "ChasePlayerStrategy.h"
 #include "GoapPlannerInterface.h"
 #include "GoapFactorySubsystem.h"
-#include "WorldStateSubsystem.h"
+#include "GoapWorldStateComponent.h"
+#include "WorldFactRegistry.h"
 #include "GoapComponent.generated.h"
 
 class AAI_Controller;
@@ -59,7 +60,7 @@ public:
 	ANPC* NPC;
 	UBlackboardComponent* AI_BlackBoard;
 	UActionStackComponent* ActionStackComponent;
-	UWorldStateSubsystem* WorldState;
+	UGoapWorldStateComponent* WorldState;
 
 	TSharedPtr<GoapAction> CurrentAction;
 
@@ -72,7 +73,7 @@ public:
 	TSharedPtr<ActionPlan> TheActionPlan;
 	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
 
-	TSharedPtr<IGoapPlannerInterface> GoapPlanner;
+	TUniquePtr<IGoapPlannerInterface> GoapPlanner;
 	UGoapFactorySubsystem* GoapFactory;
 	TUniquePtr<BeliefFactory> Factory;
 

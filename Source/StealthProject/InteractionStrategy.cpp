@@ -2,7 +2,7 @@
 
 
 #include "InteractionStrategy.h"
-#include "WorldStateSubsystem.h"
+#include "GoapWorldStateComponent.h"
 
 void UInteractionStrategy::Initialize(AAI_Controller* inIA, AActor* inTarget)
 {

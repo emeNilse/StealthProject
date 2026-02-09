@@ -23,8 +23,8 @@ public:
 		Super::Initialize(Collection);
 	}
 
-	TSharedPtr<IGoapPlannerInterface> CreatePlanner()
+	TUniquePtr<IGoapPlannerInterface> CreatePlanner()
 	{
-		return MakeShared<GoapPlanner>();
+		return MakeUnique<GoapPlanner>();
 	}
 };

@@ -20,14 +20,28 @@ UGoapComponent::UGoapComponent()
 void UGoapComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AI = Cast<AAI_Controller>(GetOwner()->GetInstigatorController());
-	NPC = Cast<ANPC>(AI->GetPawn());
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	AI = Cast<AAI_Controller>(OwnerPawn->GetController());
+	NPC = Cast<ANPC>(AI ? AI->GetPawn() : nullptr);
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
-	UWorld* World = GetWorld();
-	UGameInstance* GI = World->GetGameInstance();
-	WorldState = GI->GetSubsystem<UWorldStateSubsystem>();
+	WorldState = GetOwner()->FindComponentByClass<UGoapWorldStateComponent>();
+	if (!WorldState)
+	{
+		UE_LOG(LogTemp, Error, TEXT("GoapComp: world state comp missing on %s"), *GetOwner()->GetName());
+		return;
+	}
+
+	if (UWorldFactRegistry* Registry = GetWorld()->GetGameInstance()->GetSubsystem<UWorldFactRegistry>())
+	{
+		for (const TWeakObjectPtr<AActor>& Provider : Registry->GetProviders())
+		{
+			if (Provider.IsValid())
+			{
+				WorldState->RegisterProvider(Provider.Get());
+			}
+		}
+	}
 
 	ActionStackComponent = GetOwner()->FindComponentByClass<UActionStackComponent>();
 	ActionStackComponent->OnStackFailed.AddUObject(this, &UGoapComponent::HandlePlanFailed);
@@ -42,6 +56,7 @@ void UGoapComponent::BeginPlay()
 		if (GoapFactory)
 		{
 			GoapPlanner = GoapFactory->CreatePlanner();
+			UE_LOG(LogTemp, Warning, TEXT("%s assigned GoapPlanner at %p"), *GetOwner()->GetName(), GoapPlanner.Get());
 		}
 		else
 		{
@@ -59,14 +74,22 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!AI_BlackBoard)
+	{
+		AI_BlackBoard = AI ? AI->GetBlackboardComponent() : nullptr;
+	}
+
 	if (!TheActionPlan.IsValid() || HasNPCStateChanged())
 	{
 		if (ActionStackComponent->IsExecuting())
 		{
 			ActionStackComponent->AbortCurrentAction();
 		}
-		UE_LOG(LogTemp, Warning, TEXT("new plan here"));
-		MakeAPlanForActionStack();
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("new plan here"));
+			MakeAPlanForActionStack();
+		}
 	}
 
 	if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
@@ -89,7 +112,7 @@ void UGoapComponent::MakeAPlanForActionStack()
 	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 	{
 		CurrentGoal = TheActionPlan->AgentGoal;
-		//UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
+		UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
 		Algo::Reverse(TheActionPlan->AgentActions);
 		for (TSharedPtr<GoapAction> ga : TheActionPlan->AgentActions)
 		{
@@ -103,9 +126,9 @@ void UGoapComponent::MakeAPlanForActionStack()
 
 void UGoapComponent::HandlePlanFailed()
 {
+	//LastGoal, to do or not to do
+	LastGoal = CurrentGoal;
 	TheActionPlan = nullptr;
-	/*CurrentAction = nullptr;
-	CurrentGoal = nullptr;*/
 	MakeAPlanForActionStack();
 }
 
@@ -182,7 +205,7 @@ void UGoapComponent::CalculatePlan()
 		goalsToCheck = MoveTemp(filteredGoals);
 	}
 
-	TSharedPtr<ActionPlan> potentialPlan = GoapPlanner->Plan(this, goalsToCheck, LastGoal);
+	TSharedPtr<ActionPlan> potentialPlan = GoapPlanner->Plan(this, AI, goalsToCheck, LastGoal);
 
 	if (potentialPlan.IsValid())
 	{
@@ -206,6 +229,10 @@ bool UGoapComponent::HasNPCStateChanged()
 {
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{
+		bool cansee = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
+		bool lastcansee = LastNPCState.bCanSeePlayer;
+		UE_LOG(LogTemp, Warning, TEXT("bCanSeePlayer = %s"), cansee ? TEXT("true") : TEXT("false"));
+		UE_LOG(LogTemp, Warning, TEXT("Last State bCanSeePlayer = %s"), lastcansee ? TEXT("true") : TEXT("false"));
 		return true;
 	}
 

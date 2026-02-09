@@ -16,11 +16,13 @@ class STEALTHPROJECT_API UActionStackComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UActionStackComponent();
 
 	FOnActionStackFailed OnStackFailed;
 	FOnActionStackFinished OnStackFinished;
+
+	UPROPERTY()
+	AAI_Controller* OwnerAI;
 
 	void PushAction(TSharedPtr<GoapAction> Action);
 

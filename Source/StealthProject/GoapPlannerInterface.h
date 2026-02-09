@@ -10,6 +10,7 @@
 class ActionPlan;
 class UGoapComponent;
 class GoapGoal;
+class AAI_Controller;
 /**
  * 
  */
@@ -24,6 +25,6 @@ class IGoapPlannerInterface
 {
 public:
 	//virtual ~IGoapPlannerInterface();
-	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) = 0;
+	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, AAI_Controller* inAI, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) = 0;
 
 };

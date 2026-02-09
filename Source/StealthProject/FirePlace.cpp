@@ -35,9 +35,9 @@ void AFirePlace::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (UWorldStateSubsystem* wss = GetGameInstance()->GetSubsystem<UWorldStateSubsystem>())
+	if (UWorldFactRegistry* Registry = GetGameInstance()->GetSubsystem<UWorldFactRegistry>())
 	{
-		wss->RegisterProvider(this);
+		Registry->Register(this);
 	}
 }
 

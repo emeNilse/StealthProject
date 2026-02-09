@@ -8,7 +8,7 @@ AgentBeliefs::AgentBeliefs(FString name)
 	Name = name;
 }
 
-bool const AgentBeliefs::Evaluate()
+bool const AgentBeliefs::Evaluate(AAI_Controller* inAI)
 {
 	return ConditionFunc ? ConditionFunc() : false;
 }

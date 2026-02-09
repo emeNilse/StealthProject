@@ -30,6 +30,14 @@ public:
 			return false;
 		}
 
+		bool dist = FVector::Dist(AI->GetPawn()->GetActorLocation(), TargetActor->GetActorLocation()) <= DistanceThreshold;
+		float val = FVector::Dist(AI->GetPawn()->GetActorLocation(), TargetActor->GetActorLocation());
+		FVector tar = TargetActor->GetActorLocation();
+		FVector ai = AI->GetPawn()->GetActorLocation();
+		UE_LOG(LogTemp, Warning, TEXT("dist = %s at %0.2f"), dist ? TEXT("true") : TEXT("false"), val);
+		UE_LOG(LogTemp, Warning, TEXT("Target Actor = %s"), *tar.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("AI = %s"), *ai.ToString());
+
 		return FVector::Dist(AI->GetPawn()->GetActorLocation(), TargetActor->GetActorLocation()) <= DistanceThreshold;
 	}
 	

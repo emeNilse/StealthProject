@@ -11,13 +11,9 @@
 
 AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
 {
+	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
+	
 	SetupPerceptionSystem();
-
-	/*static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAsset(TEXT("/StealthProject/Content/AI/Controller/BP_BlackboardData"));
-	if (BBAsset.Succeeded())
-	{
-		BlackboardAsset = BBAsset.Object;
-	}*/
 }
 
 void AAI_Controller::OnPossess(APawn* InPawn)
@@ -37,6 +33,17 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 		if (NPC->GetBlackBoardData())
 		{
 			UseBlackboard(NPC->GetBlackBoardData(), BlackboardComponent);
+			
+			APawn* OwnerPawn = GetPawn();
+			if (UseBlackboard(NPC->GetBlackBoardData(), BlackboardComponent))
+			{
+				UE_LOG(LogTemp, Error, TEXT("Blackboard for %s"), *OwnerPawn->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Failed to get Blackboard for %s"), *OwnerPawn->GetName());
+			}
+			
 		}
 	}
 }
@@ -69,7 +76,7 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 		GetBlackboardComponent()->SetValueAsObject("PlayerActor", Actor);
 		GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", Stimulus.WasSuccessfullySensed());
 		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
-
+		UE_LOG(LogTemp, Warning, TEXT("%s detected player, Sensed=%d"), *GetName(), Stimulus.WasSuccessfullySensed());
 		/*if (Goap)
 		{
 			Goap->RequestReplan();

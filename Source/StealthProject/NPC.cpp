@@ -9,6 +9,8 @@
 ANPC::ANPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	WorldState = CreateDefaultSubobject<UGoapWorldStateComponent>(TEXT("WorldState"));
 }
 
 

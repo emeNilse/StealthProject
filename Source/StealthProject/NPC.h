@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "GoapWorldStateComponent.h"
 #include "EdGraphSchema_K2.h"
 
 #include "NPC.generated.h"
@@ -69,6 +70,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	UBlackboardData* BlackboardAsset;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	UGoapWorldStateComponent* WorldState;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta=(AllowPrivateAccess = "true"))

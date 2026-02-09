@@ -57,11 +57,11 @@ void GoapAction::Stop()
 	Strategy->Stop();
 }
 
-void GoapAction::EvaluateEffects()
+void GoapAction::EvaluateEffects(AAI_Controller* OwnerAI)
 {
 	for (TSharedPtr<AgentBeliefs> effect : Effects)
 	{
-		effect->Evaluate();
+		effect->Evaluate(OwnerAI);
 	}
 }
 

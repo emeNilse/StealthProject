@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
 #include "GoapActionStrategyBase.h"
-
+class AAI_Controller;
 /**
  * 
  */
@@ -48,7 +48,7 @@ public:
 
 	void Stop();
 
-	void EvaluateEffects();
+	void EvaluateEffects(AAI_Controller* OwnerAI);
 
 	class Builder
 	{

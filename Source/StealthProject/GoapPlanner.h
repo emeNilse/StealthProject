@@ -9,6 +9,7 @@
 //#include "GoapComponent.h"
 #include "Node.h"
 #include "ActionPlan.h"
+#include "AI_Controller.h"
 #include "GoapPlannerInterface.h"
 //#include "GoapPlanner.generated.h"
 
@@ -31,9 +32,9 @@ public:
 
 	~GoapPlanner();
 
-	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) override;
+	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, AAI_Controller* inAI, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal) override;
 
-	bool FindPath(Node* parent, TSet<TSharedPtr<GoapAction>> actions);
+	bool FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions);
 
 	bool HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief);
 };

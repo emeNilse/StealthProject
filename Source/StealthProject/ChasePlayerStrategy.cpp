@@ -69,7 +69,7 @@ bool UChasePlayerStrategy::Complete() const
 
 float UChasePlayerStrategy::GetRemainingDistance(AAI_Controller* inAI, AStealthProjectCharacter* inPlayer) const
 {
-	if (!inAI || !inAI->GetPawn()) return 0.0f;
+	if (!inAI || !inAI->GetPawn() || !inPlayer) return 0.0f;
 
 	UWorld* World = AI->GetWorld();
 	if (!World) return 0.f;
@@ -77,7 +77,7 @@ float UChasePlayerStrategy::GetRemainingDistance(AAI_Controller* inAI, AStealthP
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
 	if (!NavSys) return 0.0f;
 
-	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(World, inAI->GetPawn()->GetActorLocation(), Player->GetActorLocation(), inAI->GetPawn());
+	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(World, inAI->GetPawn()->GetActorLocation(), inPlayer->GetActorLocation(), inAI->GetPawn());
 
 	if (!NavPath || NavPath->PathPoints.Num() < 2) return 0.f;
 
