@@ -18,15 +18,18 @@ void UChasePlayerStrategy::Start()
 {
 	if (!AI)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("no ai"));
 		Status = EStrategyStatus::Failed;
 		return;
 	}
 		
 
 	Player = Cast<AStealthProjectCharacter>(AI->GetBlackboardComponent()->GetValueAsObject("PlayerActor"));
+	UE_LOG(LogTemp, Warning, TEXT("chase player strat"));
 
 	if (!Player)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("can't find player"));
 		Status = EStrategyStatus::Failed;
 		return;
 	}

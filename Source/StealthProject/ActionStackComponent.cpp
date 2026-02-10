@@ -82,7 +82,7 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 			if (ActionStack.Num() > 0 && CurrentStackAction != ActionStack[0])
 			{
 				CurrentStackAction = nullptr;
-				UpdateActions(DeltaTime);
+				//UpdateActions(DeltaTime);
 				return;
 			}
 		}
@@ -129,7 +129,6 @@ void UActionStackComponent::UpdateActions(float DeltaTime)
 			{
 				AbortCurrentAction();
 			}
-
 		}
 		else
 		{

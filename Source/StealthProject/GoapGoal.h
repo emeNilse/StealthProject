@@ -39,20 +39,20 @@ public:
 			return *this;
 		}
 
-		Builder& WithDesiredEffect(FString effect)
+		Builder& WithDesiredEffect(TSharedPtr<AgentBeliefs> effect)
 		{
-			goal->DesiredEffects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
+			goal->DesiredEffects.Add(effect);
 			return *this;
 		}
 
-		Builder& WithDesiredEffect(TArray<FString> effect)
+		/*Builder& WithDesiredEffect(TArray<FString> effect)
 		{
 			for (FString e : effect)
 			{
 				goal->DesiredEffects.Add(AgentBeliefs::BeliefRegistry::Get(e));
 			}
 			return *this;
-		}
+		}*/
 
 		TSharedPtr<GoapGoal> Build()
 		{

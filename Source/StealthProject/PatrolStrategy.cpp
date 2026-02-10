@@ -41,10 +41,7 @@ void UPatrolStrategy::Tick(float DeltaTime)
 	{
 		Index = ++Index % NOofPoints;
 		IndexCounter++;
-		if (IndexCounter >= NOofPoints)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("fuck you"));
-		}
+		
 		BBC->SetValueAsInt("PatrolPathIndex", Index);
 
 		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);

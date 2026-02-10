@@ -3,18 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "UObject/NoExportTypes.h"
-//#include "AgentBeliefs.generated.h"
-class AAI_Controller;
-/**
- * 
- */
-//UCLASS()
-class STEALTHPROJECT_API AgentBeliefs /*: public UObject*/
-{
-	//GENERATED_BODY()
-	
 
+class AAI_Controller;
+
+class STEALTHPROJECT_API AgentBeliefs 
+{
+	
 public:
 	FString Name;
 
@@ -35,7 +29,8 @@ public:
 		TSharedPtr<AgentBeliefs> Belief;
 
 	public:
-		Builder(const FString name);
+		Builder(TSharedPtr<AgentBeliefs>& InBelief);
+		//Builder(const FString name);
 		//Builder(const TSharedPtr<AgentBeliefs>& name);
 
 		//I don't understand why this is what works, I tried my own way first but a youtube example and ChatGPT told me it had to be written like this
@@ -61,10 +56,8 @@ public:
 	class BeliefRegistry
 	{
 	public:
-		static TSharedPtr<AgentBeliefs> Get(const FString& name)
+		TSharedPtr<AgentBeliefs> Get(const FString& name)
 		{
-			static TMap<FString, TSharedPtr<AgentBeliefs>> Cache;
-
 			if (!Cache.Contains(name))
 			{
 				Cache.Add(name, MakeShared<AgentBeliefs>(name));
@@ -72,6 +65,10 @@ public:
 
 			return Cache[name];
 		}
-	};
 
+	private:
+		TMap<FString, TSharedPtr<AgentBeliefs>> Cache;
+	};
 };
+
+

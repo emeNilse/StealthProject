@@ -3,7 +3,7 @@
 
 #include "GoapComponent.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "BeliefFactory.h"
+
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "AI_Controller.h"
@@ -47,7 +47,8 @@ void UGoapComponent::BeginPlay()
 	ActionStackComponent->OnStackFailed.AddUObject(this, &UGoapComponent::HandlePlanFailed);
 	ActionStackComponent->OnStackFinished.AddUObject(this, &UGoapComponent::HandlePlanFinished);
 
-	Factory = MakeUnique<BeliefFactory>(this, Beliefs);
+	MyBeliefRegistry = MakeUnique<AgentBeliefs::BeliefRegistry>();
+	MyBeliefFactory = MakeUnique<BeliefFactory>(this, *MyBeliefRegistry);
 
 	if (GetWorld())
 	{
@@ -79,7 +80,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		AI_BlackBoard = AI ? AI->GetBlackboardComponent() : nullptr;
 	}
 
-	if (!TheActionPlan.IsValid() || HasNPCStateChanged())
+	if (!TheActionPlan.IsValid() || HasNPCStateChanged() || bShouldReplan)
 	{
 		if (ActionStackComponent->IsExecuting())
 		{
@@ -87,7 +88,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("new plan here"));
+			bShouldReplan = false;
 			MakeAPlanForActionStack();
 		}
 	}
@@ -117,10 +118,10 @@ void UGoapComponent::MakeAPlanForActionStack()
 		for (TSharedPtr<GoapAction> ga : TheActionPlan->AgentActions)
 		{
 			ActionStackComponent->PushAction(ga);
+			UE_LOG(LogTemp, Warning, TEXT("Action: %s"), *ga->Name);
 		}
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("plan updated?"));
 	UpdateNPCState();
 }
 
@@ -129,14 +130,16 @@ void UGoapComponent::HandlePlanFailed()
 	//LastGoal, to do or not to do
 	LastGoal = CurrentGoal;
 	TheActionPlan = nullptr;
-	MakeAPlanForActionStack();
+	bShouldReplan = true;
+	//MakeAPlanForActionStack();
 }
 
 void UGoapComponent::HandlePlanFinished()
 {
 	LastGoal = CurrentGoal;
 	TheActionPlan = nullptr;
-	MakeAPlanForActionStack();
+	bShouldReplan = true;
+	//MakeAPlanForActionStack();
 }
 
 void UGoapComponent::SetupBeliefs()
@@ -145,7 +148,7 @@ void UGoapComponent::SetupBeliefs()
 	{
 		if (belief)
 		{
-			Factory->AddBelief(belief->Name, [belief, this]() { return belief->Evaluate(AI); });
+			MyBeliefFactory->AddBelief(belief->Name, [belief, this]() { return belief->Evaluate(AI); });
 		}
 	}
 }
@@ -161,13 +164,18 @@ void UGoapComponent::SetupAction()
 
 		UGoapActionStrategyBase* RuntimeStrategy = action->StrategyInstance->CreateRunTimeInstance(this, AI);
 
-		Actions.Add(
-			GoapAction::Builder(action->Name)
-			.WithStrategy(RuntimeStrategy)
-			.WithCost(action->Cost)
-			.AddPreconditions(action->PreConditions)
-			.AddEffects(action->Effects)
-			.Build());
+		auto Builder = GoapAction::Builder(action->Name).WithStrategy(RuntimeStrategy).WithCost(action->Cost);
+
+		for (const FString& preconditionName : action->PreConditions)
+		{
+			Builder.AddPrecondition(MyBeliefRegistry->Get(preconditionName));
+		}
+		for (const FString& effectName : action->Effects)
+		{
+			Builder.AddEffect(MyBeliefRegistry->Get(effectName));
+		}
+
+		Actions.Add(Builder.Build());
 	}
 }
 
@@ -177,7 +185,14 @@ void UGoapComponent::SetupGoals()
 	{
 		if (goal)
 		{
-			Goals.Add(GoapGoal::Builder(goal->Name).WithPriority(goal->Priority).WithDesiredEffect(goal->DesiredEffects).Build());
+			auto Builder = GoapGoal::Builder(goal->Name).WithPriority(goal->Priority);
+
+			for (const FString& desiredEffectName : goal->DesiredEffects)
+			{
+				Builder.WithDesiredEffect(MyBeliefRegistry->Get(desiredEffectName));
+			}
+
+			Goals.Add(Builder.Build());
 		}
 	}
 }
@@ -229,10 +244,6 @@ bool UGoapComponent::HasNPCStateChanged()
 {
 	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
 	{
-		bool cansee = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
-		bool lastcansee = LastNPCState.bCanSeePlayer;
-		UE_LOG(LogTemp, Warning, TEXT("bCanSeePlayer = %s"), cansee ? TEXT("true") : TEXT("false"));
-		UE_LOG(LogTemp, Warning, TEXT("Last State bCanSeePlayer = %s"), lastcansee ? TEXT("true") : TEXT("false"));
 		return true;
 	}
 

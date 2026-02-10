@@ -2,10 +2,10 @@
 
 
 #include "BeliefFactory.h"
-#include "GoapComponent.h"
+//#include "GoapComponent.h"
 
 
-BeliefFactory::BeliefFactory(UGoapComponent* component, TMap<FString, TSharedPtr<AgentBeliefs>>& beliefs) : Component(component), Beliefs(beliefs)
+BeliefFactory::BeliefFactory(UGoapComponent* component, AgentBeliefs::BeliefRegistry& registry) : Component(component), Registry(registry)
 {}
 
 BeliefFactory::~BeliefFactory()
@@ -14,42 +14,38 @@ BeliefFactory::~BeliefFactory()
 
 void BeliefFactory::AddBelief(FString key, TFunction<bool()> condition)
 {
-	if (!Beliefs.Contains(key))
+	TSharedPtr<AgentBeliefs> Belief = Registry.Get(key);
+
+	AgentBeliefs::Builder(Belief).WithCondition(condition).Build();
+	
+	/*if (!Beliefs.Contains(key))
 	{
 		Beliefs.Add(key, AgentBeliefs::Builder(key).WithCondition(condition).Build());
-	}
+	}*/
 }
 
-//void BeliefFactory::AddBelief(TSharedPtr<AgentBeliefs>& belief, TFunction<bool()> condition)
+
+//void BeliefFactory::AddSensorBelief(FString key, USensor* sensor)
 //{
-//	Beliefs.Add(belief, )
+//	
 //}
-
-void BeliefFactory::AddSensorBelief(FString key, USensor* sensor)
-{
-	//Beliefs.Add(key, )
-}
-
-void BeliefFactory::AddLocationBelief(FString key, float distance, FVector& locationCondition)
-{
-	Beliefs.Add(key, AgentBeliefs::Builder(key).WithCondition([=, this]() { return InRangeOf(locationCondition, distance); }).WithLocation([=]() {return locationCondition;}).Build());
-}
-
-//void BeliefFactory::AddLocationBelief(AGoapAgent& agent, FString key, float distance, const AActor* locationOfActor)
+//
+//void BeliefFactory::AddLocationBelief(FString key, float distance, FVector& locationCondition)
 //{
-//	AddLocationBelief(agent, key, distance, locationOfActor->GetActorLocation());
+//	Beliefs.Add(key, AgentBeliefs::Builder(key).WithCondition([=, this]() { return InRangeOf(locationCondition, distance); }).WithLocation([=]() {return locationCondition;}).Build());
 //}
-
-bool BeliefFactory::InRangeOf(FVector position, float range)
-{
-	AActor* owner = Component ? Component->GetOwner() : nullptr;
-
-	if (!owner)
-	{
-		return false;
-	}
-	
-	return FVector::Dist(owner->GetActorLocation(), position) <= range;
-}
+//
+//
+//bool BeliefFactory::InRangeOf(FVector position, float range)
+//{
+//	AActor* owner = Component ? Component->GetOwner() : nullptr;
+//
+//	if (!owner)
+//	{
+//		return false;
+//	}
+//	
+//	return FVector::Dist(owner->GetActorLocation(), position) <= range;
+//}
 
 

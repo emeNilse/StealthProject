@@ -31,10 +31,10 @@
 #include "GoapFactorySubsystem.h"
 #include "GoapWorldStateComponent.h"
 #include "WorldFactRegistry.h"
+#include "BeliefFactory.h"
 #include "GoapComponent.generated.h"
 
 class AAI_Controller;
-class BeliefFactory;
 class ANPC;
 
 struct NPCState
@@ -71,11 +71,15 @@ public:
 	TSet<TSharedPtr<GoapGoal>> Goals;
 
 	TSharedPtr<ActionPlan> TheActionPlan;
-	TMap<FString, TSharedPtr<AgentBeliefs>> Beliefs;
+
+	bool bShouldReplan = false;
+
+	TUniquePtr<AgentBeliefs::BeliefRegistry> MyBeliefRegistry;
 
 	TUniquePtr<IGoapPlannerInterface> GoapPlanner;
 	UGoapFactorySubsystem* GoapFactory;
-	TUniquePtr<BeliefFactory> Factory;
+
+	TUniquePtr<BeliefFactory> MyBeliefFactory;
 
 	NPCState LastNPCState;
 

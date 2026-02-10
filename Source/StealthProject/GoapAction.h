@@ -76,38 +76,40 @@ public:
 			return *this;
 		}*/
 
-		Builder& AddPrecondition(const FString precondition)
+		Builder& AddPrecondition(TSharedPtr<AgentBeliefs> preconditionBelief)
 		{
+			//const FString precondition
+			// AgentBeliefs::BeliefRegistry::Get(precondition)
 			//TSet uses hashes, AgentBeliefs is user defined and not primitive like int32 or FString
 			//problem solved by making TSets shared pointers or giving the agent beliefs a key and value for hash conversion
 			//action->Preconditions.Add(MakeShared<AgentBeliefs>(precondition));
-			action->Preconditions.Add(AgentBeliefs::BeliefRegistry::Get(precondition));
+			action->Preconditions.Add(preconditionBelief);
 			return *this;
 		}
 
-		Builder& AddPreconditions(const TArray<FString> preconditions)
+		/*Builder& AddPreconditions(const TArray<FString> preconditions)
 		{
 			for (const FString& p : preconditions)
 			{
 				AddPrecondition(p);
 			}
 			return *this;
-		}
+		}*/
 
-		Builder& AddEffect(const FString effect)
+		Builder& AddEffect(TSharedPtr<AgentBeliefs> effectBelief)
 		{
-			action->Effects.Add(AgentBeliefs::BeliefRegistry::Get(effect));
+			action->Effects.Add(effectBelief);
 			return *this;
 		}
 
-		Builder& AddEffects(const TArray<FString> effects)
+		/*Builder& AddEffects(const TArray<FString> effects)
 		{
 			for (const FString& e : effects)
 			{
 				AddEffect(e);
 			}
 			return *this;
-		}
+		}*/
 
 		TSharedPtr<GoapAction> Build()
 		{
