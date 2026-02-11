@@ -32,7 +32,7 @@ void URechargeStrategy::Tick(float DeltaTime)
 		Status = EStrategyStatus::Succeeded;
 	}
 
-	NPC->ModifyStat("Stamina", 5.f * DeltaTime);
+	NPC->ModifyStat("Stamina", PowerDrainRate * DeltaTime);
 
 	if (NPC->GetStat("Stamina") > StaminaGoal)
 	{

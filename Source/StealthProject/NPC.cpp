@@ -80,6 +80,9 @@ void ANPC::UpdateStats()
 		ModifyStat("Stamina", -5.f);
 	}
 
+	ModifyStat("OilMeter", 2);
+	ModifyStat("ResourceMeter", 4);
+
 	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));
 }
 

@@ -10,7 +10,7 @@
 
 
 
-UCLASS()
+UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UInteractionStrategy : public UGoapActionStrategyBase
 {
 	GENERATED_BODY()
@@ -24,6 +24,16 @@ private:
 	bool bInteractionResult;
 
 public:
+	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
+	{
+		UInteractionStrategy* Runtime = NewObject<UInteractionStrategy>(Outer);
+		Runtime->AI = inAI;
+		Runtime->Target = Target;
+		Runtime->InteractionType = InteractionType;
+		return Runtime;
+	}
+	
+	
 	UPROPERTY(EditAnywhere)
 	AActor* Target;
 

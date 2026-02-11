@@ -19,7 +19,7 @@ class STEALTHPROJECT_API URechargeStrategy : public UGoapActionStrategyBase
 private:
 	AAI_Controller* AI;
 	ANPC* NPC;
-	float PowerDrainRate = 10.f;
+	
 
 public:
 	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
@@ -27,11 +27,15 @@ public:
 		URechargeStrategy* Runtime = NewObject<URechargeStrategy>(Outer);
 		Runtime->AI = inAI;
 		Runtime->StaminaGoal = StaminaGoal;
+		Runtime->PowerDrainRate = PowerDrainRate;
 		return Runtime;
 	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float StaminaGoal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PowerDrainRate = 10.f;
 
 	//virtual void Initialize(AAI_Controller* inAI, float inGoal);
 
