@@ -14,21 +14,16 @@ class STEALTHPROJECT_API UActionBehaviour : public UObject, public IActionInterf
 	GENERATED_BODY()
 
 public:
-	/*ActionBehaviour();
-	~ActionBehaviour();*/
+	
 	UFUNCTION(BlueprintCallable)
 	void Initialize(APlayerController* InPlayerController);
 
-	//UFUNCTION(BlueprintCallable)
 	virtual void OnBegin_Implementation(bool bFirstTime) override {}
 
-	//UFUNCTION(BlueprintCallable)
 	virtual void OnUpdate_Implementation() override {}
 
-	//UFUNCTION(BlueprintCallable)
 	virtual void OnEnd_Implementation() override {}
 
-	//UFUNCTION(BlueprintCallable)
 	virtual bool IsDone_Implementation() const override { return true; }
 
 	UFUNCTION(BlueprintCallable)

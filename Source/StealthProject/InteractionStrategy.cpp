@@ -30,6 +30,14 @@ void UInteractionStrategy::Start()
 	}
 }
 
+void UInteractionStrategy::Tick(float DeltaTime)
+{
+	if (Complete())
+	{
+		Status = EStrategyStatus::Succeeded;
+	}
+}
+
 bool UInteractionStrategy::CanPerform() const
 {
 	return Target && Target->Implements<UInteractable>();

@@ -44,6 +44,8 @@ public:
 
 	virtual void Start() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual bool CanPerform() const override;
 
 	virtual bool Complete() const override;

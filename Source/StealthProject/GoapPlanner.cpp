@@ -7,6 +7,7 @@
 #include "GoapGoal.h"
 #include "GoapAction.h"
 
+DEFINE_LOG_CATEGORY(LogGOAP);
 GoapPlanner::GoapPlanner()
 {
 }
@@ -44,7 +45,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 	{
 		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 
-		if (FindPath(goalNode, inAI, agent->Actions))
+		if (FindPath(goalNode, inAI, agent->Actions, 0))
 		{
 			if (goalNode->IsLeafDead())
 			{
@@ -78,8 +79,11 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 	return nullptr;
 }
 
-bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
+bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions, int32 depth)
 {
+	//Debugging
+	//UE_LOG(LogGOAP, Warning, TEXT("%sEntering FindPath | Cost: %f | RequiredEffects: %d"), *Indent(depth), parent->Cost, parent->RequiredEffects.Num());
+	
 	TArray<TSharedPtr<GoapAction>> orderdActions = actions.Array();
 
 	orderdActions.Sort([](const TSharedPtr<GoapAction>& A, const TSharedPtr<GoapAction>& B)
@@ -89,6 +93,9 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 	
 	for (TSharedPtr<GoapAction> action : orderdActions)
 	{
+		//Debugging
+		//UE_LOG(LogGOAP, Warning, TEXT("%sEvaluating Action: %s | Cost: %f"), *Indent(depth), *action->Name, action->Cost);
+		
 		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = parent->RequiredEffects;
 
 		TArray<TSharedPtr<AgentBeliefs>> removeList;
@@ -108,14 +115,27 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 
 		if (requiredDesiredEffects.Num() == 0)
 		{
+			//Debugging
+			//UE_LOG(LogGOAP, Warning, TEXT("%sAll required effects satisfied at this node."), *Indent(depth));
 			return true;
 		}
 
 		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
 		{
+			//Debugging
+			bool bMatched = HasMatchingEffect(action->Effects, belief);
+			if (!bMatched)
+			{
+				//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does NOT satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
+			}
+			
+			
 			//if (action->Effects.Contains(belief))
 			if(HasMatchingEffect(action->Effects, belief))
 			{
+				//Debugging
+				//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
+				
 				TSet<TSharedPtr<AgentBeliefs>> newRequiredEffects = requiredDesiredEffects;
 				newRequiredEffects = newRequiredEffects.Difference(action->Effects);
 				
@@ -126,19 +146,35 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 
 				Node* newNode = new Node(parent, action, newRequiredEffects, parent->Cost + action->Cost);
 
-				if (FindPath(newNode, inAI, newAvailableActions))
-				{
-					parent->Leaves.Add(newNode);
-					//newRequiredEffects.Difference(newNode->Action->Preconditions);
-					//newRequiredEffects = newRequiredEffects.Difference(newNode->Action->Preconditions); ?
-				}
+				//Debugging
+				//UE_LOG(LogGOAP, Warning, TEXT("%sRecursing with Action: %s | NewRequiredEffects: %d"), *Indent(depth), *action->Name, newRequiredEffects.Num());
+
 
 				if (newRequiredEffects.Num() == 0)
 				{
+					parent->Leaves.Add(newNode);
 					return true;
 				}
+				
+				if (FindPath(newNode, inAI, newAvailableActions, depth + 1))
+				{
+					parent->Leaves.Add(newNode);
+					return true;
+					//newRequiredEffects.Difference(newNode->Action->Preconditions);
+					//newRequiredEffects = newRequiredEffects.Difference(newNode->Action->Preconditions); ?
+				}
+				else
+				{
+					//UE_LOG(LogGOAP, Warning, TEXT("%sPath failed after Action: %s"), *Indent(depth), *action->Name);
+				}
+				
 			}
 		}
+	}
+
+	if (parent->Leaves.Num() == 0)
+	{
+		//UE_LOG(LogGOAP, Error, TEXT("%sNo valid leaves found. Path dead ends."), *Indent(depth));
 	}
 
 	return parent->Leaves.Num() > 0;

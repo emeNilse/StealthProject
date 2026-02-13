@@ -18,8 +18,6 @@ class STEALTHPROJECT_API IActionInterface
 	GENERATED_BODY()
 
 public:
-	/*IAction();
-	virtual ~IAction();*/
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnBegin(bool bFirstTime);
@@ -33,8 +31,4 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	bool IsDone() const;
 
-	/*virtual FString ToString() const
-	{
-		return TEXT("Action");
-	}*/
 };

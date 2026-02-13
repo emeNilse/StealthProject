@@ -43,7 +43,7 @@ private:
 
 private:
 	TArray<TObjectPtr<UObject>> ActionStack;
-	//TSet<IActionInterface*> FirstTimeSet;
+
 	TSet<TObjectPtr<UObject>> FirstTimeActions;
 	TObjectPtr<UObject> CurrentAction;
 };
