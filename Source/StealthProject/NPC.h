@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PatrolPath.h"
+#include "AI_Controller.h"
 #include "GameFramework/Character.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -11,7 +12,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "GoapWorldStateComponent.h"
 #include "EdGraphSchema_K2.h"
-
+#include "Perception/AISenseConfig_Sight.h"
+#include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"
 
 //must this inherit from actionstack???
@@ -46,6 +48,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> Stats;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UProceduralMeshComponent* VisionMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* VisionMaterial;
+
 	UFUNCTION(BlueprintCallable)
 	void SetDestination(FVector TargetDestination);
 
@@ -57,6 +65,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ModifyStat(FName StatName, float Delta);
+
+	void InitializeVisionCone();
+
+	void GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSegments);
+
+	void Generate3DVisual(float Height, float Radius, int32 Sides);
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	bool bRecharging = false;
 
@@ -81,6 +97,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	UAISenseConfig_Sight* SightConfiguration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	AAI_Controller* MyAIController;
 
 	float StatTimerInterval;
 	float StatTimerRemaining;

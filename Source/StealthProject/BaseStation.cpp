@@ -12,8 +12,10 @@ ABaseStation::ABaseStation()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
 	TextRenderer = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderer"));
-	RootComponent = TextRenderer;
+	TextRenderer->SetupAttachment(RootComponent);
 
 	DisplayName = TEXT("Station name");
 }
@@ -35,6 +37,8 @@ void ABaseStation::BeginPlay()
 {
 	Super::BeginPlay();
 	TextRenderer->SetText(FText::FromString(DisplayName));
+	TextRenderer->SetRelativeLocation(FVector(0, 0, 100));
+	TextRenderer->SetWorldSize(40);
 }
 
 // Called every frame
@@ -52,9 +56,9 @@ void ABaseStation::UpdateTextRotation()
 	if (!pc) return;
 
 	FVector CameraLocation = pc->PlayerCameraManager->GetCameraLocation();
+	
 	FVector TextLocation = TextRenderer->GetComponentLocation();
-
-	FRotator LookAtRotation = (CameraLocation - TextLocation).Rotation();
-	TextRenderer->SetWorldRotation(LookAtRotation);
+	
+	TextRenderer->SetWorldRotation((CameraLocation - TextLocation).Rotation());
 }
 

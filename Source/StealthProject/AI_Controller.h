@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "AI_Controller.generated.h"
 
 class UGoapComponent;
@@ -20,6 +21,7 @@ public:
 
 	explicit AAI_Controller(FObjectInitializer const& ObjectInitializer);
 	
+	UAISenseConfig_Sight* GetSightConfig() const { return SightConfig; }
 
 protected: 
 

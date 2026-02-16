@@ -11,6 +11,21 @@ ANPC::ANPC()
 	PrimaryActorTick.bCanEverTick = true;
 
 	WorldState = CreateDefaultSubobject<UGoapWorldStateComponent>(TEXT("WorldState"));
+
+	VisionMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("VisionMesh"));
+	VisionMesh->SetupAttachment(RootComponent);
+	VisionMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	VisionMesh->SetGenerateOverlapEvents(false);
+
+	UMaterialInstanceDynamic* DynMaterial = VisionMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (DynMaterial)
+	{
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+	}
+
+	/*DynMaterial->SetVectorParameterValue("ConeColor", FLinearColor::Red);
+	DynMaterial->SetScalarParameterValue("FresnelPower", 4.0f);
+	DynMaterial->SetScalarParameterValue("DepthFadeDistance", 120.0f);*/
 }
 
 
@@ -116,6 +131,147 @@ void ANPC::ModifyStat(FName StatName, float Delta)
 		*Value += Delta;
 		*Value = FMath::Clamp(*Value, 0.f, 100.f);
 	}
+}
+
+void ANPC::InitializeVisionCone()
+{
+	if (AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
+	{
+		if (UAISenseConfig_Sight* Sight = AIController->GetSightConfig())
+		{
+			GenerateVisualCone(Sight->SightRadius, Sight->PeripheralVisionAngleDegrees, 32);
+			/*float Height = Sight->SightRadius;
+			float Radius = Height * FMath::Tan(FMath::DegreesToRadians(Sight->PeripheralVisionAngleDegrees));
+			int32 Sides = 32;
+			Generate3DVisual(Height, Radius, Sides);*/
+		}
+	}
+}
+
+void ANPC::GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSegments)
+{
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
+
+	float HalfAngleRad = FMath::DegreesToRadians(HalfAngleDegrees);
+
+	Vertices.Add(FVector::ZeroVector);
+
+	for (int32 i = 0; i <= NumSegments; i++)
+	{
+		float Alpha = (float)i / NumSegments;
+		float Angle = FMath::Lerp(-HalfAngleRad, HalfAngleRad, Alpha);
+
+		float X = Radius * FMath::Cos(Angle);
+		float Y = Radius * FMath::Sin(Angle);
+
+		Vertices.Add(FVector(X, Y, 0));
+	}
+
+	for (int32 i = 1; i <= NumSegments; i++)
+	{
+		Triangles.Add(0);
+		Triangles.Add(i);
+		Triangles.Add(i + 1);
+	}
+
+	for (int32 i = 0; i < Vertices.Num(); i++)
+	{
+		Normals.Add(FVector::UpVector);
+		UVs.Add(FVector2D(0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
+	}
+
+	VisionMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, TArray<FColor>(), Tangents, false);
+
+	if (VisionMaterial)
+	{
+		VisionMesh->SetMaterial(0, VisionMaterial);
+	}
+}
+
+void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
+{
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
+
+	Vertices.Add(FVector::ZeroVector);
+
+	for (int32 i = 0; i < Sides; i++)
+	{
+		float AngleRad = 2 * PI * i / Sides;
+		float X = Radius * FMath::Cos(AngleRad);
+		float Y = Radius * FMath::Sin(AngleRad);
+		Vertices.Add(FVector(X, Y, 0));
+	}
+
+	for (int32 i = 0; i < Sides; i++)
+	{
+		int32 Current = i + 1;
+		int32 Next = (i + 1) % Sides + 1;
+
+		Triangles.Add(0);
+		Triangles.Add(Next);
+		Triangles.Add(Current);
+	}
+
+	int32 BaseCenterIndex = Vertices.Num();
+	Vertices.Add(FVector(0, 0, 0));
+
+	for (int32 i = 0; i < Sides; i++)
+	{
+		int32 Current = i + 1;
+		int32 Next = (i + 1) % Sides + 1;
+
+		Triangles.Add(BaseCenterIndex);
+		Triangles.Add(Next);
+		Triangles.Add(Current);
+	}
+
+	Normals.Init(FVector::ZeroVector, Vertices.Num());
+
+	for (int32 i = 0; i < Triangles.Num(); i += 3)
+	{
+		FVector Edge1 = Vertices[Triangles[i + 1]] - Vertices[Triangles[i]];
+		FVector Edge2 = Vertices[Triangles[i + 2]] - Vertices[Triangles[i]];
+		FVector Normal = FVector::CrossProduct(Edge2, Edge1).GetSafeNormal();
+
+		Normals[Triangles[i]] += Normal;
+		Normals[Triangles[i + 1]] += Normal;
+		Normals[Triangles[i + 2]] += Normal;
+	}
+
+	for (FVector& Normal : Normals)
+	{
+		Normal.Normalize();
+	}
+
+	for (int32 i = 0; i < Vertices.Num(); i++)
+	{
+		UVs.Add(FVector2D(0, 0));
+		Tangents.Add(FProcMeshTangent(1, 0, 0));
+	}
+
+	VisionMesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UVs, TArray<FLinearColor>(), Tangents, false);
+
+	if (VisionMaterial)
+	{
+		VisionMesh->SetMaterial(0, VisionMaterial);
+		VisionMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	}
+}
+
+void ANPC::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitializeVisionCone();
 }
 
 void ANPC::Tick(float DeltaTime)
