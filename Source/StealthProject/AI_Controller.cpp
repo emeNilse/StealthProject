@@ -3,10 +3,12 @@
 
 #include "AI_Controller.h"
 #include "NPC.h"
+#include "GameFramework/Controller.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "StealthProjectCharacter.h"
+#include "StealthGameState.h"
 #include "GoapComponent.h"
 
 AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
@@ -28,6 +30,8 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 			Blackboard = b;
 			RunBehaviorTree(Tree);
 		}*/
+		MyNPC = NPC;
+
 		Goap = NPC->FindComponentByClass<UGoapComponent>();
 
 		if (NPC->GetBlackBoardData())
@@ -66,6 +70,7 @@ void AAI_Controller::SetupPerceptionSystem()
 		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
 		GetPerceptionComponent()->ConfigureSense(*SightConfig);
+		
 	}
 }
 
@@ -73,13 +78,29 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 {
 	if (auto* const c = Cast<AStealthProjectCharacter>(Actor))
 	{
-		GetBlackboardComponent()->SetValueAsObject("PlayerActor", Actor);
-		GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", Stimulus.WasSuccessfullySensed());
-		GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
-		UE_LOG(LogTemp, Warning, TEXT("%s detected player, Sensed=%d"), *GetName(), Stimulus.WasSuccessfullySensed());
-		/*if (Goap)
+		if (Stimulus.WasSuccessfullySensed())
 		{
-			Goap->RequestReplan();
-		}*/
+			if (LineOfSightTo(Actor))
+			{
+				MyNPC->SetNPCState(ENPCState::Engaged);
+
+				GetBlackboardComponent()->SetValueAsObject("PlayerActor", Actor);
+				GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", true);
+				GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
+			}
+		}
+		else
+		{
+			MyNPC->SetNPCState(ENPCState::Alert);
+
+			if (AStealthGameState* GS = GetWorld()->GetGameState<AStealthGameState>())
+			{
+				GS->SetGlobalAlert();
+			}
+
+			GetBlackboardComponent()->SetValueAsObject("PlayerActor", nullptr);
+			GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", false);
+			GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
+		}
 	}
 }

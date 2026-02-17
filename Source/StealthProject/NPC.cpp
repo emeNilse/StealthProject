@@ -2,6 +2,7 @@
 
 
 #include "NPC.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -13,15 +14,16 @@ ANPC::ANPC()
 	WorldState = CreateDefaultSubobject<UGoapWorldStateComponent>(TEXT("WorldState"));
 
 	VisionMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("VisionMesh"));
-	VisionMesh->SetupAttachment(RootComponent);
+	VisionMesh->SetupAttachment(GetCapsuleComponent());
+	
 	VisionMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	VisionMesh->SetGenerateOverlapEvents(false);
 
-	UMaterialInstanceDynamic* DynMaterial = VisionMesh->CreateAndSetMaterialInstanceDynamic(0);
+	/*DynMaterial = VisionMesh->CreateAndSetMaterialInstanceDynamic(0);
 	if (DynMaterial)
 	{
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
-	}
+	}*/
 
 	/*DynMaterial->SetVectorParameterValue("ConeColor", FLinearColor::Red);
 	DynMaterial->SetScalarParameterValue("FresnelPower", 4.0f);
@@ -37,6 +39,10 @@ void ANPC::BeginPlay()
 	StatTimerRemaining = 1.f;
 
 	GlobalDestination = GetActorLocation();
+
+	float HalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	VisionMesh->SetRelativeLocation(FVector(0, 0, -HalfHeight + 2.f));
 }
 
 void ANPC::RayCast()
@@ -133,6 +139,49 @@ void ANPC::ModifyStat(FName StatName, float Delta)
 	}
 }
 
+void ANPC::SetNPCState(ENPCState NewState)
+{
+	if (NPCState != NewState)
+	{
+		NPCState = NewState;
+
+		OnNPCStateChange();
+	}
+
+	if (NPCState != ENPCState::Alert)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AlertTimerhandle);
+	}
+}
+
+void ANPC::ReturnToCalm()
+{
+	SetNPCState(ENPCState::Calm);
+}
+
+void ANPC::BeginAlert()
+{
+	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 5.f, false);
+}
+
+
+void ANPC::OnNPCStateChange()
+{
+	switch (NPCState)
+	{
+	case ENPCState::Calm:
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		break;
+	case ENPCState::Alert:
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		BeginAlert();
+		break;
+	case ENPCState::Engaged:
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		break;
+	}
+}
+
 void ANPC::InitializeVisionCone()
 {
 	if (AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
@@ -140,8 +189,9 @@ void ANPC::InitializeVisionCone()
 		if (UAISenseConfig_Sight* Sight = AIController->GetSightConfig())
 		{
 			GenerateVisualCone(Sight->SightRadius, Sight->PeripheralVisionAngleDegrees, 32);
-			/*float Height = Sight->SightRadius;
-			float Radius = Height * FMath::Tan(FMath::DegreesToRadians(Sight->PeripheralVisionAngleDegrees));
+			/*float HalfAngle = 45.f;
+			float Height = Sight->SightRadius;
+			float Radius = Height * FMath::Tan(FMath::DegreesToRadians(HalfAngle));
 			int32 Sides = 32;
 			Generate3DVisual(Height, Radius, Sides);*/
 		}
@@ -190,6 +240,8 @@ void ANPC::GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSeg
 	if (VisionMaterial)
 	{
 		VisionMesh->SetMaterial(0, VisionMaterial);
+		DynMaterial = VisionMesh->CreateAndSetMaterialInstanceDynamic(0);
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
 	}
 }
 
@@ -200,15 +252,15 @@ void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 	TArray<FVector> Normals;
 	TArray<FVector2D> UVs;
 	TArray<FProcMeshTangent> Tangents;
-
-	Vertices.Add(FVector::ZeroVector);
+	int ApexIndex = 0;
+	Vertices.Add(FVector(Height, 0, 0));
 
 	for (int32 i = 0; i < Sides; i++)
 	{
 		float AngleRad = 2 * PI * i / Sides;
-		float X = Radius * FMath::Cos(AngleRad);
-		float Y = Radius * FMath::Sin(AngleRad);
-		Vertices.Add(FVector(X, Y, 0));
+		float Y = Radius * FMath::Cos(AngleRad);
+		float Z = Radius * FMath::Sin(AngleRad);
+		Vertices.Add(FVector(Height, Y, Z));
 	}
 
 	for (int32 i = 0; i < Sides; i++)
@@ -216,9 +268,9 @@ void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 		int32 Current = i + 1;
 		int32 Next = (i + 1) % Sides + 1;
 
-		Triangles.Add(0);
-		Triangles.Add(Next);
+		Triangles.Add(ApexIndex);
 		Triangles.Add(Current);
+		Triangles.Add(Next);
 	}
 
 	int32 BaseCenterIndex = Vertices.Num();
@@ -234,9 +286,9 @@ void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 		Triangles.Add(Current);
 	}
 
-	Normals.Init(FVector::ZeroVector, Vertices.Num());
+	Normals.Init(FVector::UpVector, Vertices.Num());
 
-	for (int32 i = 0; i < Triangles.Num(); i += 3)
+	/*for (int32 i = 0; i < Triangles.Num(); i += 3)
 	{
 		FVector Edge1 = Vertices[Triangles[i + 1]] - Vertices[Triangles[i]];
 		FVector Edge2 = Vertices[Triangles[i + 2]] - Vertices[Triangles[i]];
@@ -250,7 +302,7 @@ void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 	for (FVector& Normal : Normals)
 	{
 		Normal.Normalize();
-	}
+	}*/
 
 	for (int32 i = 0; i < Vertices.Num(); i++)
 	{
@@ -263,7 +315,7 @@ void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 	if (VisionMaterial)
 	{
 		VisionMesh->SetMaterial(0, VisionMaterial);
-		VisionMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		//VisionMesh->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	}
 }
 

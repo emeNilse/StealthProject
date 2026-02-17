@@ -16,7 +16,15 @@
 #include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"
 
-//must this inherit from actionstack???
+
+UENUM(BlueprintType)
+enum class ENPCState : uint8
+{
+	Calm,
+	Alert,
+	Engaged
+};
+
 UCLASS()
 class STEALTHPROJECT_API ANPC : public ACharacter
 {
@@ -66,6 +74,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ModifyStat(FName StatName, float Delta);
 
+	UFUNCTION(BlueprintCallable)
+	void SetNPCState(ENPCState NewState);
+
+	UFUNCTION(BlueprintCallable)
+	void ReturnToCalm();
+
+	UFUNCTION(BlueprintCallable)
+	void BeginAlert();
+
+	UFUNCTION(BlueprintCallable)
+	void OnNPCStateChange();
+
 	void InitializeVisionCone();
 
 	void GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSegments);
@@ -102,6 +122,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	AAI_Controller* MyAIController;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	ENPCState NPCState = ENPCState::Calm;
+
+	UMaterialInstanceDynamic* DynMaterial;
+
+	FTimerHandle AlertTimerhandle;
 
 	float StatTimerInterval;
 	float StatTimerRemaining;

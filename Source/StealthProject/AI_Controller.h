@@ -9,6 +9,7 @@
 #include "AI_Controller.generated.h"
 
 class UGoapComponent;
+class ANPC;
 /**
  * 
  */
@@ -34,6 +35,8 @@ private:
 	class UAISenseConfig_Sight* SightConfig;
 
 	UGoapComponent* Goap;
+
+	ANPC* MyNPC;
 
 	void SetupPerceptionSystem();
 
