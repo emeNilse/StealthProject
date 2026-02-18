@@ -88,7 +88,7 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 
 	orderdActions.Sort([](const TSharedPtr<GoapAction>& A, const TSharedPtr<GoapAction>& B)
 		{
-			return A->Cost < B->Cost;
+			return A->CostValue() < B->CostValue();
 		});
 	
 	for (TSharedPtr<GoapAction> action : orderdActions)
@@ -144,7 +144,7 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 				TSet<TSharedPtr<GoapAction>> newAvailableActions = actions;
 				newAvailableActions.Remove(action);
 
-				Node* newNode = new Node(parent, action, newRequiredEffects, parent->Cost + action->Cost);
+				Node* newNode = new Node(parent, action, newRequiredEffects, parent->Cost + action->CostValue());
 
 				//Debugging
 				//UE_LOG(LogGOAP, Warning, TEXT("%sRecursing with Action: %s | NewRequiredEffects: %d"), *Indent(depth), *action->Name, newRequiredEffects.Num());

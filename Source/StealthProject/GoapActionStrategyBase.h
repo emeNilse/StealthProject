@@ -45,6 +45,8 @@ public:
 
 	virtual EStrategyStatus TickStatus() { return Status; }
 
+	virtual float GetCost(AAI_Controller* inAI, float DefaultCost) const { return DefaultCost; }
+
 };
 
 template<typename TStrategy, typename... Args>

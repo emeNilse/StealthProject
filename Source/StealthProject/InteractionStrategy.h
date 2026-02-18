@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInteractionType InteractionType;
 	
-	virtual void Initialize(AAI_Controller* inIA, AActor* inTarget);
+	//virtual void Initialize(AAI_Controller* inIA, AActor* inTarget);
 
 	virtual void Start() override;
 

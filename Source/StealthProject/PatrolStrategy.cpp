@@ -3,6 +3,9 @@
 
 #include "PatrolStrategy.h"
 #include "Kismet/GameplayStatics.h"
+#include "NavigationSystem.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "NavigationPath.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 void UPatrolStrategy::Start()
@@ -14,15 +17,23 @@ void UPatrolStrategy::Start()
 		return;
 	}
 	bPatrolling = true;
-	NPC = Cast<ANPC>(AI->GetPawn());
-	FVector currentLocation = NPC->GetActorLocation();
-	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
-	NOofPoints = NPC->GetPatrolPath()->Num();
+
+	//NPC = Cast<ANPC>(AI->GetPawn());
+	//FVector currentLocation = NPC->GetActorLocation();
+	//NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
+
+	UObject* Object = AI->GetBlackboardComponent()->GetValueAsObject("CurrentPatrolPath");
+	MyPatrolPath = Cast<APatrolPath>(Object);
+
+	NOofPoints = MyPatrolPath->Num();
+
 	BBC = AI->GetBlackboardComponent();
 	Index = BBC->GetValueAsInt("PatrolPathIndex");
-	FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
-	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+	FVector Point = MyPatrolPath->GetPatrolPoint(Index);
+
+	GlobalPoint = MyPatrolPath->GetActorTransform().TransformPosition(Point);
 	IndexCounter = 0;
+
 	AI->MoveToLocation(GlobalPoint);
 
 	Status = EStrategyStatus::Running;
@@ -44,8 +55,8 @@ void UPatrolStrategy::Tick(float DeltaTime)
 		
 		BBC->SetValueAsInt("PatrolPathIndex", Index);
 
-		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
-		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+		FVector Point = MyPatrolPath->GetPatrolPoint(Index);
+		GlobalPoint = MyPatrolPath->GetActorTransform().TransformPosition(Point);
 	
 		AI->MoveToLocation(GlobalPoint);
 	}
@@ -57,7 +68,6 @@ void UPatrolStrategy::Stop()
 	Index = NOofPoints;
 	AI->StopMovement();
 }
-
 
 bool UPatrolStrategy::Complete() const
 {
@@ -112,3 +122,23 @@ int UPatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVec
 	return 0;
 }
 
+float UPatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
+{
+	if (!inAI || !inAI->GetPawn()) return 0.0f;
+
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	if (!NavSys) return 0.0f;
+
+	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(World, inAI->GetPawn()->GetActorLocation(), targetDestination, inAI->GetPawn());
+
+	if (!NavPath || NavPath->PathPoints.Num() < 2) return 0.f;
+
+	float Length = 0.f;
+
+	for (int i = 1; i < NavPath->PathPoints.Num(); i++)
+	{
+		Length += FVector::Dist(NavPath->PathPoints[i - 1], NavPath->PathPoints[i]);
+	}
+
+	return Length;
+}

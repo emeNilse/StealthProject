@@ -4,30 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "GoapActionStrategyBase.h"
+#include "NavigationSystem.h"
 #include "AI_Controller.h"
-#include "MoveStrategy.generated.h"
+#include "NavigationSystem.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "NavigationPath.h"
+#include "NPC.h"
+#include "RandomLocationStrategy.generated.h"
 
 /**
  * 
  */
 UCLASS(Blueprintable, EditInlineNew)
-class STEALTHPROJECT_API UMoveStrategy : public UGoapActionStrategyBase
+class STEALTHPROJECT_API URandomLocationStrategy : public UGoapActionStrategyBase
 {
 	GENERATED_BODY()
-
-public:
 	
+public:
 	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
 	{
-		UMoveStrategy* Runtime = NewObject<UMoveStrategy>(Outer);
-		Runtime->TargetActor = TargetActor;
+		URandomLocationStrategy* Runtime = NewObject<URandomLocationStrategy>(Outer);
 		Runtime->AI = inAI;
+		Runtime->SearchRadius = SearchRadius;
 		Runtime->WithinMinimumRange = WithinMinimumRange;
+		Runtime->MaxStuckTime = MaxStuckTime;
 		return Runtime;
 	}
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr <AActor> TargetActor;
+	float SearchRadius = 1500.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WithinMinimumRange;
@@ -35,22 +40,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxStuckTime = 3.f;
 
-	FVector Destination;
-
-	//TFunction was for the pure C++ Goap, not supported by "Unreal's reflection system"(?)
-	//TFunction<FVector()> Destination;
-
-	AAI_Controller* AI;
-
-	//virtual void Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor);
-
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Stop() override;
 
-	virtual bool CanPerform() const override;
+	virtual bool CanPerform() const override { return !Complete(); };
+
 	virtual bool Complete() const override;
 
 	virtual float GetCost(AAI_Controller* inAI, float DefaultCost) const override;
@@ -58,6 +55,9 @@ public:
 	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;
 
 private:
+	AAI_Controller* AI;
+
+	FVector Destination;
 
 	float StuckTimer;
 };

@@ -3,7 +3,6 @@
 
 #include "GoapComponent.h"
 #include "Navigation/PathFollowingComponent.h"
-
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "AI_Controller.h"
@@ -122,7 +121,7 @@ void UGoapComponent::MakeAPlanForActionStack()
 		}
 	}
 
-	UpdateNPCState();
+	//UpdateNPCState();
 }
 
 void UGoapComponent::HandlePlanFailed()
@@ -164,7 +163,8 @@ void UGoapComponent::SetupAction()
 
 		UGoapActionStrategyBase* RuntimeStrategy = action->StrategyInstance->CreateRunTimeInstance(this, AI);
 
-		auto Builder = GoapAction::Builder(action->Name).WithStrategy(RuntimeStrategy).WithCost(action->Cost);
+		//Had to remove action->Cost from WithCost() in order to make the Cost dynamic
+		auto Builder = GoapAction::Builder(action->Name).WithStrategy(RuntimeStrategy).WithCost([RuntimeStrategy, this, action]() -> float { return RuntimeStrategy->GetCost(AI, action->Cost); });
 
 		for (const FString& preconditionName : action->PreConditions)
 		{
@@ -235,17 +235,28 @@ void UGoapComponent::CalculatePlan()
 	}
 }
 
-void UGoapComponent::UpdateNPCState()
-{
-	LastNPCState.bCanSeePlayer = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
-}
+//void UGoapComponent::UpdateNPCState()
+//{
+//	//LastNPCStats.bCanSeePlayer = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
+//	LastGoal = CurrentGoal;
+//	TheActionPlan = nullptr;
+//	bShouldReplan = true;
+//}
 
 bool UGoapComponent::HasNPCStateChanged()
 {
-	if (LastNPCState.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
+	if (LastNPCState != NPC->GetNPCState())
 	{
+		LastNPCState = NPC->GetNPCState();
+		LastGoal = CurrentGoal;
+		TheActionPlan = nullptr;
 		return true;
 	}
+	
+	/*if (LastNPCStats.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
+	{
+		return true;
+	}*/
 
 	return false;
 }

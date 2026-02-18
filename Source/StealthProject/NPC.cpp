@@ -161,7 +161,7 @@ void ANPC::ReturnToCalm()
 
 void ANPC::BeginAlert()
 {
-	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 5.f, false);
+	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 30.f, false);
 }
 
 

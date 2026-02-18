@@ -16,7 +16,6 @@
 #include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"
 
-
 UENUM(BlueprintType)
 enum class ENPCState : uint8
 {
@@ -73,6 +72,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ModifyStat(FName StatName, float Delta);
+
+	UFUNCTION(BlueprintCallable)
+	ENPCState GetNPCState() const { return NPCState; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetNPCState(ENPCState NewState);

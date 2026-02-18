@@ -36,6 +36,8 @@ public:
 
 	UBlackboardComponent* BBC;
 
+	APatrolPath* MyPatrolPath;
+
 	float DistanceToTarget;
 
 	int Index;
@@ -60,5 +62,7 @@ public:
 	APatrolPath* FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation);
 
 	int FindClostestPatrolPathPoint(APatrolPath* inPath, const FVector& inNPCLocation);
+
+	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;
 
 };

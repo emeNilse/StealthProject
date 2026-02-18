@@ -6,12 +6,13 @@
 GoapAction::GoapAction(FString name)
 {
 	Name = name;
-	Cost = 1;
+	//Cost = 1;
 }
 
 GoapAction::~GoapAction()
 {
 }
+
 
 //telling the garbage collector to not touch Strategy
 void GoapAction::AddReferencedObjects(FReferenceCollector& Collector)

@@ -37,7 +37,7 @@
 class AAI_Controller;
 class ANPC;
 
-struct NPCState
+struct NPCLatestStats
 {
 	float Stamina;
 	float OilAmountAtStation;
@@ -81,7 +81,8 @@ public:
 
 	TUniquePtr<BeliefFactory> MyBeliefFactory;
 
-	NPCState LastNPCState;
+	NPCLatestStats LastNPCStats;
+	ENPCState LastNPCState = ENPCState::Calm;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TArray<UGoapBelief*> BeliefSet;
@@ -91,26 +92,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TArray<UGoapGoalObject*> GoalSet;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector Destination;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	AActor* Target;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* RechargeStationActor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector RechargeStation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector SupplyStation;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Mine;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector OilWell;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Refinery;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector SupplyShipmentStation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TEXT")
 	FString CurrentActionText;

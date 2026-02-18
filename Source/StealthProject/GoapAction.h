@@ -17,17 +17,22 @@ public:
 
 	FString Name;
 
-	float Cost;
+	//float Cost;
+	TFunction<float()> GetCost;
 
-	// const FString& GetName() const { return Name; }
-	
-	// float GetCost() const { return Cost; }
+	float CostValue() const
+	{
+		if (GetCost)
+		{
+			return GetCost();
+		}
+		return 0.f;
+	}
 
 	TSet<TSharedPtr<AgentBeliefs>> Preconditions;
 
 	TSet<TSharedPtr<AgentBeliefs>> Effects;
 
-	//TWeakObjectPtr was needed instead of TSharedPtr, to allow for UObjects to make use of it(?)
 	//GoapAction is not a UObject, UGoapActionStrategyBase is. To protect Strategy needed to make GoapAction : FCGObject and add reference below
 	UGoapActionStrategyBase* Strategy;
 
@@ -58,9 +63,9 @@ public:
 
 		Builder(const FString name);
 
-		Builder& WithCost(float cost)
+		Builder& WithCost(TFunction<float()> CostFunc)
 		{
-			action->Cost = cost;
+			action->GetCost = CostFunc;
 			return *this;
 		}
 
@@ -115,12 +120,5 @@ public:
 		{
 			return action;
 		}
-			
-
 	};
-
-private:
-
-	//FORCEINLINE void SetCost(float cost) { Cost = cost; }
-
 };

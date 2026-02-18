@@ -43,6 +43,21 @@ void UMoveStrategy::Tick(float DeltaTime)
 	{
 		Status = EStrategyStatus::Failed;
 	}
+	else
+	{
+		if (AI->GetMoveStatus() == EPathFollowingStatus::Waiting || AI->GetMoveStatus() == EPathFollowingStatus::Idle)
+		{
+			StuckTimer += DeltaTime;
+			if (StuckTimer >= MaxStuckTime)
+			{
+				Status = EStrategyStatus::Failed;
+			}
+		}
+		else
+		{
+			StuckTimer = 0.0f;
+		}
+	}
 }
 
 void UMoveStrategy::Stop()
@@ -57,40 +72,27 @@ bool UMoveStrategy::CanPerform() const
 	return true;
 }
 
-bool UMoveStrategy::HasFailed() const
-{
-	int timer = 0;
-	if (AI->GetMoveStatus() == EPathFollowingStatus::Moving)
-	{
-		timer = 0;
-	}
-	else if (AI->GetMoveStatus() == EPathFollowingStatus::Waiting)
-	{
-		timer += 1;
-	}
-	
-	return false;
-}
-
 bool UMoveStrategy::Complete() const
 {
 	if (!AI) return false;
 	
 	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
 
+}
 
-	/*float RemainingDistance = GetRemainingDistance(AI, Destination);
-
-	bool bPathPending = AI->GetMoveStatus() == EPathFollowingStatus::Waiting;
-
-	return RemainingDistance < 50.f && !bPathPending;*/
+float UMoveStrategy::GetCost(AAI_Controller* inAI, float DefaultCost) const
+{
+	if (!inAI || !TargetActor.IsValid()) return DefaultCost;
+	float RawDistance = GetRemainingDistance(inAI, TargetActor.Get()->GetActorLocation());
+	float MaxCost = 20.f;
+	return FMath::Min(RawDistance / 100.0f, MaxCost);
 }
 
 float UMoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
 	if(!inAI || !inAI->GetPawn()) return 0.0f;
 	
-	UWorld* World = AI->GetWorld();
+	UWorld* World = inAI->GetWorld();
 	if (!World) return 0.f;
 
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);

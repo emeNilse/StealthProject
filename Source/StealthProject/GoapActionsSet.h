@@ -34,4 +34,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	UGoapActionStrategyBase* StrategyInstance;
+
+	float GetDynamicCost(AAI_Controller* inAI) const
+	{
+		if (StrategyInstance)
+		{
+			return StrategyInstance->GetCost(inAI, Cost);
+		}
+		return Cost;
+	}
 };

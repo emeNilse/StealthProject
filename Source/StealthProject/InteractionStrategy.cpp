@@ -4,11 +4,11 @@
 #include "InteractionStrategy.h"
 #include "GoapWorldStateComponent.h"
 
-void UInteractionStrategy::Initialize(AAI_Controller* inIA, AActor* inTarget)
-{
-	AI = inIA;
-	Target = inTarget;
-}
+//void UInteractionStrategy::Initialize(AAI_Controller* inIA, AActor* inTarget)
+//{
+//	AI = inIA;
+//	Target = inTarget;
+//}
 
 void UInteractionStrategy::Start()
 {

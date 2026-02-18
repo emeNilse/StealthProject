@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GoapBelief.h"
-#include "AI_Controller.h"
 #include "LocationBelief.generated.h"
 
 /**
