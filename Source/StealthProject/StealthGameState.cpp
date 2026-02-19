@@ -19,6 +19,9 @@ void AStealthGameState::SetGlobalAlert()
 {
 	for (TActorIterator<ANPC> It(GetWorld()); It; ++It)
 	{
-		It->SetNPCState(ENPCState::Alert);
+		if (It->GetNPCState() != ENPCState::Engaged || It->GetNPCState() != ENPCState::Alert)
+		{
+			It->SetNPCState(ENPCState::Alert);
+		}
 	}
 }
