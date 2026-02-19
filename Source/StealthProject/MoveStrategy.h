@@ -30,6 +30,9 @@ public:
 	TSoftObjectPtr <AActor> TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DynamicRangeCostActive = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WithinMinimumRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

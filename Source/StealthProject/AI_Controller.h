@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "AI_Controller.generated.h"
 
 class UGoapComponent;
@@ -34,6 +35,8 @@ protected:
 private:
 	class UAISenseConfig_Sight* SightConfig;
 
+	class UAISenseConfig_Hearing* HearingConfig;
+
 	UGoapComponent* Goap;
 
 	ANPC* MyNPC;
@@ -41,5 +44,11 @@ private:
 	void SetupPerceptionSystem();
 
 	UFUNCTION()
+	void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION()
 	void OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus);
+
+	UFUNCTION()
+	void OnNoiseHeard(AActor* Actor, FAIStimulus const Stimulus);
 };

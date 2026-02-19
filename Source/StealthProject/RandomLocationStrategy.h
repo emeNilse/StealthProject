@@ -35,6 +35,9 @@ public:
 	float SearchRadius = 1500.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool DynamicRangeCostActive = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WithinMinimumRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

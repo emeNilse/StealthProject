@@ -18,20 +18,20 @@ void UPatrolStrategy::Start()
 	}
 	bPatrolling = true;
 
-	//NPC = Cast<ANPC>(AI->GetPawn());
-	//FVector currentLocation = NPC->GetActorLocation();
-	//NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
+	NPC = Cast<ANPC>(AI->GetPawn());
+	FVector currentLocation = NPC->GetActorLocation();
+	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
 
-	UObject* Object = AI->GetBlackboardComponent()->GetValueAsObject("CurrentPatrolPath");
-	MyPatrolPath = Cast<APatrolPath>(Object);
+	/*UObject* Object = AI->GetBlackboardComponent()->GetValueAsObject("CurrentPatrolPath");
+	MyPatrolPath = Cast<APatrolPath>(Object);*/
 
-	NOofPoints = MyPatrolPath->Num();
+	NOofPoints = NPC->GetPatrolPath()->Num();
 
 	BBC = AI->GetBlackboardComponent();
 	Index = BBC->GetValueAsInt("PatrolPathIndex");
-	FVector Point = MyPatrolPath->GetPatrolPoint(Index);
+	FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
 
-	GlobalPoint = MyPatrolPath->GetActorTransform().TransformPosition(Point);
+	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 	IndexCounter = 0;
 
 	AI->MoveToLocation(GlobalPoint);
@@ -55,8 +55,8 @@ void UPatrolStrategy::Tick(float DeltaTime)
 		
 		BBC->SetValueAsInt("PatrolPathIndex", Index);
 
-		FVector Point = MyPatrolPath->GetPatrolPoint(Index);
-		GlobalPoint = MyPatrolPath->GetActorTransform().TransformPosition(Point);
+		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
+		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
 	
 		AI->MoveToLocation(GlobalPoint);
 	}

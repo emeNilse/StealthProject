@@ -20,6 +20,7 @@ UENUM(BlueprintType)
 enum class ENPCState : uint8
 {
 	Calm,
+	Investigative,
 	Alert,
 	Engaged
 };
@@ -61,6 +62,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UMaterialInterface* VisionMaterial;
 
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* ConeMesh;*/
+
 	UFUNCTION(BlueprintCallable)
 	void SetDestination(FVector TargetDestination);
 
@@ -86,6 +90,9 @@ public:
 	void BeginAlert();
 
 	UFUNCTION(BlueprintCallable)
+	void BeginInvestigative();
+
+	UFUNCTION(BlueprintCallable)
 	void OnNPCStateChange();
 
 	void InitializeVisionCone();
@@ -97,8 +104,6 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	bool bRecharging = false;
-
-	float Stamina;
 
 	FVector GlobalDestination;
 
@@ -130,7 +135,13 @@ private:
 
 	UMaterialInstanceDynamic* DynMaterial;
 
+	UMaterialInstanceDynamic* DynMaterialForScanner;
+
+	UStaticMeshComponent* ConeMesh;
+
 	FTimerHandle AlertTimerhandle;
+
+	bool PlayerSpotted = false;
 
 	float StatTimerInterval;
 	float StatTimerRemaining;

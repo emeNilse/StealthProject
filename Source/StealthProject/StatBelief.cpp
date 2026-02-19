@@ -27,6 +27,8 @@ bool UStatBelief::Compare(float stat) const
 		return stat >= Value;
 	case EFloatComparison::Equal:
 		return stat == Value;
+	case EFloatComparison::Range:
+		return stat > Value && stat < MaxRangeValue;
 	}
 	return false;
 }

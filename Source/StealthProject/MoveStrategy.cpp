@@ -77,15 +77,21 @@ bool UMoveStrategy::Complete() const
 	if (!AI) return false;
 	
 	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
-
 }
 
 float UMoveStrategy::GetCost(AAI_Controller* inAI, float DefaultCost) const
 {
-	if (!inAI || !TargetActor.IsValid()) return DefaultCost;
-	float RawDistance = GetRemainingDistance(inAI, TargetActor.Get()->GetActorLocation());
-	float MaxCost = 20.f;
-	return FMath::Min(RawDistance / 100.0f, MaxCost);
+	if (DynamicRangeCostActive)
+	{
+		if (!inAI || !TargetActor.IsValid()) return DefaultCost;
+		float RawDistance = GetRemainingDistance(inAI, TargetActor.Get()->GetActorLocation());
+		float MaxCost = 20.f;
+		return FMath::Min(RawDistance / 100.0f, MaxCost);
+	}
+	else
+	{
+		return DefaultCost;
+	}
 }
 
 float UMoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const

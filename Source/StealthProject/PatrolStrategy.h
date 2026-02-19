@@ -24,7 +24,7 @@ public:
 		return Runtime;
 	}
 
-	TFunction<FVector()> Destination;
+	//TFunction<FVector()> Destination;
 
 	AAI_Controller* AI;
 

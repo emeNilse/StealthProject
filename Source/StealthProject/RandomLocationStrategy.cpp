@@ -82,10 +82,17 @@ bool URandomLocationStrategy::Complete() const
 
 float URandomLocationStrategy::GetCost(AAI_Controller* inAI, float DefaultCost) const
 {
-	if (!inAI) return DefaultCost;
-	float RawDistance = GetRemainingDistance(inAI, Destination);
-	float MaxCost = 20.f;
-	return FMath::Min(RawDistance / 100.0f, MaxCost);
+	if (DynamicRangeCostActive)
+	{
+		if (!inAI) return DefaultCost;
+		float RawDistance = GetRemainingDistance(inAI, Destination);
+		float MaxCost = 20.f;
+		return FMath::Min(RawDistance / 100.0f, MaxCost);
+	}
+	else
+	{
+		return DefaultCost;
+	}
 }
 
 float URandomLocationStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const

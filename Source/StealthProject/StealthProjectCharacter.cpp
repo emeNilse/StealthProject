@@ -12,6 +12,7 @@
 #include "InputActionValue.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "Perception/AISense_Hearing.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -103,6 +104,7 @@ void AStealthProjectCharacter::SetupStimulusSource()
 	if (StimulusSource)
 	{
 		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
 		StimulusSource->RegisterWithPerceptionSystem();
 	}
 }

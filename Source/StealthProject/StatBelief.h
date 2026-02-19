@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float Value = 0.f;
 
+	UPROPERTY(EditAnywhere)
+	float MaxRangeValue = 0.f;
+
 	const float GetStatValue(APawn* pawn) const;
 
 	bool Compare(float stat) const;

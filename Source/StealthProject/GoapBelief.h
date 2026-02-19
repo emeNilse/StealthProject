@@ -18,7 +18,8 @@ enum class EFloatComparison : uint8
 	LessOrEqual,
 	Greater,
 	GreaterOrEqual,
-	Equal
+	Equal,
+	Range
 };
 
 UCLASS(Abstract, Blueprintable, EditInlineNew)

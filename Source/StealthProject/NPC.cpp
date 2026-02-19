@@ -43,8 +43,16 @@ void ANPC::BeginPlay()
 	float HalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
 	VisionMesh->SetRelativeLocation(FVector(0, 0, -HalfHeight + 2.f));
+
+	ConeMesh = Cast<UStaticMeshComponent>(GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	if (ConeMesh)
+	{
+		DynMaterialForScanner = ConeMesh->CreateAndSetMaterialInstanceDynamic(0);
+		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+	}
 }
 
+//RayCast was used for early debugging purposes, don't have the heart to delete
 void ANPC::RayCast()
 {
 	FHitResult* HitResult = new FHitResult();
@@ -99,6 +107,15 @@ void ANPC::UpdateStats()
 	if (!bRecharging)
 	{
 		ModifyStat("Stamina", -5.f);
+	}
+
+	if (PlayerSpotted)
+	{
+		ModifyStat("Suspicious", 100);
+	}
+	else
+	{
+		ModifyStat("Suspicious", -5);
 	}
 
 	ModifyStat("OilMeter", 2);
@@ -164,6 +181,11 @@ void ANPC::BeginAlert()
 	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 30.f, false);
 }
 
+void ANPC::BeginInvestigative()
+{
+	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 2.f, false);
+}
+
 
 void ANPC::OnNPCStateChange()
 {
@@ -171,13 +193,23 @@ void ANPC::OnNPCStateChange()
 	{
 	case ENPCState::Calm:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		PlayerSpotted = false;
+		break;
+	case ENPCState::Investigative:
+		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
+		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
 		break;
 	case ENPCState::Alert:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		PlayerSpotted = false;
 		BeginAlert();
 		break;
 	case ENPCState::Engaged:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		PlayerSpotted = true;
 		break;
 	}
 }
@@ -245,6 +277,7 @@ void ANPC::GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSeg
 	}
 }
 
+//Attempt at a 3D "scanner" visualization, might attempt this again in the future
 void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 {
 	TArray<FVector> Vertices;
