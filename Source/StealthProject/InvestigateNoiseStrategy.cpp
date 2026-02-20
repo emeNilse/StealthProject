@@ -27,7 +27,9 @@ void UInvestigateNoiseStrategy::Tick(float DeltaTime)
 	{
 		APawn* pawn = AI->GetPawn();
 		ANPC* npc = Cast<ANPC>(pawn);
-		npc->BeginInvestigative();
+		npc->ReturnToCalm();
+		AI->GetBlackboardComponent()->SetValueAsBool("bHasInvestigated", true);
+		AI->GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
 		Status = EStrategyStatus::Succeeded;
 	}
 	else if (!CanPerform())

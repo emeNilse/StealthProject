@@ -83,6 +83,11 @@ void ALumberStorage::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (UWorldFactRegistry* Registry = GetGameInstance()->GetSubsystem<UWorldFactRegistry>())
+	{
+		Registry->Register(this);
+	}
+
 	CurrentLumberAmount = MaxLumberAmount;
 }
 

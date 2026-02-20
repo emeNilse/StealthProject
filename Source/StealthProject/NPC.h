@@ -141,6 +141,8 @@ private:
 
 	FTimerHandle AlertTimerhandle;
 
+	FTimerHandle InvestigativeTimerhandle;
+
 	bool PlayerSpotted = false;
 
 	float StatTimerInterval;

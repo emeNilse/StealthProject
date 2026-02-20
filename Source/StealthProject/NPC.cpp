@@ -19,15 +19,9 @@ ANPC::ANPC()
 	VisionMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	VisionMesh->SetGenerateOverlapEvents(false);
 
-	/*DynMaterial = VisionMesh->CreateAndSetMaterialInstanceDynamic(0);
-	if (DynMaterial)
-	{
-		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
-	}*/
-
-	/*DynMaterial->SetVectorParameterValue("ConeColor", FLinearColor::Red);
-	DynMaterial->SetScalarParameterValue("FresnelPower", 4.0f);
-	DynMaterial->SetScalarParameterValue("DepthFadeDistance", 120.0f);*/
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 300.f, 0.f);
 }
 
 
@@ -158,22 +152,34 @@ void ANPC::ModifyStat(FName StatName, float Delta)
 
 void ANPC::SetNPCState(ENPCState NewState)
 {
-	if (NPCState != NewState)
-	{
-		NPCState = NewState;
+	if (NPCState == NewState) return;
 
-		OnNPCStateChange();
-	}
-
-	if (NPCState != ENPCState::Alert)
+	if (NPCState == ENPCState::Alert)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(AlertTimerhandle);
 	}
+
+	if (NPCState == ENPCState::Investigative)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(InvestigativeTimerhandle);
+	}
+	
+	NPCState = NewState;
+
+	if (NPCState == ENPCState::Alert)
+	{
+		BeginAlert();
+	}
+
+	OnNPCStateChange();
 }
 
 void ANPC::ReturnToCalm()
 {
-	SetNPCState(ENPCState::Calm);
+	if (NPCState == ENPCState::Alert || NPCState == ENPCState::Investigative)
+	{
+		SetNPCState(ENPCState::Calm);
+	}
 }
 
 void ANPC::BeginAlert()
@@ -183,7 +189,7 @@ void ANPC::BeginAlert()
 
 void ANPC::BeginInvestigative()
 {
-	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 2.f, false);
+	GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 2.f, false);
 }
 
 
@@ -194,21 +200,24 @@ void ANPC::OnNPCStateChange()
 	case ENPCState::Calm:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		PlayerSpotted = false;
 		break;
 	case ENPCState::Investigative:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		break;
 	case ENPCState::Alert:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 		PlayerSpotted = false;
-		BeginAlert();
 		break;
 	case ENPCState::Engaged:
 		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 		PlayerSpotted = true;
 		break;
 	}

@@ -71,8 +71,8 @@ void AAI_Controller::SetupPerceptionSystem()
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 		HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HeaingConfig"));
-		HearingConfig->HearingRange = 500.f;
-		HearingConfig->LoSHearingRange = 400.f;
+		HearingConfig->HearingRange = 1000.f;
+		HearingConfig->LoSHearingRange = 1000.f;
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
@@ -91,7 +91,7 @@ void AAI_Controller::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		OnTargetDetected(Actor, Stimulus);
 	}
-	else if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && !GetBlackboardComponent()->GetValueAsBool("bIgnoreNoise"))
+	else if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && !GetBlackboardComponent()->GetValueAsBool("bIgnoreNoise") && MyNPC->GetStat("Suspicious") < 90.f)
 	{
 		OnNoiseHeard(Actor, Stimulus);
 	}
@@ -123,8 +123,7 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 
 			if (AStealthGameState* GS = GetWorld()->GetGameState<AStealthGameState>())
 			{
-				//Buggy, somewhere the bCanSeePlayer is still true
-				//GS->SetGlobalAlert();
+				GS->SetGlobalAlert();
 			}
 		}
 	}
@@ -137,12 +136,13 @@ void AAI_Controller::OnNoiseHeard(AActor* Actor, FAIStimulus const Stimulus)
 		if (Stimulus.WasSuccessfullySensed())
 		{
 			GetBlackboardComponent()->SetValueAsBool("bHeardSomething", true);
+			GetBlackboardComponent()->SetValueAsBool("bHasInvestigated", false);
 			GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 			MyNPC->SetNPCState(ENPCState::Investigative);
 		}
 		else
 		{
-			GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
+			//GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
 			GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 		}
 	}

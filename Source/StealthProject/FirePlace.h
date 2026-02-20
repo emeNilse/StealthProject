@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BaseStation.h"
-#include "GoapWorldStateComponent.h"
 #include "WorldFactRegistry.h"
 #include "FirePlace.generated.h"
 

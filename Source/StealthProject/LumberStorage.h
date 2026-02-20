@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BaseStation.h"
 #include "ResourceStorage.h"
+#include "WorldFactRegistry.h"
 #include "LumberStorage.generated.h"
 
 UCLASS()
