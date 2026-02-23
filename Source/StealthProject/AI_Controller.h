@@ -7,6 +7,9 @@
 #include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
+#include "NavigationSystem.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "NavigationPath.h"
 #include "AI_Controller.generated.h"
 
 class UGoapComponent;
@@ -40,6 +43,8 @@ private:
 	UGoapComponent* Goap;
 
 	ANPC* MyNPC;
+
+	UNavigationSystemV1* NavSys;
 
 	void SetupPerceptionSystem();
 

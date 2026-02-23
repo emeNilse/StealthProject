@@ -12,6 +12,7 @@
 #include "StealthGameState.h"
 #include "GoapComponent.h"
 
+
 AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
 {
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
@@ -32,7 +33,7 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 			RunBehaviorTree(Tree);
 		}*/
 		MyNPC = NPC;
-
+		NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 		Goap = NPC->FindComponentByClass<UGoapComponent>();
 
 		if (NPC->GetBlackBoardData())
@@ -133,6 +134,13 @@ void AAI_Controller::OnNoiseHeard(AActor* Actor, FAIStimulus const Stimulus)
 {
 	if (auto* const c = Cast<AStealthProjectCharacter>(Actor))
 	{
+		UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(GetWorld(), GetPawn()->GetActorLocation(), Stimulus.StimulusLocation, GetPawn());
+
+		if (!NavPath || !NavPath->IsValid() || NavPath->IsPartial())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to find path so heard nothing"));
+			return;
+		}
 		if (Stimulus.WasSuccessfullySensed())
 		{
 			GetBlackboardComponent()->SetValueAsBool("bHeardSomething", true);

@@ -41,6 +41,8 @@ public:
 
 	virtual bool Complete() const override;
 
+	void CallFailed();
+
 private:
 
 	FVector Destination;

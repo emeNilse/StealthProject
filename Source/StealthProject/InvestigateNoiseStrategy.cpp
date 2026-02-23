@@ -12,11 +12,32 @@ void UInvestigateNoiseStrategy::Start()
 {
 	if (!AI)
 	{
-		Status = EStrategyStatus::Failed;
+		CallFailed();
+		return;
+	}
+
+	UWorld* World = AI->GetWorld();
+	if (!World)
+	{
+		CallFailed();
+		return;
+	}
+		
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	if (!NavSys)
+	{
+		CallFailed();
 		return;
 	}
 
 	Destination = AI->GetBlackboardComponent()->GetValueAsVector("NoiseLocation");
+	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(World, AI->GetPawn()->GetActorLocation(), Destination, AI->GetPawn());
+	if (!NavPath || NavPath->PathPoints.Num() < 2)
+	{
+		CallFailed();
+		return;
+	}
+
 	AI->MoveToLocation(Destination);
 	Status = EStrategyStatus::Running;
 }
@@ -43,7 +64,7 @@ void UInvestigateNoiseStrategy::Tick(float DeltaTime)
 			StuckTimer += DeltaTime;
 			if (StuckTimer >= MaxStuckTime)
 			{
-				Status = EStrategyStatus::Failed;
+				CallFailed();
 			}
 		}
 		else
@@ -65,4 +86,14 @@ bool UInvestigateNoiseStrategy::Complete() const
 	if (!AI) return false;
 	
 	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
+}
+
+void UInvestigateNoiseStrategy::CallFailed()
+{
+	APawn* pawn = AI->GetPawn();
+	ANPC* npc = Cast<ANPC>(pawn);
+	npc->ReturnToCalm();
+	AI->GetBlackboardComponent()->SetValueAsBool("bHasInvestigated", true);
+	AI->GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
+	Status = EStrategyStatus::Failed;
 }
