@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,8 @@
 #include "GoapBelief.h"
 #include "LocationBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief for the location of an actor in the world
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API ULocationBelief : public UGoapBelief
 {

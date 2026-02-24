@@ -5,13 +5,6 @@
 #include "AI_Controller.h"
 #include "NPC.h"
 
-
-//void URechargeStrategy::Initialize(AAI_Controller* inAI, float inGoal)
-//{
-//	AI = inAI;
-//	StaminaGoal = inGoal;
-//}
-
 void URechargeStrategy::Start()
 {
 	NPC = Cast<ANPC>(AI->GetPawn());

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "GoapBelief.h"
 #include "GoapBeliefSet.generated.h"
 
-/**
- * 
- */
+//Goap Belief Set is a part of the Goap Component where the designer sets the info for Goap Beliefs before it is registered as Agent Beliefs.
+
 UCLASS(Blueprintable)
 class STEALTHPROJECT_API UGoapBeliefSet : public UObject
 {

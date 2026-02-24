@@ -1,15 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "BaseStation.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 
-// Sets default values
 ABaseStation::ABaseStation()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -32,7 +28,6 @@ void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 	OutFacts.Add(Fact);
 }
 
-// Called when the game starts or when spawned
 void ABaseStation::BeginPlay()
 {
 	Super::BeginPlay();
@@ -41,7 +36,6 @@ void ABaseStation::BeginPlay()
 	TextRenderer->SetWorldSize(40);
 }
 
-// Called every frame
 void ABaseStation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -52,10 +46,10 @@ void ABaseStation::UpdateTextRotation()
 {
 	if (!TextRenderer) return;
 
-	APlayerController* pc = UGameplayStatics::GetPlayerController(this, 0);
-	if (!pc) return;
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC) return;
 
-	FVector CameraLocation = pc->PlayerCameraManager->GetCameraLocation();
+	FVector CameraLocation = PC->PlayerCameraManager->GetCameraLocation();
 	
 	FVector TextLocation = TextRenderer->GetComponentLocation();
 	

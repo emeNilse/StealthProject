@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,9 @@
 #include "BaseStation.h"
 #include "Generator.generated.h"
 
-/**
- * 
- */
+//Not finished yet, the idea was to let the player interact with the generator and sabotage the Recharge Stations.
+//That or to have the AI feed the generator fuel to power the Recharge Station.
+
 UCLASS()
 class STEALTHPROJECT_API AGenerator : public ABaseStation
 {

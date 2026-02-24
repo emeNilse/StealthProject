@@ -3,10 +3,3 @@
 
 #include "IAction.h"
 
-//IAction::IAction()
-//{
-//}
-//
-//IAction::~IAction()
-//{
-//}

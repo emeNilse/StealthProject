@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "GoapPlanner.h"
 #include "GoapComponent.h"
-//#include "ActionPlan.h"
 #include "GoapGoal.h"
 #include "GoapAction.h"
 
@@ -68,7 +66,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 				goapActionStack.Push(cheapestLeaf->Action);
 			}
 
-			//to make it a "stack"
+			//To make the plan a "stack"
 			Algo::Reverse(goapActionStack);
 
 			return MakeShared<ActionPlan>(goal, goapActionStack, goalNode->Cost);

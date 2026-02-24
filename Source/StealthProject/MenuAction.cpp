@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MenuAction.h"
@@ -13,7 +12,6 @@ void UMenuAction::OnBegin_Implementation(bool bFirstTime)
 		UWorld* World = GetTypedOuter<UWorld>();
 		if (!Worlds) return;
 
-		//APlayerController* PC = OwningPlayerController;
 		if (!OwningPlayerController) return;
 
 		WidgetInstance = CreateWidget<UUserWidget>(OwningPlayerController, WidgetClass);

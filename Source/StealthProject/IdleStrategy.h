@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,17 +6,12 @@
 #include "CountdownTimer.h"
 #include "IdleStrategy.generated.h"
 
-
+//Goap strategy for just staying idle for a set amount of time.
 
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UIdleStrategy : public UGoapActionStrategyBase
 {
 	GENERATED_BODY()
-
-private:
-	
-	bool bTimerComplete;
-	TUniquePtr<CountdownTimer> Timer;
 
 public:
 
@@ -31,7 +25,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Duration = 1.0f;
 
-	//virtual void Initialize(float inDuration);
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -41,4 +34,10 @@ public:
 	virtual bool CanPerform() const override { return true; }
 
 	virtual bool Complete() const override { return Timer->IsFinished(); }
+
+private:
+
+	bool bTimerComplete;
+
+	TUniquePtr<CountdownTimer> Timer;
 };

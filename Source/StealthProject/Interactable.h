@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
+
+//Interactable interface for any interactable items and stations
 
 UENUM()
 enum class EInteractionStatus : uint8

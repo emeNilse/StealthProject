@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,13 +8,17 @@
 #include "WorldFactRegistry.h"
 #include "LumberStorage.generated.h"
 
+//The Lumber Storage is not in use in the Game map, this station is meant for the Goap Presentation map when it's ready.
+//One of several stations that should make use of the World Fact Provider. 
+//I haven't decided yet how I should implement this. Info should be shared with AI, of course, but just trying to figure out the best design.
+
 UCLASS()
 class STEALTHPROJECT_API ALumberStorage : public ABaseStation, public IResourceStorage
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+
 	ALumberStorage();
 
 	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
@@ -32,16 +35,10 @@ public:
 	virtual void Deposit(FName Resource, int32 Amount) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	/*void TakeLumber(int amount);
-
-	void RefillStorage(int amount);*/
 
 private:
 

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "WorldFactProvider.h"
 #include "WorldFactRegistry.generated.h"
 
-/**
- * 
- */
+//Subsystem that stores any Actor that implements the World Fact Provider.
+
 UCLASS()
 class STEALTHPROJECT_API UWorldFactRegistry : public UGameInstanceSubsystem
 {

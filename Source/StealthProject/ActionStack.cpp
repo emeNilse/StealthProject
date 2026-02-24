@@ -1,11 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "ActionStack.h"
 
-//UActionStack::UActionStack()
-//{
-//}
 
 UActionStack::~UActionStack()
 {
@@ -28,7 +23,6 @@ void UActionStack::PushAction(UObject* Action)
 		return;
 	}
 
-	//ActionStack.RemoveSingle(Action);
 	ActionStack.Remove(Action);
 	ActionStack.Insert(Action, 0);
 
@@ -66,16 +60,13 @@ void UActionStack::UpdateActions()
 	{
 		CurrentAction = ActionStack[0];
 
-		//bool bFirstTime = !FirstTimeSet.Contains(CurrentAction.Get());
 		bool bFirstTime = !FirstTimeActions.Contains(CurrentAction.Get());
 		FirstTimeActions.Add(CurrentAction.Get());
 
-		//CurrentAction->OnBegin(bFirstTime);
 		IActionInterface::Execute_OnBegin(CurrentAction, bFirstTime);
 
 		if (CurrentAction)
 		{
-			//Did another action get pushed?
 			if (ActionStack.Num() > 0 && CurrentAction != ActionStack[0])
 			{
 				CurrentAction = nullptr;
@@ -87,7 +78,6 @@ void UActionStack::UpdateActions()
 
 	if (CurrentAction)
 	{
-		//CurrentAction->OnUpdate();
 		IActionInterface::Execute_OnUpdate(CurrentAction);
 
 		if (ActionStack.Num() > 0 && CurrentAction == ActionStack[0])
@@ -95,7 +85,6 @@ void UActionStack::UpdateActions()
 			if (IActionInterface::Execute_IsDone(CurrentAction))
 			{
 				ActionStack.RemoveAt(0);
-				//CurrentAction->OnEnd();
 				IActionInterface::Execute_OnEnd(CurrentAction);
 				FirstTimeActions.Remove(CurrentAction.Get());
 				CurrentAction = nullptr;

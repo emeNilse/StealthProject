@@ -1,14 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "FirePlace.h"
 
-// Sets default values
+
 AFirePlace::AFirePlace()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 bool AFirePlace::Interact_Implementation(AActor* interactor, EInteractionType type)

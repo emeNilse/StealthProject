@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,8 @@
 #include "GoapActionStrategyBase.h"
 #include "LastKnownPlayerLocationStrategy.generated.h"
 
-/**
- * 
- */
+//AI moves to the player's last known location after losing "sight" of the player.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API ULastKnownPlayerLocationStrategy : public UGoapActionStrategyBase
 {
@@ -22,8 +20,6 @@ public:
 		Runtime->AI = inAI;
 		return Runtime;
 	}
-
-	AAI_Controller* AI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WithinMinimumRange = 50.f;
@@ -43,8 +39,9 @@ public:
 
 private:
 
+	AAI_Controller* AI;
+
 	FVector Destination;
 
 	float StuckTimer;
-
 };

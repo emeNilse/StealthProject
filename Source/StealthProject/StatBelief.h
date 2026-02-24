@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "NPC.h"
 #include "StatBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief that checks the AI's stats.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UStatBelief : public UGoapBelief
 {

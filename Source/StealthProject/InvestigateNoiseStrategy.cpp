@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "InvestigateNoiseStrategy.h"
@@ -46,9 +45,9 @@ void UInvestigateNoiseStrategy::Tick(float DeltaTime)
 {
 	if (Complete())
 	{
-		APawn* pawn = AI->GetPawn();
-		ANPC* npc = Cast<ANPC>(pawn);
-		npc->ReturnToCalm();
+		APawn* Pawn = AI->GetPawn();
+		ANPC* NPC = Cast<ANPC>(Pawn);
+		NPC->ReturnToCalm();
 		AI->GetBlackboardComponent()->SetValueAsBool("bHasInvestigated", true);
 		AI->GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
 		Status = EStrategyStatus::Succeeded;
@@ -88,11 +87,12 @@ bool UInvestigateNoiseStrategy::Complete() const
 	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
 }
 
+//Upon failure, the Blackboard booleans have to be reset otherwise the AI gets stuck in Investigation
 void UInvestigateNoiseStrategy::CallFailed()
 {
-	APawn* pawn = AI->GetPawn();
-	ANPC* npc = Cast<ANPC>(pawn);
-	npc->ReturnToCalm();
+	APawn* Pawn = AI->GetPawn();
+	ANPC* NPC = Cast<ANPC>(Pawn);
+	NPC->ReturnToCalm();
 	AI->GetBlackboardComponent()->SetValueAsBool("bHasInvestigated", true);
 	AI->GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
 	Status = EStrategyStatus::Failed;

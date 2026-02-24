@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,13 +6,14 @@
 #include "EdGraphSchema_K2.h"
 #include "PatrolPath.generated.h"
 
+//This script is used to create patrol paths in the world. When the AI is patrolling, it will find its nearest patrol path and patrol that route.
+
 UCLASS()
 class STEALTHPROJECT_API APatrolPath : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	APatrolPath();
 
 	FVector GetPatrolPoint(int const index) const;

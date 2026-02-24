@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,11 @@
 #include "AI_Controller.h"
 #include "GoapBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief is the base class for the actual beliefs given to an AI in the editor.
+//Any and all beliefs that can be given to the AI stem from here.
+//Goap Component has a TSet of Goap Beliefs, wherein a designer may add and create as many beliefs to their hearts content,
+//and is registered upon construction.
+//The evaluate function is overwritten in each Belief to match the evaluation requirements.
 
 UENUM(BlueprintType)
 enum class EFloatComparison : uint8

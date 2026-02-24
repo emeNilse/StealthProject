@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,9 +7,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DistanceToActorBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief that verifies if the player is within a certain distance to the AI.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UDistanceToActorBelief : public UGoapBelief
 {

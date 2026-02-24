@@ -1,15 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 
+//The Action Plan contains the Goal, chosen Actions, and the total Cost.
+//Ties in with Goap Planner Interface and Goap Planner.
 
 class GoapAction;
 class GoapGoal;
-/**
- * 
- */
+
 class STEALTHPROJECT_API ActionPlan
 {
 public:

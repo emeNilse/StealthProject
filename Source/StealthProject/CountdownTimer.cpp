@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "CountdownTimer.h"
 
@@ -22,7 +20,6 @@ void CountdownTimer::Start()
 	CurrentDuration = Duration;
 	UE_LOG(LogTemp, Warning, TEXT("Timer start called"));
 	UE_LOG(LogTemp, Warning, TEXT("current at start =%.2f"), CurrentDuration);
-	//OnTimerStart.Broadcast();
 
 	bRunning = true;
 	UE_LOG(LogTemp, Warning, TEXT("bRunning at start ="), bRunning ? TEXT("true") : TEXT("false"));
@@ -55,7 +52,6 @@ void CountdownTimer::Stop()
 	UE_LOG(LogTemp, Warning, TEXT("timer stop called and finished"));
 	bRunning = false;
 	UE_LOG(LogTemp, Warning, TEXT("bRunning at stop end ="), bRunning ? TEXT("true") : TEXT("false"));
-	//OnTimerStop.Broadcast();
 }
 
 void CountdownTimer::Reset()

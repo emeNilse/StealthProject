@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "BeliefFactory.h"
-//#include "GoapComponent.h"
+
 
 
 BeliefFactory::BeliefFactory(UGoapComponent* component, AgentBeliefs::BeliefRegistry& registry) : Component(component), Registry(registry)

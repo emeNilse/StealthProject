@@ -1,14 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "IdleStrategy.h"
-
-
-//void UIdleStrategy::Initialize(float inDuration)
-//{
-//	Timer = MakeUnique<CountdownTimer>(inDuration);
-//	UE_LOG(LogTemp, Warning, TEXT("bRunning at construct ="), bTimerComplete ? TEXT("true") : TEXT("false"));
-//}
 
 void UIdleStrategy::Start()
 {

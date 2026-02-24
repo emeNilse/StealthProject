@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "MoveStrategy.h"
 #include "NavigationSystem.h"
@@ -7,11 +5,6 @@
 #include "NavigationPath.h"
 #include "GameFramework/Pawn.h"
 
-//void UMoveStrategy::Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor)
-//{
-//	AI = inAI;
-//	Destination = inActor->GetActorLocation();
-//}
 
 void UMoveStrategy::Start()
 {
@@ -79,6 +72,14 @@ bool UMoveStrategy::Complete() const
 	return FVector::Dist(AI->GetPawn()->GetActorLocation(), Destination) < WithinMinimumRange;
 }
 
+//I have read somewhere (can't remember the source, soz) that Dynamic Range Cost can be one option
+//to give an action a "cost". Basically, if the AI has to choose between two movement options (going to different objects)
+//then it should take the "nearest" option since it requires less walking. I had to remake the GoapAction's Cost
+//functions because of this and implement a lambda that you see in GoapComponent. This is Costly (pun not intended), 
+//so I have a boolean, DynamicRangeCostActive, that is false by default and should return the Cost set for the 
+//strategy in the editor. I have tested it, and it seems to work fine, but couldn't think of a proper use of it in
+//the game nor what is a reasonable cost to return from the function. Since cost is based on distance, the cost can go up to
+//large numbers, so I tried rounding the cost to a "max cost", but haven't had enough testing to know if it is a viable max. 
 float UMoveStrategy::GetCost(AAI_Controller* inAI, float DefaultCost) const
 {
 	if (DynamicRangeCostActive)
@@ -94,6 +95,8 @@ float UMoveStrategy::GetCost(AAI_Controller* inAI, float DefaultCost) const
 	}
 }
 
+//FVector::Dist returns a straight line distance-to-destination, this method specifically looks for the remaining
+//distance to walk to the destination via the NavMesh
 float UMoveStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
 	if(!inAI || !inAI->GetPawn()) return 0.0f;

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "AI_Controller.h"
 #include "NPC.h"
@@ -20,6 +18,8 @@ AAI_Controller::AAI_Controller(FObjectInitializer const& ObjectInitializer)
 	SetupPerceptionSystem();
 }
 
+//You will find traces of the BehaviourTree I originally used for testing.
+//I'm keeping it in just in case I need to use it again.
 void AAI_Controller::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -49,43 +49,40 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to get Blackboard for %s"), *OwnerPawn->GetName());
 			}
-			
 		}
 	}
 }
 
 void AAI_Controller::SetupPerceptionSystem()
 {
-	
-	/*if (SightConfig)
-	{*/
-		SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 
-		SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
-		SightConfig->SightRadius = 500.f;
-		SightConfig->LoseSightRadius = SightConfig->SightRadius + 250.f;
-		SightConfig->PeripheralVisionAngleDegrees = 90.f;
-		SightConfig->SetMaxAge(2.f);
-		SightConfig->AutoSuccessRangeFromLastSeenLocation = 520.f;
-		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	SightConfig->SightRadius = 500.f;
+	SightConfig->LoseSightRadius = SightConfig->SightRadius + 250.f;
+	SightConfig->PeripheralVisionAngleDegrees = 90.f;
+	SightConfig->SetMaxAge(2.f);
+	SightConfig->AutoSuccessRangeFromLastSeenLocation = 520.f;
+	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
-		HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HeaingConfig"));
-		HearingConfig->HearingRange = 1000.f;
-		HearingConfig->LoSHearingRange = 1000.f;
-		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
-		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
-		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HeaingConfig"));
+	HearingConfig->HearingRange = 1000.f;
+	HearingConfig->LoSHearingRange = 1000.f;
+	HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+	HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
+	HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
 
-		GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnPerceptionUpdated);
-		GetPerceptionComponent()->ConfigureSense(*SightConfig);
-		GetPerceptionComponent()->ConfigureSense(*HearingConfig);
-		
-	//}
+	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
+	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnPerceptionUpdated);
+	GetPerceptionComponent()->ConfigureSense(*SightConfig);
+	GetPerceptionComponent()->ConfigureSense(*HearingConfig);
 }
 
+//Hearing should be ignored if the AI has spotted the player or just recently lost sight of player.
+//If I had more time, I would delve deeper into the "Move to last known location" strategy, but
+//for the scope of this game this had to do.
 void AAI_Controller::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
@@ -130,6 +127,7 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 	}
 }
 
+//If noise was heard in a spot that is unreachable via NavMesh -> Ignore Noise
 void AAI_Controller::OnNoiseHeard(AActor* Actor, FAIStimulus const Stimulus)
 {
 	if (auto* const c = Cast<AStealthProjectCharacter>(Actor))
@@ -150,7 +148,7 @@ void AAI_Controller::OnNoiseHeard(AActor* Actor, FAIStimulus const Stimulus)
 		}
 		else
 		{
-			//GetBlackboardComponent()->SetValueAsBool("bHeardSomething", false);
+			//Not needed, I just got lost in debugging
 			GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 		}
 	}

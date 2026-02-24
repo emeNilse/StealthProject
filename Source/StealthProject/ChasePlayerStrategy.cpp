@@ -1,17 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "ChasePlayerStrategy.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationPath.h"
-
-
-//void UChasePlayerStrategy::Initialize(AAI_Controller* inAI)
-//{
-//	AI = inAI;
-//}
 
 
 void UChasePlayerStrategy::Start()
@@ -23,7 +15,6 @@ void UChasePlayerStrategy::Start()
 		return;
 	}
 		
-
 	Player = Cast<AStealthProjectCharacter>(AI->GetBlackboardComponent()->GetValueAsObject("PlayerActor"));
 	UE_LOG(LogTemp, Warning, TEXT("chase player strat"));
 
@@ -40,7 +31,6 @@ void UChasePlayerStrategy::Start()
 
 void UChasePlayerStrategy::Tick(float DeltaTime)
 {
-	//Target = Player->GetActorLocation();
 	AI->MoveToActor(Player);
 
 	if (Complete())
@@ -70,6 +60,7 @@ bool UChasePlayerStrategy::Complete() const
 	return remainingDistance < 50.f;
 }
 
+//See Move Strategy for explanation
 float UChasePlayerStrategy::GetRemainingDistance(AAI_Controller* inAI, AStealthProjectCharacter* inPlayer) const
 {
 	if (!inAI || !inAI->GetPawn() || !inPlayer) return 0.0f;

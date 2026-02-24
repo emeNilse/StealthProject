@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,10 +6,13 @@
 #include "ActionStack.h"
 #include "MyGameInstance.generated.h"
 
+//To push the Main Menu into the Action Stack, I had to hard code it find the Blueprint that would create the Main Menu Widget and
+//push it into the Action Stack on start-up.
+//How to do so was not straight forward...
+//The tricky part was trying to register the player controller to the widget so that the player can interact with the menu.
+
 class UActionBehaviour;
-/**
- * 
- */
+
 UCLASS()
 class STEALTHPROJECT_API UMyGameInstance : public UGameInstance
 {

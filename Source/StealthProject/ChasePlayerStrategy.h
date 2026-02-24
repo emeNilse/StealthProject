@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,9 @@
 #include "AI_Controller.h"
 #include "StealthProjectCharacter.h"
 #include "ChasePlayerStrategy.generated.h"
-/**
- * 
- */
+
+//This Strategy is for chaisng the player
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UChasePlayerStrategy : public UGoapActionStrategyBase
 {
@@ -26,9 +25,6 @@ public:
 	AAI_Controller* AI;
 
 	AStealthProjectCharacter* Player;
-
-
-	//virtual void Initialize(AAI_Controller* inAI);
 
 	virtual void Start() override;
 

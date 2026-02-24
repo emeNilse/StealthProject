@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,9 +8,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "WithinRadiusBelief.generated.h"
 
-//This class should rather be called PatrolRouteWithinRadius.
-//At first I was think this could be multi-taskable,
-//but to save the info it finds I don't think there's any other way. 
+//This class should rather be called PatrolRouteWithinRadius. 
+// This is an different type of search for a particular Actor with a Radius belief.
+// 
+// You can probably tell I've been overworking a bit and slowly losing my mind over what "best approach" to take.
+// 
+// At first I was think this could be multi-taskable but to save the info it finds I don't think there's any other way.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UWithinRadiusBelief : public UGoapBelief
 {

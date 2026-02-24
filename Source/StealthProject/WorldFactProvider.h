@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "UObject/Interface.h"
 #include "WorldFactProvider.generated.h"
+
+//Interface for any station or item that has World Facts to share with the AI.
 
 UENUM()
 enum class EWorldFactType : uint8

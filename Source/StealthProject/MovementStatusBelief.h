@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "AI_Controller.h"
 #include "MovementStatusBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief for the movement status of the AI
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UMovementStatusBelief : public UGoapBelief
 {
@@ -29,5 +27,4 @@ public:
 
 		return AI->GetMoveStatus() == RequiredStatus;
 	}
-	
 };

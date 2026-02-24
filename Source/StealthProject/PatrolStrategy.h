@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,9 +7,9 @@
 #include "NPC.h"
 #include "PatrolPath.h"
 #include "PatrolStrategy.generated.h"
-/**
- * 
- */
+
+//Action Strategy for going on Patrol. AI finds the nearest patrol path and then patrols along the route.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UPatrolStrategy : public UGoapActionStrategyBase
 {
@@ -24,8 +23,18 @@ public:
 		return Runtime;
 	}
 
-	//TFunction<FVector()> Destination;
+	virtual void Start() override;
 
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void Stop() override;
+
+	virtual bool CanPerform() const override { return !Complete(); };
+
+	virtual bool Complete() const override;
+
+
+private:
 	AAI_Controller* AI;
 
 	UWorld* World;
@@ -41,23 +50,12 @@ public:
 	float DistanceToTarget;
 
 	int Index;
-	
+
 	int IndexCounter;
 
 	bool bPatrolling;
 
 	int NOofPoints;
-
-	//virtual void Initialize(AAI_Controller* inAI);
-	virtual void Start() override;
-
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void Stop() override;
-
-	virtual bool CanPerform() const override { return !Complete(); };
-
-	virtual bool Complete() const override;
 
 	APatrolPath* FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation);
 

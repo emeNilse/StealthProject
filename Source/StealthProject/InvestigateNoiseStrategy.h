@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,8 @@
 #include "GoapActionStrategyBase.h"
 #include "InvestigateNoiseStrategy.generated.h"
 
-/**
- * 
- */
+//If the AI "heard" something, it should investigate the last location of the sound source
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UInvestigateNoiseStrategy : public UGoapActionStrategyBase
 {
@@ -22,8 +20,6 @@ public:
 		Runtime->AI = inAI;
 		return Runtime;
 	}
-
-	AAI_Controller* AI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float WithinMinimumRange = 50.f;
@@ -44,6 +40,7 @@ public:
 	void CallFailed();
 
 private:
+	AAI_Controller* AI;
 
 	FVector Destination;
 

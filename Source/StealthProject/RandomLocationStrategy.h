@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -12,9 +11,9 @@
 #include "NPC.h"
 #include "RandomLocationStrategy.generated.h"
 
-/**
- * 
- */
+//As the name implies, find a random location and walk there.
+//This Strategy is used when the AI is in Alert state and with high suspicion.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API URandomLocationStrategy : public UGoapActionStrategyBase
 {

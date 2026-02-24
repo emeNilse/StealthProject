@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "ResourceStorage.h"
 #include "CheckResourceStorageStrategy.generated.h"
 
-/**
- * 
- */
+//Not finished. This is for Goap presentation.
+
 UCLASS()
 class STEALTHPROJECT_API UCheckResourceStorageStrategy : public UInteractionStrategy
 {

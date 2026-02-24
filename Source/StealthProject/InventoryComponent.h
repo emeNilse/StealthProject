@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
+
+//Inventory Component is not in use yet, coming soon.
 
 UENUM(BlueprintType)
 enum class EItemType : uint8
@@ -20,8 +21,7 @@ class STEALTHPROJECT_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UInventoryComponent();
 
 	UFUNCTION(BlueprintPure)

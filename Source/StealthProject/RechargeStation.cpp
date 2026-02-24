@@ -1,12 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "RechargeStation.h"
 #include "GoapComponent.h"
 
-void ARechargeStation::TickDrainPower(ANPC* npc)
+void ARechargeStation::TickDrainPower(ANPC* NPC)
 {
-	if (UGoapActionStrategyBase* strategy = npc->GetComponentByClass<UGoapComponent>()->GetCurrentStrategy())
+	if (UGoapActionStrategyBase* strategy = NPC->GetComponentByClass<UGoapComponent>()->GetCurrentStrategy())
 	{
 		if (URechargeStrategy* recharge = Cast<URechargeStrategy>(strategy))
 		{

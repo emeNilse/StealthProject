@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "MyGameInstance.h"
 #include "ActionBehaviour.h"
@@ -28,18 +26,18 @@ void UMyGameInstance::TryPushStartupAction(UWorld* World, ELevelTick TickType, f
 	if (bStartupActionPushed || !World || !Stack) return;
 
 	APlayerController* PC = World->GetFirstPlayerController();
-	if (!PC) return; // PC not ready yet; wait for next tick
+	if (!PC) return; //PC not ready yet, wait for next tick
 
-	// Create and initialize your main menu action
+	//Create and initialize main menu action
 	UActionBehaviour* Action = NewObject<UActionBehaviour>(this, StartupAction);
 	Action->Initialize(PC);
 
-	// Push it onto the stack
+	//Push it onto the stack
 	Stack->PushAction(Action);
 
 	bStartupActionPushed = true;
 
-	// Remove delegate so it doesn't run again
+	//Remove delegate so it doesn't run again
 	FWorldDelegates::OnWorldPostActorTick.RemoveAll(this);
 }
 
@@ -63,49 +61,9 @@ void UMyGameInstance::Init()
 
 	if (!Stack) return;
 
-	//TSubclassOf<UActionBehaviour> MainMenuClass = StartupAction;
-
 	if (!StartupAction)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StartupActionClass not found!"));
 		return;
 	}
-
-
-	//UActionBehaviour* Action = NewObject<UActionBehaviour>(this, StartupAction);
-	//Action->Initialize(PC);
-
-	// Push it onto the stack
-	//Stack->PushAction(Action);
-	//UWorld* World = GetWorld();
-
-	//APlayerController* PC = World->GetFirstPlayerController();
-	//if (!PC)
-	//{
-	//	// PlayerController not created yet: delay by one frame
-	//	FTimerHandle TimerHandle;
-	//	World->GetTimerManager().SetTimer(TimerHandle, [this]()
-	//		{
-	//			APlayerController* DelayedPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//			if (!DelayedPC) return;
-
-	//			UActionBehaviour* ActionDelayed = NewObject<UActionBehaviour>(this, StartupAction);
-	//			ActionDelayed->Initialize(DelayedPC);
-	//			Stack->PushAction(ActionDelayed);
-
-	//		}, 0.1f, false); // 0.1s delay
-	//	return;
-	//}
-
-	//UActionBehaviour* Action = NewObject<UActionBehaviour>(this, StartupAction);
-	//if (!Action)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Failed to create startup action instance"));
-	//	return;
-	//}
-
-	//Action->Initialize(PC);
-
-	//Stack->PushAction(Action);
-
 }

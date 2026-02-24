@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +8,12 @@
 #include "WorldFactProvider.h"
 #include "GoapWorldStateComponent.h"
 #include "BaseStation.generated.h"
+
+//The Base Station is what every "station" the AI may interact with is inherited from. 
+//Provides a text renderer to clearly display what station it is. 
+//Has Interactable interface so the AI can Interact, if necessary, with the station.
+//Stations also inherit from World Fact Provider, in case info about the station (e.g. storage of a resource) needs to
+// be announced/shared with the AI.
 
 UCLASS()
 class STEALTHPROJECT_API ABaseStation : public AActor, public IInteractable, public IWorldFactProvider

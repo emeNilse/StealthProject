@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,6 +5,7 @@
 #include "UObject/Interface.h"
 #include "ResourceStorage.generated.h"
 
+//To be used by stations that have resources to give or store.
 
 UINTERFACE(MinimalAPI)
 class UResourceStorage : public UInterface

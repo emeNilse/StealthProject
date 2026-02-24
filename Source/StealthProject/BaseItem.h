@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,6 +6,9 @@
 #include "Interactable.h"
 #include "InventoryComponent.h"
 #include "BaseItem.generated.h"
+
+//Base Item is currently not in use.
+//The plan is to, after the game is handed in, to let the AI actually pick up items and have a basic inventory.
 
 UCLASS()
 class STEALTHPROJECT_API ABaseItem : public AActor, public IInteractable

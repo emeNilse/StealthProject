@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,6 +15,15 @@
 #include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"
 
+//The NPC class primarily handles AI state and stats. And is the link between AI Controller and Blackboard.
+
+
+//States for the AI, used as requirements for Actions and visuals
+//Calm -> Run daily operations
+//Investigative -> investigate anomaly (noise)
+//Alert -> search the area, type of search depends on Suspicious meter
+//Engaged -> Chase the player
+
 UENUM(BlueprintType)
 enum class ENPCState : uint8
 {
@@ -31,17 +39,7 @@ class STEALTHPROJECT_API ANPC : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ANPC();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
-	virtual void RayCast();
 
 	UBehaviorTree* GetBehaviorTree() const;
 
@@ -49,9 +47,7 @@ public:
 
 	APatrolPath* GetPatrolPath();
 
-	void SetPatrolPath(APatrolPath* inPath);
-
-	void UpdateStats();
+	bool bRecharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> Stats;
@@ -62,11 +58,14 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UMaterialInterface* VisionMaterial;
 
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* ConeMesh;*/
+	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void SetDestination(FVector TargetDestination);
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	virtual void RayCast();
+
+	void SetPatrolPath(APatrolPath* inPath);
 
 	UFUNCTION(BlueprintCallable)
 	float GetStat(FName StatName) const;
@@ -95,37 +94,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnNPCStateChange();
 
-	void InitializeVisionCone();
-
-	void GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSegments);
-
-	void Generate3DVisual(float Height, float Radius, int32 Sides);
-
 	virtual void PossessedBy(AController* NewController) override;
 
-	bool bRecharging = false;
-
-	FVector GlobalDestination;
-
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	UBlackboardData* BlackboardAsset;
 
+	//GOAP world state properties, this is for the AI to keep track of world information.
+	//e.g. some station (will eventually) have information that the AI should know about.
+	//The AI will use this in it's planner to determine where to go for resources and other items.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	UGoapWorldStateComponent* WorldState;
 
 private:
+	//My old Behaviour Tree, as stated in other scripts, I'm keeping it around for debugging purposes
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta=(AllowPrivateAccess = "true"))
 	UBehaviorTree* Tree;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	UAISenseConfig_Sight* SightConfiguration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	AAI_Controller* MyAIController;
@@ -146,6 +135,14 @@ private:
 	bool PlayerSpotted = false;
 
 	float StatTimerInterval;
+
 	float StatTimerRemaining;
 
+	void UpdateStats();
+
+	void InitializeVisionCone();
+
+	void GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSegments);
+
+	void Generate3DVisual(float Height, float Radius, int32 Sides);
 };

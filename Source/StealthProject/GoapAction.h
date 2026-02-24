@@ -1,14 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
 #include "GoapActionStrategyBase.h"
+
+//Goap Action was designed alongside Agent Belief, hence structure is simalar. 
+//Like Agent Belief, the Goap Action comes with a Builder that "registers/creates" the action upon adding it to the Goap Component's
+//list of available actions.
+//It comes with the ability to set cost, preconditions (that match with agent beliefs), and effects (that match with agent beliefs).
+//As you can see this script is messy, because it gave me much frustration upon design and I had to learn a lot about Shared Pointers and
+//Lambdas here... don't want to delete all because I want to come back and see how things work (or used to work).
+
 class AAI_Controller;
-/**
- * 
- */
+
 class STEALTHPROJECT_API GoapAction : public FGCObject
 {
 public:
@@ -17,7 +22,8 @@ public:
 
 	FString Name;
 
-	//float Cost;
+	//float Cost; This was changed to adapt for the Dynamic Range Cost I created for Move Strategy
+	//The lambda called in Goap Component is costly, I wonder if there's a better solution.
 	TFunction<float()> GetCost;
 
 	float CostValue() const

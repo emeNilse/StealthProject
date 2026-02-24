@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,6 +8,12 @@
 #include "AI_Controller.h"
 #include "GoapPlannerInterface.h"
 
+//The GoapPlanner is responsible for coming up with a plan for the AI.
+//The planners sorts Goals on priority and Actions on cost, and iterates over goals until it has found a plan that is viable.
+//I want to expand on the planner so that it makes use of another search algorithm (I was wondering if something like A* is possible).
+//Beacuse the current set up will be less efficient the more goals and actions I give the AI.
+//Inherits from Goap Planner Interface to set up Plan.
+
 class GoapGoal;
 class GoapAction;
 class UGoapComponent;
@@ -16,8 +21,6 @@ DECLARE_LOG_CATEGORY_EXTERN(LogGOAP, Log, All);
 
 class STEALTHPROJECT_API GoapPlanner : public IGoapPlannerInterface
 {
-	
-
 public:
 	GoapPlanner();
 
@@ -29,6 +32,7 @@ public:
 
 	bool HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief);
 
+	//I was using this for "Pretty printing", but thinking I'll scrap it
 	FString Indent(int32 Depth)
 	{
 		return FString::ChrN(Depth * 2, TEXT(' '));

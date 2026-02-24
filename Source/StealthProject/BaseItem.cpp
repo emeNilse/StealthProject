@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "BaseItem.h"
 
@@ -15,6 +13,5 @@ bool ABaseItem::Interact_Implementation(AActor* interactor, EInteractionType typ
 			return true;
 		}
 	}
-
 	return false;
 }

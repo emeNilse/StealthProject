@@ -1,13 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "AgentBeliefs.h"
 
-/**
- * 
- */
+//The Goap Goals, a desire that is based off an existing (Goap) Agent Belief
+
 class STEALTHPROJECT_API GoapGoal
 {
 	
@@ -17,14 +15,9 @@ public:
 
 	FString Name;
 
-	//FORCEINLINE const FString& GetName() const { return Name; }
-
 	int Priority;
 
-	//FORCEINLINE float GetPriority() const { return Priority; }
-
 	TSet<TSharedPtr<AgentBeliefs>> DesiredEffects;
-
 
 	class Builder
 	{
@@ -58,7 +51,5 @@ public:
 		{
 			return goal;
 		}
-
 	};
-
 };

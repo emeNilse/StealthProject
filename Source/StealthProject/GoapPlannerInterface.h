@@ -1,30 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "UObject/Interface.h"
-//#include "GoapPlannerInterface.generated.h"
 
+//The Goap Planner interface
+//I know what you're thinking, was this really necessary?
+//This is from when I first started and the Goap tutorial I was following was for Unity...
+//And in the chaos of figuring out TSharedPtrs, I forgot why I needed this, but the point(er) is that it works.
 
 class ActionPlan;
 class UGoapComponent;
 class GoapGoal;
 class AAI_Controller;
-/**
- * 
- */
-//UINTERFACE(MinimalAPI)
-//class UGoapPlannerInterface : public UInterface
-//{
-//	GENERATED_BODY()
-//	
-//};
+
 
 class IGoapPlannerInterface
 {
 public:
-	//virtual ~IGoapPlannerInterface();
 	virtual TSharedPtr<ActionPlan> Plan(UGoapComponent* agent, AAI_Controller* inAI, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal = nullptr) = 0;
-
 };

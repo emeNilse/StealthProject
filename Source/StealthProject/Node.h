@@ -1,14 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GoapAction.h"
 
+//This Node class is used by the Goap Planner when coming up with a plan
 
-/**
- * 
- */
 class STEALTHPROJECT_API Node
 {
 public:

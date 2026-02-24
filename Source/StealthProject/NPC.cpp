@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "NPC.h"
 #include "Components/CapsuleComponent.h"
@@ -32,8 +30,6 @@ void ANPC::BeginPlay()
 	StatTimerInterval = 1.f;
 	StatTimerRemaining = 1.f;
 
-	GlobalDestination = GetActorLocation();
-
 	float HalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
 	VisionMesh->SetRelativeLocation(FVector(0, 0, -HalfHeight + 2.f));
@@ -46,7 +42,7 @@ void ANPC::BeginPlay()
 	}
 }
 
-//RayCast was used for early debugging purposes, don't have the heart to delete
+//RayCast was used for early debugging purposes, not sure if I might need it later. 
 void ANPC::RayCast()
 {
 	FHitResult* HitResult = new FHitResult();
@@ -63,15 +59,12 @@ void ANPC::RayCast()
 		if (HitResult->GetActor() == UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Hit someone");
-			
 		}
 
 		if (HitResult != NULL)
 		{
-			
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, HitResult->GetActor()->GetFName().ToString());
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "Hit something");
-			
 		}
 	}
 }
@@ -96,6 +89,8 @@ void ANPC::SetPatrolPath(APatrolPath* inPath)
 	PatrolPath = inPath;
 }
 
+//For now, some of the NPC stats are simply updated here.
+//The plan is to, eventually, move OilMeter and ResourceMeter to the actual stations.
 void ANPC::UpdateStats()
 {
 	if (!bRecharging)
@@ -116,11 +111,6 @@ void ANPC::UpdateStats()
 	ModifyStat("ResourceMeter", 4);
 
 	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));
-}
-
-void ANPC::SetDestination(FVector TargetDestination)
-{
-	GlobalDestination = TargetDestination;
 }
 
 float ANPC::GetStat(FName StatName) const
@@ -182,16 +172,20 @@ void ANPC::ReturnToCalm()
 	}
 }
 
+//When the AI becomes Alert, after 30 seconds it should return to a calm state.
 void ANPC::BeginAlert()
 {
 	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 30.f, false);
 }
 
+//When the AI becomes Investigative, if it gets stuck there, after 2 seconds it should return to a calm state.
+//Originally I wanted something like this where the AI goes like "Hmmm..." before returning to being calm. 
+//But apparently there's a bug somewhere that takes care of that already... and I haven't found it.
+//Hence, this ensures the AI will return to normal.
 void ANPC::BeginInvestigative()
 {
 	GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 2.f, false);
 }
-
 
 void ANPC::OnNPCStateChange()
 {
@@ -223,6 +217,7 @@ void ANPC::OnNPCStateChange()
 	}
 }
 
+//State debugging purposes. However, for now it looks good as a visual too.
 void ANPC::InitializeVisionCone()
 {
 	if (AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
@@ -286,7 +281,7 @@ void ANPC::GenerateVisualCone(float Radius, float HalfAngleDegrees, int32 NumSeg
 	}
 }
 
-//Attempt at a 3D "scanner" visualization, might attempt this again in the future
+//Attempt at a 3D "scanner" visualization, does not work well, but might attempt this again in the future.
 void ANPC::Generate3DVisual(float Height, float Radius, int32 Sides)
 {
 	TArray<FVector> Vertices;

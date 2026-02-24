@@ -1,10 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GoapActionStrategyBase.h"
 #include "ProcessStrategy.generated.h"
+
+//Currently not in use, but the idea is for strategies to inherit from this strategy.
+//I was thinking Recharge Strategy could inherit from this.
 
 class AAI_Controller;
 class ANPC;
@@ -23,10 +25,6 @@ UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UProcessStrategy : public UGoapActionStrategyBase
 {
 	GENERATED_BODY()
-	
-private:
-	AAI_Controller* AI;
-	ANPC* NPC;
 
 public:
 	virtual UGoapActionStrategyBase* CreateRunTimeInstance(UObject* Outer, AAI_Controller* inAI) const override
@@ -63,4 +61,12 @@ public:
 	virtual bool Complete() const override;
 
 	float GetStatDrainRate() const { return StatDrainRate; }
+
+
+private:
+
+	AAI_Controller* AI;
+
+	ANPC* NPC;
+
 };

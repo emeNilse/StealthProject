@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,8 @@
 #include "GoapActionStrategyBase.h"
 #include "GoapActionsSet.generated.h"
 
-/**
- * 
- */
+//Goap Action Set is a part of the Goap Component where the designer sets the info for a Goap Action before it is created.
+
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UGoapActionsSet : public UObject
 {

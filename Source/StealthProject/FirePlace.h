@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,6 +6,9 @@
 #include "BaseStation.h"
 #include "WorldFactRegistry.h"
 #include "FirePlace.generated.h"
+
+//Not in use. This is meant for Goap Presentation.
+//I thought about using it in the game, but there was too much else to fix.
 
 UCLASS()
 class STEALTHPROJECT_API AFirePlace : public ABaseStation

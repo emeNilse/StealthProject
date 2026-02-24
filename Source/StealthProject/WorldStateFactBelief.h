@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,9 +7,9 @@
 
 #include "WorldStateFactBelief.generated.h"
 
-/**
- * 
- */
+//Goap Belief that is meant to verify info from the World Facts.
+//Have yet to find a suitable use for it. Coming in Goap Presentation.
+
 UCLASS()
 class STEALTHPROJECT_API UWorldStateFactBelief : public UGoapBelief
 {

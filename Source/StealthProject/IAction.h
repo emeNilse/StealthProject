@@ -1,10 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "IAction.generated.h"
+
+//Action Interface used for the Action Stack.
+//The design is based on Carl's lecture 7 where he showed how to control the menus via the action stack.
 
 UINTERFACE(Blueprintable)
 class STEALTHPROJECT_API UActionInterface : public UInterface

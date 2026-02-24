@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "GoapAction.h"
 
@@ -14,7 +12,7 @@ GoapAction::~GoapAction()
 }
 
 
-//telling the garbage collector to not touch Strategy
+//Telling the garbage collector to not touch Strategy!
 void GoapAction::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(Strategy);

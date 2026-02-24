@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "GoapComponent.h"
 #include "Navigation/PathFollowingComponent.h"
@@ -7,9 +5,6 @@
 #include "Math/UnrealMathUtility.h"
 #include "AI_Controller.h"
 #include "ActionPlan.h"
-#include "NPC.h"
-
-
 
 UGoapComponent::UGoapComponent()
 {
@@ -120,17 +115,13 @@ void UGoapComponent::MakeAPlanForActionStack()
 			UE_LOG(LogTemp, Warning, TEXT("Action: %s"), *ga->Name);
 		}
 	}
-
-	//UpdateNPCState();
 }
 
 void UGoapComponent::HandlePlanFailed()
 {
-	//LastGoal, to do or not to do
 	LastGoal = CurrentGoal;
 	TheActionPlan = nullptr;
 	bShouldReplan = true;
-	//MakeAPlanForActionStack();
 }
 
 void UGoapComponent::HandlePlanFinished()
@@ -138,7 +129,6 @@ void UGoapComponent::HandlePlanFinished()
 	LastGoal = CurrentGoal;
 	TheActionPlan = nullptr;
 	bShouldReplan = true;
-	//MakeAPlanForActionStack();
 }
 
 void UGoapComponent::SetupBeliefs()
@@ -163,7 +153,8 @@ void UGoapComponent::SetupAction()
 
 		UGoapActionStrategyBase* RuntimeStrategy = action->StrategyInstance->CreateRunTimeInstance(this, AI);
 
-		//Had to remove action->Cost from WithCost() in order to make the Cost dynamic
+		//Had to remove action->Cost from WithCost(), and replace it with the following lambda in order to 
+		// make room for the Dynamic Range Cost that can be implemented in Move Strategies
 		auto Builder = GoapAction::Builder(action->Name).WithStrategy(RuntimeStrategy).WithCost([RuntimeStrategy, this, action]() -> float { return RuntimeStrategy->GetCost(AI, action->Cost); });
 
 		for (const FString& preconditionName : action->PreConditions)
@@ -235,13 +226,6 @@ void UGoapComponent::CalculatePlan()
 	}
 }
 
-//void UGoapComponent::UpdateNPCState()
-//{
-//	//LastNPCStats.bCanSeePlayer = AI_BlackBoard->GetValueAsBool("bCanSeePlayer");
-//	LastGoal = CurrentGoal;
-//	TheActionPlan = nullptr;
-//	bShouldReplan = true;
-//}
 
 bool UGoapComponent::HasNPCStateChanged()
 {
@@ -252,11 +236,6 @@ bool UGoapComponent::HasNPCStateChanged()
 		TheActionPlan = nullptr;
 		return true;
 	}
-	
-	/*if (LastNPCStats.bCanSeePlayer != AI_BlackBoard->GetValueAsBool("bCanSeePlayer"))
-	{
-		return true;
-	}*/
 
 	return false;
 }

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,13 @@
 #include "AI_Controller.h"
 #include "MoveStrategy.generated.h"
 
-/**
- * 
- */
+//All AI strategies that involve moving to a location uses the MoveStrategy.
+//For the scope of the game project, I have limited the expanse of MoveStrategy, the target destination is fed in the editor.
+// So for now, the movement startegy is rather "hard coded".
+//I plan to make it more dynamic during graduation (or remake it entirely) so that it can be more dynamic and 
+//find the closest Actor of Type TargetActor.
+//And, eventually, to also see if said Actor (e.g. if it has a resource timer) is viable. 
+// However, I am still trying to decide what is the best architecture for such a strategy.
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UMoveStrategy : public UGoapActionStrategyBase
 {
@@ -38,15 +41,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxStuckTime = 3.f;
 
-	FVector Destination;
-
-	//TFunction was for the pure C++ Goap, not supported by "Unreal's reflection system"(?)
-	//TFunction<FVector()> Destination;
-
-	AAI_Controller* AI;
-
-	//virtual void Initialize(AAI_Controller* inAI, TSoftObjectPtr<AActor> inActor);
-
 	virtual void Start() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -61,6 +55,9 @@ public:
 	float GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const;
 
 private:
+	FVector Destination;
+
+	AAI_Controller* AI;
 
 	float StuckTimer;
 };

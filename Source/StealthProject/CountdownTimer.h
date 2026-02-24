@@ -1,26 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 
-
+//This CountdownTimer class was used by raw C++ classes.
+//Originally when most of my Goap Scripts were just raw C++ and not UCLASSes, I had to create my own timer as they could use Unreal's timer.
 DECLARE_MULTICAST_DELEGATE(FOnTimerEvent);
-/**
- * 
- */
+
 class STEALTHPROJECT_API CountdownTimer
 {
-	float Duration = 0.f;
-	float CurrentDuration = 0.f;
-	bool bRunning = false;
-
 public:
+	float Duration = 0.f;
+
+	float CurrentDuration = 0.f;
+
+	bool bRunning = false;
 	CountdownTimer(float duration);
 	~CountdownTimer();
 
-	/*FOnTimerEvent OnTimerStart;
-	FOnTimerEvent OnTimerStop;*/
 	
 	void Start();
 

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,9 +13,11 @@
 
 class UGoapComponent;
 class ANPC;
-/**
- * 
- */
+
+//The AI Controller is responsible for movement and is the part that has access to the Blackboard component.
+//I used a Behaviour Tree to get an understanding of how to access the Blackboard and to test the GOAP in its early stages.
+//You will likely see remnants of my Behaviour Tree code lying around, because I want to have it available for debugging purposes.
+//I use Unreal's AI perception system for sight and hearing, of which, the parameters are configured in the SetupPerceptionSystem().
 UCLASS()
 class STEALTHPROJECT_API AAI_Controller : public AAIController
 {

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "PatrolStrategy.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,9 +19,6 @@ void UPatrolStrategy::Start()
 	NPC = Cast<ANPC>(AI->GetPawn());
 	FVector currentLocation = NPC->GetActorLocation();
 	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
-
-	/*UObject* Object = AI->GetBlackboardComponent()->GetValueAsObject("CurrentPatrolPath");
-	MyPatrolPath = Cast<APatrolPath>(Object);*/
 
 	NOofPoints = NPC->GetPatrolPath()->Num();
 
@@ -99,6 +94,7 @@ APatrolPath* UPatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVect
 	return Closest;
 }
 
+//This function looks for the nearest patrol point belonging to a patrol path. For now though, just finding the nearest patrol path is good enough.
 int UPatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVector& inNPCLocation)
 {
 	/*TArray<FVector> FoundPoints;
@@ -122,6 +118,7 @@ int UPatrolStrategy::FindClostestPatrolPathPoint(APatrolPath* inPath, const FVec
 	return 0;
 }
 
+//See Move Strategy for explanation.
 float UPatrolStrategy::GetRemainingDistance(AAI_Controller* inAI, const FVector& targetDestination) const
 {
 	if (!inAI || !inAI->GetPawn()) return 0.0f;

@@ -1,15 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "ActionBehaviour.h"
-
-//ActionBehaviour::ActionBehaviour()
-//{
-//}
-//
-//ActionBehaviour::~ActionBehaviour()
-//{
-//}
 
 void UActionBehaviour::Initialize(APlayerController* InPlayerController)
 {
