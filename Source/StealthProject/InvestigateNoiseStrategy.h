@@ -5,7 +5,8 @@
 #include "GoapActionStrategyBase.h"
 #include "InvestigateNoiseStrategy.generated.h"
 
-//If the AI "heard" something, it should investigate the last location of the sound source
+//If the AI "heard" something, it should investigate the last location of the sound source.
+//I chose to let the AI have continuous hearing, so in update it calls for the latest noise location.
 
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UInvestigateNoiseStrategy : public UGoapActionStrategyBase
@@ -45,4 +46,10 @@ private:
 	FVector Destination;
 
 	float StuckTimer;
+
+	UWorld* World;
+
+	UNavigationSystemV1* NavSys;
+
+	UNavigationPath* NavPath;
 };

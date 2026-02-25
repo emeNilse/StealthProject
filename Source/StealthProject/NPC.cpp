@@ -110,7 +110,7 @@ void ANPC::UpdateStats()
 	ModifyStat("OilMeter", 2);
 	ModifyStat("ResourceMeter", 4);
 
-	UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));
+	/*UE_LOG(LogTemp, Warning, TEXT("Stamina %f"), GetStat("Stamina"));*/
 }
 
 float ANPC::GetStat(FName StatName) const

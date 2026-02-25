@@ -25,9 +25,16 @@ protected:
 
 	bool bIsDone = false;
 
+	bool bIsActive = false;
+
 public:
 	virtual void OnBegin_Implementation(bool bFirstTime) override;
+
+	virtual void OnUpdate_Implementation() override;
 	virtual void OnEnd_Implementation() override;
 	virtual bool IsDone_Implementation() const override;
 	virtual void RequestDone() override;
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateWidget();
 };

@@ -8,6 +8,9 @@
 #include "InteractionStrategy.generated.h"
 
 //Strategy that let the AI call the station/items Interact function.
+//Interaction Type will determine, as I expand on this project, what kind of interaction should be triggered if
+//a station can have more than one interaction. E.g. a resource storage station can have a "Withdraw" and 
+//"Deposit" interaction.
 
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UInteractionStrategy : public UGoapActionStrategyBase

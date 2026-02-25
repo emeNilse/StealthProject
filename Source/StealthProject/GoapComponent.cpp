@@ -86,8 +86,9 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 			MakeAPlanForActionStack();
 		}
 	}
-
-	if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
+	
+	//Debugging and Goap Display purposes
+	/*if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
 	{
 		CurrentGoalText = "Goal: " + CurrentGoal->Name;
 		CurrentActionText = "Action: " + ActionStackComponent->GetCurrentAction()->Name;
@@ -96,7 +97,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		CurrentGoalText = "Goal: ";
 		CurrentActionText = "Action: ";
-	}
+	}*/
 }
 
 void UGoapComponent::MakeAPlanForActionStack()
@@ -107,12 +108,12 @@ void UGoapComponent::MakeAPlanForActionStack()
 	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 	{
 		CurrentGoal = TheActionPlan->AgentGoal;
-		UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
 		Algo::Reverse(TheActionPlan->AgentActions);
 		for (TSharedPtr<GoapAction> ga : TheActionPlan->AgentActions)
 		{
 			ActionStackComponent->PushAction(ga);
-			UE_LOG(LogTemp, Warning, TEXT("Action: %s"), *ga->Name);
+			//UE_LOG(LogTemp, Warning, TEXT("Action: %s"), *ga->Name);
 		}
 	}
 }
@@ -222,7 +223,7 @@ void UGoapComponent::CalculatePlan()
 		TheActionPlan = nullptr;
 		CurrentAction = nullptr;
 		CurrentGoal = nullptr;
-		UE_LOG(LogTemp, Warning, TEXT("something strange with this place"));
+		//UE_LOG(LogTemp, Warning, TEXT("something strange with this place"));
 	}
 }
 

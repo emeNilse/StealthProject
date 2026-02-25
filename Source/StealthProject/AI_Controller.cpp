@@ -68,7 +68,7 @@ void AAI_Controller::SetupPerceptionSystem()
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HeaingConfig"));
-	HearingConfig->HearingRange = 1000.f;
+	HearingConfig->HearingRange = 2000.f;
 	HearingConfig->LoSHearingRange = 1000.f;
 	HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 	HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;

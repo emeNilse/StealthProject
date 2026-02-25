@@ -19,8 +19,7 @@ void UMenuAction::OnBegin_Implementation(bool bFirstTime)
 		if (WidgetInstance)
 		{
 			WidgetInstance->AddToViewport(100);
-			OwningPlayerController->SetInputMode(FInputModeUIOnly());
-			OwningPlayerController->bShowMouseCursor = true;
+			WidgetInstance->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
 		if (WidgetInstance->FindFunction(TEXT("SetOwningAction")))
@@ -33,18 +32,30 @@ void UMenuAction::OnBegin_Implementation(bool bFirstTime)
 	}
 }
 
+void UMenuAction::OnUpdate_Implementation()
+{
+	if (!WidgetInstance) return;
+
+	if (!bIsActive)
+	{
+		bIsActive = true;
+
+		WidgetInstance->SetVisibility(ESlateVisibility::Visible);
+
+		if (OwningPlayerController)
+		{
+			OwningPlayerController->SetInputMode(FInputModeUIOnly());
+			OwningPlayerController->bShowMouseCursor = true;
+		}
+	}
+}
+
 void UMenuAction::OnEnd_Implementation()
 {
 	if (WidgetInstance)
 	{
 		WidgetInstance->RemoveFromParent();
 		WidgetInstance = nullptr;
-	}
-
-	if (OwningPlayerController)
-	{
-		//OwningPlayerController->SetInputMode(FInputModeGameOnly());
-		//OwningPlayerController->bShowMouseCursor = false;
 	}
 }
 
@@ -56,4 +67,12 @@ bool UMenuAction::IsDone_Implementation() const
 void UMenuAction::RequestDone()
 {
 	bIsDone = true;
+}
+
+void UMenuAction::DeactivateWidget()
+{
+	if (!WidgetInstance) return;
+
+	bIsActive = false;
+	WidgetInstance->SetVisibility(ESlateVisibility::Collapsed);
 }

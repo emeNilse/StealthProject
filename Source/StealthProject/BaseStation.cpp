@@ -10,8 +10,8 @@ ABaseStation::ABaseStation()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	TextRenderer = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderer"));
-	TextRenderer->SetupAttachment(RootComponent);
+	/*TextRenderer = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderer"));
+	TextRenderer->SetupAttachment(RootComponent);*/
 
 	DisplayName = TEXT("Station name");
 }
@@ -31,15 +31,15 @@ void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 void ABaseStation::BeginPlay()
 {
 	Super::BeginPlay();
-	TextRenderer->SetText(FText::FromString(DisplayName));
+	/*TextRenderer->SetText(FText::FromString(DisplayName));
 	TextRenderer->SetRelativeLocation(FVector(0, 0, 100));
-	TextRenderer->SetWorldSize(40);
+	TextRenderer->SetWorldSize(40);*/
 }
 
 void ABaseStation::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateTextRotation();
+	//UpdateTextRotation();
 }
 
 void ABaseStation::UpdateTextRotation()

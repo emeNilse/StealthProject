@@ -34,6 +34,7 @@
 //If the plan is null, complete, or failed, or is the AI (NPC class) has a state change, the component will set up a new plan. 
 
 //Planning is done in the Goap Planner and the execution takes place in the Action Stack Component.
+//If you want to see how many actions are in a plan, there's a Debug Log function in MakeAPlanForActionStack().
 
 class AAI_Controller;
 

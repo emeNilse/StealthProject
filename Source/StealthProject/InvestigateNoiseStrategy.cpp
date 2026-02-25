@@ -15,14 +15,14 @@ void UInvestigateNoiseStrategy::Start()
 		return;
 	}
 
-	UWorld* World = AI->GetWorld();
+	World = AI->GetWorld();
 	if (!World)
 	{
 		CallFailed();
 		return;
 	}
 		
-	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
 	if (!NavSys)
 	{
 		CallFailed();
@@ -30,7 +30,7 @@ void UInvestigateNoiseStrategy::Start()
 	}
 
 	Destination = AI->GetBlackboardComponent()->GetValueAsVector("NoiseLocation");
-	UNavigationPath* NavPath = NavSys->FindPathToLocationSynchronously(World, AI->GetPawn()->GetActorLocation(), Destination, AI->GetPawn());
+	NavPath = NavSys->FindPathToLocationSynchronously(World, AI->GetPawn()->GetActorLocation(), Destination, AI->GetPawn());
 	if (!NavPath || NavPath->PathPoints.Num() < 2)
 	{
 		CallFailed();
@@ -58,6 +58,15 @@ void UInvestigateNoiseStrategy::Tick(float DeltaTime)
 	}
 	else
 	{
+		Destination = AI->GetBlackboardComponent()->GetValueAsVector("NoiseLocation");
+		NavPath = NavSys->FindPathToLocationSynchronously(World, AI->GetPawn()->GetActorLocation(), Destination, AI->GetPawn());
+		if (!NavPath || NavPath->PathPoints.Num() < 2)
+		{
+			CallFailed();
+			return;
+		}
+		AI->MoveToLocation(Destination);
+
 		if (AI->GetMoveStatus() == EPathFollowingStatus::Waiting || AI->GetMoveStatus() == EPathFollowingStatus::Idle)
 		{
 			StuckTimer += DeltaTime;
