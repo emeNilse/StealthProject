@@ -10,7 +10,7 @@
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GoapWorldStateComponent.h"
-#include "EdGraphSchema_K2.h"
+//#include "EdGraphSchema_K2.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"
@@ -86,6 +86,9 @@ public:
 	void ReturnToCalm();
 
 	UFUNCTION(BlueprintCallable)
+	void ReturnToAlert();
+
+	UFUNCTION(BlueprintCallable)
 	void BeginAlert();
 
 	UFUNCTION(BlueprintCallable)
@@ -121,6 +124,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	ENPCState NPCState = ENPCState::Calm;
+
+	ENPCState LastNPCState = ENPCState::Calm;
 
 	UMaterialInstanceDynamic* DynMaterial;
 

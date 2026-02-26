@@ -20,17 +20,63 @@ void UPatrolStrategy::Start()
 	FVector currentLocation = NPC->GetActorLocation();
 	NPC->SetPatrolPath(FindClosestPatrolPath(World, currentLocation));
 
-	NOofPoints = NPC->GetPatrolPath()->Num();
+	if (NPC->GetPatrolPath())
+	{
+		bPathFound = true;
+	}
+	else
+	{
+		bPathFound = false;
+	}
 
-	BBC = AI->GetBlackboardComponent();
-	Index = BBC->GetValueAsInt("PatrolPathIndex");
-	FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
 
-	GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
-	IndexCounter = 0;
+	if (bPathFound)
+	{
+		NOofPoints = NPC->GetPatrolPath()->Num();
 
-	AI->MoveToLocation(GlobalPoint);
+		BBC = AI->GetBlackboardComponent();
+		Index = BBC->GetValueAsInt("PatrolPathIndex");
+		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
 
+		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+		IndexCounter = 0;
+
+		AI->MoveToLocation(GlobalPoint);
+	}
+	else
+	{
+		const int MaxAttempts = 5;
+		int Attempts = 0;
+		bool bLocationfound = false;
+
+		while (Attempts < MaxAttempts)
+		{
+			Attempts++;
+
+			if (auto* const NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
+			{
+				FNavLocation Location;
+				if (NavSys->GetRandomReachablePointInRadius(AI->GetPawn()->GetActorLocation(), SearchRadius, Location))
+				{
+					GlobalPoint = Location.Location;
+					AI->MoveToLocation(GlobalPoint);
+					Status = EStrategyStatus::Running;
+					bLocationfound = true;
+					break;
+				}
+			}
+			else
+			{
+				Status = EStrategyStatus::Failed;
+			}
+		}
+
+		if (!bLocationfound)
+		{
+			Status = EStrategyStatus::Failed;
+		}
+	}
+	
 	Status = EStrategyStatus::Running;
 }
 
@@ -38,23 +84,46 @@ void UPatrolStrategy::Tick(float DeltaTime)
 {
 	if (Complete())
 	{
+		if (bPathFound)
+		{
+			NPC->GetPatrolPath()->NoLongerUsePath();
+		}
 		Status = EStrategyStatus::Succeeded;
 	}
 
-	DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
-	
-	if (bPatrolling && DistanceToTarget < 100.f)
+	if (bPathFound)
 	{
-		Index = ++Index % NOofPoints;
-		IndexCounter++;
-		
-		BBC->SetValueAsInt("PatrolPathIndex", Index);
+		DistanceToTarget = FVector::Dist(NPC->GetActorLocation(), GlobalPoint);
 
-		FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
-		GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
-	
-		AI->MoveToLocation(GlobalPoint);
+		if (bPatrolling && DistanceToTarget < 100.f)
+		{
+			Index = ++Index % NOofPoints;
+			IndexCounter++;
+
+			BBC->SetValueAsInt("PatrolPathIndex", Index);
+
+			FVector Point = NPC->GetPatrolPath()->GetPatrolPoint(Index);
+			GlobalPoint = NPC->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+
+			AI->MoveToLocation(GlobalPoint);
+		}
 	}
+	else
+	{
+		if (AI->GetMoveStatus() == EPathFollowingStatus::Waiting || AI->GetMoveStatus() == EPathFollowingStatus::Idle)
+		{
+			StuckTimer += DeltaTime;
+			if (StuckTimer >= MaxStuckTime)
+			{
+				Status = EStrategyStatus::Failed;
+			}
+		}
+		else
+		{
+			StuckTimer = 0.0f;
+		}
+	}
+	
 }
 
 void UPatrolStrategy::Stop()
@@ -66,7 +135,14 @@ void UPatrolStrategy::Stop()
 
 bool UPatrolStrategy::Complete() const
 {
-	return (IndexCounter >= NOofPoints);
+	if (bPathFound)
+	{
+		return (IndexCounter >= NOofPoints);
+	}
+	else
+	{
+		return FVector::Dist(AI->GetPawn()->GetActorLocation(), GlobalPoint) < WithinMinimumRange;
+	}
 }
 
 APatrolPath* UPatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation)
@@ -74,24 +150,34 @@ APatrolPath* UPatrolStrategy::FindClosestPatrolPath(UWorld* inWorld, const FVect
 	TArray<AActor*> FoundPaths;
 	UGameplayStatics::GetAllActorsOfClass(inWorld, APatrolPath::StaticClass(), FoundPaths);
 
-	APatrolPath* Closest = nullptr;
+	APatrolPath* ClosestPath = nullptr;
 	float BestDistSq = TNumericLimits<float>::Max();
 
 	for (AActor* a : FoundPaths)
 	{
 		if (APatrolPath* Path = Cast<APatrolPath>(a))
 		{
+			if (Path->IsPathTaken())
+			{
+				continue;
+			}
+
 			const float DistSq = FVector::DistSquared(inNPCLocation, Path->GetActorLocation());
 
 			if (DistSq < BestDistSq)
 			{
 				BestDistSq = DistSq;
-				Closest = Path;
+				ClosestPath = Path;
 			}
 		}
 	}
 	
-	return Closest;
+	if (ClosestPath)
+	{
+		ClosestPath->PathTaken();
+	}
+
+	return ClosestPath;
 }
 
 //This function looks for the nearest patrol point belonging to a patrol path. For now though, just finding the nearest patrol path is good enough.

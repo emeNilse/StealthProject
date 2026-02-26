@@ -6,8 +6,8 @@
 #include "ResourceStorage.h"
 #include "CheckResourceStorageStrategy.generated.h"
 
-//Not finished. This is for Goap presentation.
-
+//Not finished nor in use right now. This is for Goap presentation.
+//Though cannot decide if this is unnecessary and simple interaction is enough.
 UCLASS()
 class STEALTHPROJECT_API UCheckResourceStorageStrategy : public UInteractionStrategy
 {

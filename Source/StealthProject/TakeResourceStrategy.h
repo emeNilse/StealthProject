@@ -7,6 +7,8 @@
 #include "TakeResourceStrategy.generated.h"
 
 //Not in use yet. For Goap Presentation.
+//Not sure if this can be covered by the interaction strategy on its own. 
+//Hence, not finished. Not sure if this is what I need for later.
 
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UTakeResourceStrategy : public UInteractionStrategy

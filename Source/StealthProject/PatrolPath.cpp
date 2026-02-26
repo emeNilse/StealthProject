@@ -17,4 +17,18 @@ int APatrolPath::Num() const
 	return PatrolPoints.Num();
 }
 
+void APatrolPath::PathTaken()
+{
+	if (bTaken) return;
+
+	bTaken = true;
+}
+
+void APatrolPath::NoLongerUsePath()
+{
+	if (!bTaken) return;
+
+	bTaken = false;
+}
+
 

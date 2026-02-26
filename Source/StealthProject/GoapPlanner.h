@@ -33,8 +33,8 @@ public:
 	bool HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief);
 
 	//I was using this for "Pretty printing", but thinking I'll scrap it
-	FString Indent(int32 Depth)
+	/*FString Indent(int32 Depth)
 	{
 		return FString::ChrN(Depth * 2, TEXT(' '));
-	}
+	}*/
 };

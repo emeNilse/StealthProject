@@ -88,7 +88,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	}
 	
 	//Debugging and Goap Display purposes
-	/*if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
+	if (CurrentGoal.IsValid() && ActionStackComponent->GetCurrentAction())
 	{
 		CurrentGoalText = "Goal: " + CurrentGoal->Name;
 		CurrentActionText = "Action: " + ActionStackComponent->GetCurrentAction()->Name;
@@ -97,7 +97,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		CurrentGoalText = "Goal: ";
 		CurrentActionText = "Action: ";
-	}*/
+	}
 }
 
 void UGoapComponent::MakeAPlanForActionStack()

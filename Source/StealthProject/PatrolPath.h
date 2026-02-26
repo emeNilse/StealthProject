@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "EdGraphSchema_K2.h"
+//#include "EdGraphSchema_K2.h"
 #include "PatrolPath.generated.h"
 
 //This script is used to create patrol paths in the world. When the AI is patrolling, it will find its nearest patrol path and patrol that route.
@@ -20,8 +20,16 @@ public:
 
 	int Num() const;
 
+	bool IsPathTaken() const { return bTaken; }
+
+	void PathTaken();
+
+	void NoLongerUsePath();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta=(MakeEditWidget="true", AllowPrivateAccess="true"))
 	TArray<FVector> PatrolPoints;
+
+	bool bTaken = false;
 
 };

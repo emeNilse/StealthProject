@@ -154,6 +154,8 @@ void ANPC::SetNPCState(ENPCState NewState)
 		GetWorld()->GetTimerManager().ClearTimer(InvestigativeTimerhandle);
 	}
 	
+	LastNPCState = NPCState;
+
 	NPCState = NewState;
 
 	if (NPCState == ENPCState::Alert)
@@ -172,6 +174,14 @@ void ANPC::ReturnToCalm()
 	}
 }
 
+void ANPC::ReturnToAlert()
+{
+	if (NPCState == ENPCState::Investigative)
+	{
+		SetNPCState(ENPCState::Alert);
+	}
+}
+
 //When the AI becomes Alert, after 30 seconds it should return to a calm state.
 void ANPC::BeginAlert()
 {
@@ -184,7 +194,14 @@ void ANPC::BeginAlert()
 //Hence, this ensures the AI will return to normal.
 void ANPC::BeginInvestigative()
 {
-	GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 2.f, false);
+	if (LastNPCState == ENPCState::Alert)
+	{
+		GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToAlert, 1.f, false);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 1.f, false);
+	}
 }
 
 void ANPC::OnNPCStateChange()
@@ -192,24 +209,24 @@ void ANPC::OnNPCStateChange()
 	switch (NPCState)
 	{
 	case ENPCState::Calm:
-		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		PlayerSpotted = false;
 		break;
 	case ENPCState::Investigative:
-		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
+		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		break;
 	case ENPCState::Alert:
-		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
 		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 		PlayerSpotted = false;
 		break;
 	case ENPCState::Engaged:
-		DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
 		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Red);
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 		PlayerSpotted = true;
@@ -360,7 +377,7 @@ void ANPC::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	InitializeVisionCone();
+	//InitializeVisionCone();
 }
 
 void ANPC::Tick(float DeltaTime)

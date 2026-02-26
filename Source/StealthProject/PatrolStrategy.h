@@ -9,6 +9,8 @@
 #include "PatrolStrategy.generated.h"
 
 //Action Strategy for going on Patrol. AI finds the nearest patrol path and then patrols along the route.
+//I recently made an edit where a Patrol Path can only be patrolled by one AI at a time.
+//So if the AI cannot find an available patrol path, it will instead search a random location.
 
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UPatrolStrategy : public UGoapActionStrategyBase
@@ -56,6 +58,16 @@ private:
 	bool bPatrolling;
 
 	int NOofPoints;
+
+	bool bPathFound;
+
+	float SearchRadius = 1500.f;
+
+	float WithinMinimumRange = 50.f;
+
+	float MaxStuckTime = 3.f;
+
+	float StuckTimer;
 
 	APatrolPath* FindClosestPatrolPath(UWorld* inWorld, const FVector& inNPCLocation);
 
