@@ -108,7 +108,7 @@ void UGoapComponent::MakeAPlanForActionStack()
 	if (TheActionPlan.IsValid() && TheActionPlan->AgentActions.Num() > 0)
 	{
 		CurrentGoal = TheActionPlan->AgentGoal;
-		//UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
+		UE_LOG(LogTemp, Warning, TEXT("Goal: %s with %d actions in plan"), *CurrentGoal->Name, TheActionPlan->AgentActions.Num());
 		Algo::Reverse(TheActionPlan->AgentActions);
 		for (TSharedPtr<GoapAction> ga : TheActionPlan->AgentActions)
 		{
