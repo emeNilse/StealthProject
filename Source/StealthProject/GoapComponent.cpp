@@ -48,7 +48,7 @@ void UGoapComponent::BeginPlay()
 	{
 		GoapFactory = GetWorld()->GetGameInstance()->GetSubsystem<UGoapFactorySubsystem>();
 
-		if (GoapFactory)
+		if (IsValid(GoapFactory))
 		{
 			GoapPlanner = GoapFactory->CreatePlanner();
 			UE_LOG(LogTemp, Warning, TEXT("%s assigned GoapPlanner at %p"), *GetOwner()->GetName(), GoapPlanner.Get());
@@ -152,6 +152,8 @@ void UGoapComponent::SetupAction()
 			continue;
 		}
 
+		//The runtime instance is all because of of the Dynamic Range Cost
+		//If I ditch the dynamic range cost I will revert back to the previous Action setup method
 		UGoapActionStrategyBase* RuntimeStrategy = action->StrategyInstance->CreateRunTimeInstance(this, AI);
 
 		//Had to remove action->Cost from WithCost(), and replace it with the following lambda in order to 
