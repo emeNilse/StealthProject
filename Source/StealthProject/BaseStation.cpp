@@ -16,6 +16,13 @@ ABaseStation::ABaseStation()
 	DisplayName = TEXT("Station name");
 }
 
+bool ABaseStation::Interact_Implementation(AActor* interactor, EInteractionType type)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Base station interaction called"))
+	
+	return true;
+}
+
 void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	FWorldFact Fact;

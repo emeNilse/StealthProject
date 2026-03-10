@@ -9,6 +9,8 @@ AFirePlace::AFirePlace()
 
 bool AFirePlace::Interact_Implementation(AActor* interactor, EInteractionType type)
 {
+	Super::Interact_Implementation(interactor, type);
+	
 	if (bFireActive) return false;
 
 	IgniteFire();
@@ -48,13 +50,14 @@ void AFirePlace::Tick(float DeltaTime)
 		if (TimeActive <= 0.f)
 		{
 			bFireActive = false;
+			DeactivateFire();
 		}
 	}
 }
 
 void AFirePlace::IgniteFire()
 {
-	TimeActive = 100.f;
+	TimeActive = 10.f;
 	bFireActive = true;
 }
 

@@ -15,7 +15,7 @@ enum class EInteractionStatus : uint8
 	Failed
 };
 
-UENUM()
+UENUM(BlueprintType)
 enum class EInteractionType : uint8
 {
 	Default,
@@ -24,8 +24,8 @@ enum class EInteractionType : uint8
 	Storage_Refill
 };
 
-UINTERFACE(MinimalAPI)
-class UInteractable : public UInterface
+UINTERFACE(BlueprintType)
+class STEALTHPROJECT_API UInteractable : public UInterface
 {
 	GENERATED_BODY()
 };

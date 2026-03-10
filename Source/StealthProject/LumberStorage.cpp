@@ -3,15 +3,15 @@
 
 ALumberStorage::ALumberStorage()
 {
-
 	PrimaryActorTick.bCanEverTick = true;
 
 	StationTag = "Storage";
-
 }
 
 bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionType type)
 {
+	Super::Interact_Implementation(interactor, type);
+	
 	switch (type)
 	{
 	case EInteractionType::Default:
@@ -19,10 +19,10 @@ bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionTyp
 	case EInteractionType::Storage_Check:
 		return true;
 	case EInteractionType::Storage_Take:
-		Take(LumberResource, 10);
+		Take(LumberResource, 20);
 		return true;
 	case EInteractionType::Storage_Refill:
-		Deposit(LumberResource, 10);
+		Deposit(LumberResource, 20);
 		return true;
 	}
 
@@ -68,6 +68,8 @@ void ALumberStorage::Take(FName Resource, int32 Amount)
 	if (!CanTake(Resource, Amount)) return;
 
 	CurrentLumberAmount -= Amount;
+
+	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
 }
 
 void ALumberStorage::Deposit(FName Resource, int32 Amount)
@@ -75,6 +77,8 @@ void ALumberStorage::Deposit(FName Resource, int32 Amount)
 	if (!CanDeposit(Resource, Amount)) return;
 
 	CurrentLumberAmount += Amount;
+
+	CurrentLumberAmount = FMath::Clamp(CurrentLumberAmount, 0, MaxLumberAmount);
 }
 
 void ALumberStorage::BeginPlay()

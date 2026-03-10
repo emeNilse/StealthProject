@@ -22,6 +22,12 @@ public:
 
 	virtual void GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts) override;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsFireActive() { return bFireActive; }
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeactivateFire();
+
 protected:
 	virtual void BeginPlay() override;
 

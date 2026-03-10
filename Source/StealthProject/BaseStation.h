@@ -24,6 +24,8 @@ public:
 
 	ABaseStation();
 
+	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
+
 	virtual void GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts) override;
 
 protected:

@@ -22,10 +22,7 @@ public:
 
 	virtual bool Evaluate(AAI_Controller* AI) const override
 	{
-		if (!AI || !TargetActor.IsValid())
-		{
-			return false;
-		}
+		if (!AI || !TargetActor.IsValid()) return false;
 
 		return FVector::Dist(AI->GetPawn()->GetActorLocation(), TargetActor->GetActorLocation()) <= DistanceThreshold;
 	}

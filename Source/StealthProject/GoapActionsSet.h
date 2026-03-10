@@ -27,8 +27,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Effects;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Location;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Location;*/
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	UGoapActionStrategyBase* StrategyInstance;
