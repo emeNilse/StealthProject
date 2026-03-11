@@ -26,7 +26,37 @@ public:
 
 	virtual bool Interact_Implementation(AActor* interactor, EInteractionType type) override;
 
+	virtual bool IsInteractionComplete_Implementation() override;
+
 	virtual void GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts) override;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	FName KeyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	bool bIsStationActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	int ResourceAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	float ResourceFloat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource Details")
+	int MaxResourceAmount;
+
+	UFUNCTION(BlueprintCallable)
+	void Take(int32 Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void Deposit(int32 Amount);
+
+	UFUNCTION(BlueprintCallable)
+	bool CanTake(int32 Amount) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool CanDeposit(int32 Amount) const;
 
 protected:
 

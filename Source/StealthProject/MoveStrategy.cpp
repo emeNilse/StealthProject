@@ -3,6 +3,7 @@
 #include "NavigationSystem.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "NavigationPath.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Pawn.h"
 
 
@@ -14,8 +15,19 @@ void UMoveStrategy::Start()
 		return;
 	}
 
-	AActor* RuntimeTarget = TargetActor.Get();
-	if (!RuntimeTarget)
+	AActor* RuntimeTarget;
+
+	if (bEnableBlackboardLocation)
+	{
+		AActor* BlackboardTarget = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey));
+		RuntimeTarget = BlackboardTarget;
+	}
+	else
+	{
+		RuntimeTarget = TargetActor.Get();
+	}
+	
+	if (IsValid(RuntimeTarget))
 	{
 		Status = EStrategyStatus::Failed;
 		return;

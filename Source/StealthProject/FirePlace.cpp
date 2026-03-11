@@ -9,7 +9,7 @@ AFirePlace::AFirePlace()
 
 bool AFirePlace::Interact_Implementation(AActor* interactor, EInteractionType type)
 {
-	Super::Interact_Implementation(interactor, type);
+	//Super::Interact_Implementation(interactor, type);
 	
 	if (bFireActive) return false;
 

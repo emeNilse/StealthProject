@@ -23,12 +23,20 @@ public:
 		UInteractionStrategy* Runtime = NewObject<UInteractionStrategy>(Outer);
 		Runtime->AI = inAI;
 		Runtime->Target = Target;
+		Runtime->bEnableBlackboardLocation = bEnableBlackboardLocation;
+		Runtime->BlackboardKey = BlackboardKey;
 		Runtime->InteractionType = InteractionType;
 		return Runtime;
 	}
 	
 	UPROPERTY(EditAnywhere)
 	AActor* Target;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableBlackboardLocation = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bEnableBlackboardLocation"))
+	FName BlackboardKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInteractionType InteractionType;

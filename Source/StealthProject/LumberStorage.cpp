@@ -10,7 +10,7 @@ ALumberStorage::ALumberStorage()
 
 bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionType type)
 {
-	Super::Interact_Implementation(interactor, type);
+	//Super::Interact_Implementation(interactor, type);
 	
 	switch (type)
 	{

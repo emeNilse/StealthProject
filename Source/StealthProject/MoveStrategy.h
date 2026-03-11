@@ -26,11 +26,20 @@ public:
 		Runtime->TargetActor = TargetActor;
 		Runtime->AI = inAI;
 		Runtime->WithinMinimumRange = WithinMinimumRange;
+		Runtime->MaxStuckTime = MaxStuckTime;
+		Runtime->bEnableBlackboardLocation = bEnableBlackboardLocation;
+		Runtime->BlackboardKey = BlackboardKey;
 		return Runtime;
 	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr <AActor> TargetActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnableBlackboardLocation = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bEnableBlackboardLocation"))
+	FName BlackboardKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool DynamicRangeCostActive = false;

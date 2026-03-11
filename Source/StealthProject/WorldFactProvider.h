@@ -8,7 +8,7 @@
 
 //Interface for any station or item that has World Facts to share with the AI.
 
-UENUM()
+UENUM(BlueprintType)
 enum class EWorldFactType : uint8
 {
 	Bool,
@@ -22,29 +22,29 @@ struct FWorldFact
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName Key;
+	FName Key = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EWorldFactType Type;
+	EWorldFactType Type = EWorldFactType::Bool;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool BoolValue;
+	bool BoolValue = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 IntValue;
+	int32 IntValue = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float FloatValue;
+	float FloatValue = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector Location;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector Location = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TWeakObjectPtr<AActor> Source;
 };
 
-UINTERFACE(MinimalAPI)
-class UWorldFactProvider : public UInterface
+UINTERFACE(BlueprintType)
+class STEALTHPROJECT_API UWorldFactProvider : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -55,7 +55,7 @@ class STEALTHPROJECT_API IWorldFactProvider
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "World Facts")
 	void GatherWorldFacts(UPARAM(ref) TArray<FWorldFact>& OutFacts);
 
 };
