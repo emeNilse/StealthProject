@@ -14,13 +14,15 @@ UGoapComponent::UGoapComponent()
 void UGoapComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	AI = Cast<AAI_Controller>(OwnerPawn->GetController());
+
 	NPC = Cast<ANPC>(AI ? AI->GetPawn() : nullptr);
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
 	WorldState = GetOwner()->FindComponentByClass<UGoapWorldStateComponent>();
-	if (!WorldState)
+	if (!IsValid(WorldState))
 	{
 		UE_LOG(LogTemp, Error, TEXT("GoapComp: world state comp missing on %s"), *GetOwner()->GetName());
 		return;

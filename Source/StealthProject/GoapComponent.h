@@ -100,6 +100,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void MakeAPlanForActionStack();
@@ -127,4 +128,5 @@ public:
 private:
 
 	TSharedPtr<GoapGoal> LastGoal;
+
 };

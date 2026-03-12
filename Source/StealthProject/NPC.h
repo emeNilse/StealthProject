@@ -10,7 +10,6 @@
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GoapWorldStateComponent.h"
-//#include "EdGraphSchema_K2.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "ProceduralMeshComponent.h"
 #include "NPC.generated.h"

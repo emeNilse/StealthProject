@@ -1,17 +1,34 @@
 
 #include "InteractionStrategy.h"
 #include "GoapWorldStateComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
 void UInteractionStrategy::Start()
 {
-	if (!Target || !Target->Implements<UInteractable>())
+	if (!AI)
+	{
+		Status = EStrategyStatus::Failed;
+		return;
+	}
+	
+	if (bEnableBlackboardLocation)
+	{
+		AActor* BlackboardTarget = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey));
+		RuntimeTarget = BlackboardTarget;
+	}
+	else
+	{
+		RuntimeTarget = Target;
+	}
+	
+	if (!RuntimeTarget || !RuntimeTarget->Implements<UInteractable>())
 	{
 		Status = EStrategyStatus::Failed;
 		return;
 	}
 
-	bInteractionResult = IInteractable::Execute_Interact(Target, AI->GetPawn(), InteractionType);
+	bInteractionResult = IInteractable::Execute_Interact(RuntimeTarget, AI->GetPawn(), InteractionType);
 
 	if (!bInteractionResult)
 	{
@@ -33,10 +50,10 @@ void UInteractionStrategy::Tick(float DeltaTime)
 
 bool UInteractionStrategy::CanPerform() const
 {
-	return Target && Target->Implements<UInteractable>();
+	return RuntimeTarget && RuntimeTarget->Implements<UInteractable>();
 }
 
 bool UInteractionStrategy::Complete() const
 {
-	return IInteractable::Execute_IsInteractionComplete(Target);
+	return IInteractable::Execute_IsInteractionComplete(RuntimeTarget);
 }

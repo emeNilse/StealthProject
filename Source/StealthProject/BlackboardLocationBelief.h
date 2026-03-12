@@ -28,6 +28,8 @@ public:
 
 		AActor* Target = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey));
 
+		if (!Target) return false;
+
 		return FVector::Dist(AI->GetPawn()->GetActorLocation(), Target->GetActorLocation()) <= DistanceThreshold;
 	}
 };

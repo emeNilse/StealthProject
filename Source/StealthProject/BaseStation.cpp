@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
+#include "WorldFactRegistry.h"
 
 ABaseStation::ABaseStation()
 {
@@ -10,8 +11,8 @@ ABaseStation::ABaseStation()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-	/*TextRenderer = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderer"));
-	TextRenderer->SetupAttachment(RootComponent);*/
+	TextRenderer = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderer"));
+	TextRenderer->SetupAttachment(RootComponent);
 
 	DisplayName = TEXT("Station name");
 }
@@ -57,7 +58,17 @@ void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 	OutFacts.Add(Fact);
 }
 
-void ABaseStation::Take(int32 Amount)
+void ABaseStation::ActivateStation()
+{
+	bIsStationActive = true;
+}
+
+void ABaseStation::DeactivateStation()
+{
+	bIsStationActive = false;
+}
+
+void ABaseStation::Take(int Amount)
 {
 	if (!CanTake(Amount)) return;
 
@@ -66,7 +77,7 @@ void ABaseStation::Take(int32 Amount)
 	ResourceAmount = FMath::Clamp(ResourceAmount, 0, MaxResourceAmount);
 }
 
-void ABaseStation::Deposit(int32 Amount)
+void ABaseStation::Deposit(int Amount)
 {
 	if (!CanDeposit(Amount)) return;
 
@@ -75,12 +86,12 @@ void ABaseStation::Deposit(int32 Amount)
 	ResourceAmount = FMath::Clamp(ResourceAmount, 0, MaxResourceAmount);
 }
 
-bool ABaseStation::CanTake(int32 Amount) const
+bool ABaseStation::CanTake(int Amount) const
 {
 	return ResourceAmount > Amount;
 }
 
-bool ABaseStation::CanDeposit(int32 Amount) const
+bool ABaseStation::CanDeposit(int Amount) const
 {
 	return ResourceAmount + Amount <= MaxResourceAmount;
 }
@@ -91,6 +102,14 @@ void ABaseStation::BeginPlay()
 	TextRenderer->SetText(FText::FromString(DisplayName));
 	TextRenderer->SetRelativeLocation(FVector(0, 0, 100));
 	TextRenderer->SetWorldSize(40);
+
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (UWorldFactRegistry* Registry = GI->GetSubsystem<UWorldFactRegistry>())
+		{
+			Registry->Register(this);
+		}
+	}
 }
 
 void ABaseStation::Tick(float DeltaTime)

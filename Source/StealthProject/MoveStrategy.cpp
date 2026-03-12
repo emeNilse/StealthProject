@@ -27,7 +27,7 @@ void UMoveStrategy::Start()
 		RuntimeTarget = TargetActor.Get();
 	}
 	
-	if (IsValid(RuntimeTarget))
+	if (!IsValid(RuntimeTarget))
 	{
 		Status = EStrategyStatus::Failed;
 		return;

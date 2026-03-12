@@ -47,16 +47,22 @@ public:
 	int MaxResourceAmount;
 
 	UFUNCTION(BlueprintCallable)
-	void Take(int32 Amount);
+	void ActivateStation();
 
 	UFUNCTION(BlueprintCallable)
-	void Deposit(int32 Amount);
+	void DeactivateStation();
 
 	UFUNCTION(BlueprintCallable)
-	bool CanTake(int32 Amount) const;
+	void Take(int Amount);
 
 	UFUNCTION(BlueprintCallable)
-	bool CanDeposit(int32 Amount) const;
+	void Deposit(int Amount);
+
+	UFUNCTION(BlueprintCallable)
+	bool CanTake(int Amount) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool CanDeposit(int Amount) const;
 
 protected:
 

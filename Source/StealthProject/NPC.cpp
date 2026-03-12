@@ -3,7 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-
+#include "GoapComponent.h"
 
 ANPC::ANPC()
 {

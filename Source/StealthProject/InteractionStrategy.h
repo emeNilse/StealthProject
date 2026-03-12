@@ -54,4 +54,6 @@ private:
 	AAI_Controller* AI = nullptr;
 
 	bool bInteractionResult;
+
+	AActor* RuntimeTarget;
 };
