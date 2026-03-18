@@ -41,15 +41,25 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 	for (TSharedPtr<GoapGoal> goal : orderdGoals)
 	{
-		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
+		/*Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
+		startNode->HCost = Heuristic(startNode->RequiredEffects);
 
+		Node* pathResult = FindPathAStar(startNode, inAI, agent->Actions);
+		
+		if (!pathResult) continue;
+
+		TArray<TSharedPtr<GoapAction>> actions = BuildPlan(pathResult);
+
+		return MakeShared<ActionPlan>(goal, actions, pathResult->GCost);*/
+		
+		//Old path finder
+		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 		if (FindPath(goalNode, inAI, agent->Actions, 0))
 		{
 			if (goalNode->IsLeafDead())
 			{
 				continue;
 			}
-
 			TArray<TSharedPtr<GoapAction>> goapActionStack;
 			//Node* currentNode = goalNode;
 			while (goalNode->Leaves.Num() > 0)
@@ -58,22 +68,16 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 					{
 						return A.Cost < B.Cost;
 					});
-
 				Node* cheapestLeaf = goalNode->Leaves[0];
-
 				goalNode = cheapestLeaf;
-
 				goapActionStack.Push(cheapestLeaf->Action);
 			}
-
 			//To make the plan a "stack"
-			Algo::Reverse(goapActionStack);
-
+			//Algo::Reverse(goapActionStack);
 			return MakeShared<ActionPlan>(goal, goapActionStack, goalNode->Cost);
 		}
 	}
 	
-	//UE_LOG(LogTemp, Warning, TEXT("No plan found"));
 	return nullptr;
 }
 
@@ -147,7 +151,6 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 				//Debugging
 				//UE_LOG(LogGOAP, Warning, TEXT("%sRecursing with Action: %s | NewRequiredEffects: %d"), *Indent(depth), *action->Name, newRequiredEffects.Num());
 
-
 				if (newRequiredEffects.Num() == 0)
 				{
 					parent->Leaves.Add(newNode);
@@ -179,6 +182,103 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 	//return false;
 }
 
+Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
+{
+	TArray<Node*> openSet;
+	TArray<Node*> closedSet;
+
+	openSet.Add(parentNode);
+
+	while (openSet.Num() > 0)
+	{
+		
+		
+		openSet.Sort([](Node& A, Node& B)
+			{
+				return A.FCost() < B.FCost();
+			});
+
+		Node* currentNode = openSet[0];
+		openSet.RemoveAt(0);
+
+
+		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = currentNode->RequiredEffects;
+
+		TArray<TSharedPtr<AgentBeliefs>> removeList;
+
+		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
+		{
+			if (belief->Evaluate(inAI))
+			{
+				removeList.Add(belief);
+			}
+		}
+
+		for (TSharedPtr<AgentBeliefs> belief : removeList)
+		{
+			requiredDesiredEffects.Remove(belief);
+		}
+
+
+
+		if (requiredDesiredEffects.Num() == 0)
+		{
+			return currentNode;
+		}
+
+		closedSet.Add(currentNode);
+
+
+
+
+		
+
+
+
+		for (TSharedPtr<GoapAction> action : actions)
+		{
+			bool bUseful = false;
+			for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
+			{
+				if (HasMatchingEffect(action->Effects, belief))
+				{
+					bUseful = true;
+					break;
+				}
+			}
+
+			if (!bUseful) continue;
+			//currentNode->RequiredEffects
+			TSet<TSharedPtr<AgentBeliefs>> newEffects = requiredDesiredEffects;
+			newEffects = newEffects.Difference(action->Effects);
+			newEffects = newEffects.Union(action->Preconditions);
+
+			float newG = currentNode->GCost + action->CostValue();
+			float newH = Heuristic(newEffects);
+
+			Node* neighbourNode = new Node(currentNode, action, newEffects, newG);
+			neighbourNode->HCost = newH;
+
+			/*bool bVisited = false;
+			for (Node* closed : closedSet)
+			{
+				if (closed->RequiredEffects.Includes(newEffects) && newEffects.Includes(closed->RequiredEffects))
+				{
+					bVisited = true;
+					break;
+				}
+			}
+			if (bVisited) continue;*/
+
+			if (IsInClosedAndBetterCost(neighbourNode, closedSet)) continue;
+
+			openSet.Add(neighbourNode);
+		}
+	}
+	
+	return nullptr;
+}
+
 bool GoapPlanner::HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief)
 {
 	for (TSharedPtr<AgentBeliefs> effect : actionEffects)
@@ -189,5 +289,65 @@ bool GoapPlanner::HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffect
 		}
 	}
 	return false;
+}
+
+float GoapPlanner::Heuristic(const TSet<TSharedPtr<AgentBeliefs>>& effects)
+{
+	return effects.Num();
+}
+
+bool GoapPlanner::IsInClosedAndBetterCost(Node* node, const TArray<Node*>& ClosedList)
+{
+	for (Node* closedNode : ClosedList)
+	{
+		if (AreEffectsEqual(node->RequiredEffects, closedNode->RequiredEffects))
+		{
+			if (closedNode->GCost <= node->GCost)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool GoapPlanner::AreEffectsEqual(TSet<TSharedPtr<AgentBeliefs>>& A, TSet<TSharedPtr<AgentBeliefs>>& B)
+{
+	if (A.Num() != B.Num())
+		return false;
+
+	for (const TSharedPtr<AgentBeliefs>& beliefA : A)
+	{
+		bool bFound = false;
+
+		for (const TSharedPtr<AgentBeliefs>& beliefB : B)
+		{
+			if (beliefA->Equals(beliefB))
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if (!bFound)
+			return false;
+	}
+
+	return true;
+}
+
+TArray<TSharedPtr<GoapAction>> GoapPlanner::BuildPlan(Node* endNode)
+{
+	TArray<TSharedPtr<GoapAction>> plan;
+	Node* current = endNode;
+
+	while (current && current->Action)
+	{
+		plan.Push(current->Action);
+		current = current->Parent;
+	}
+	//Algo::Reverse(plan);
+	return plan;
 }
 

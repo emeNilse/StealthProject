@@ -6,6 +6,6 @@ Node::Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBel
 	Parent = parent;
 	Action = action;
 	RequiredEffects = effects;
-	Cost = cost;
+	GCost = cost;
 }
 

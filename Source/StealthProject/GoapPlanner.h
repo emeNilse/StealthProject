@@ -30,7 +30,17 @@ public:
 
 	bool FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions, int32 depth);
 
+	Node* FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions);
+
 	bool HasMatchingEffect(TSet<TSharedPtr<AgentBeliefs>>& actionEffects, TSharedPtr<AgentBeliefs> belief);
+
+	float Heuristic(const TSet<TSharedPtr<AgentBeliefs>>& effects);
+
+	bool IsInClosedAndBetterCost(Node* node, const TArray<Node*>& ClosedList);
+
+	bool AreEffectsEqual(TSet<TSharedPtr<AgentBeliefs>>& A, TSet<TSharedPtr<AgentBeliefs>>& B);
+
+	TArray<TSharedPtr<GoapAction>> BuildPlan(Node* endNode);
 
 	//I was using this for "Pretty printing", but thinking I'll scrap it
 	/*FString Indent(int32 Depth)

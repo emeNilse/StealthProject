@@ -12,6 +12,7 @@
 #include "GoapWorldStateComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "ProceduralMeshComponent.h"
+#include "AgentfactProvider.h"
 #include "NPC.generated.h"
 
 //The NPC class primarily handles AI state and stats. And is the link between AI Controller and Blackboard.
@@ -23,17 +24,17 @@
 //Alert -> search the area, type of search depends on Suspicious meter
 //Engaged -> Chase the player
 
-UENUM(BlueprintType)
-enum class ENPCState : uint8
-{
-	Calm,
-	Investigative,
-	Alert,
-	Engaged
-};
+//UENUM(BlueprintType)
+//enum class ENPCState : uint8
+//{
+//	Calm,
+//	Investigative,
+//	Alert,
+//	Engaged
+//};
 
 UCLASS()
-class STEALTHPROJECT_API ANPC : public ACharacter
+class STEALTHPROJECT_API ANPC : public ACharacter, public IAgentFactProvider
 {
 	GENERATED_BODY()
 

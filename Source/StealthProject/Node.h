@@ -19,6 +19,10 @@ public:
 
 	float Cost = 0.f;
 
+	float GCost = 0.f;
+	float HCost = 0.f;
+	float FCost() const { return GCost + HCost; }
+
 	bool IsLeafDead() const
 	{
 		return Leaves.Num() == 0 && Action == nullptr;

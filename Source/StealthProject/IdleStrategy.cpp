@@ -11,6 +11,7 @@ void UIdleStrategy::Start()
 	UE_LOG(LogTemp, Warning, TEXT("IdleStrategy start called"));
 	UE_LOG(LogTemp, Warning, TEXT("bRunning at start ="), bTimerComplete ? TEXT("true") : TEXT("false"));
 	Timer->Start();
+	Status = EStrategyStatus::Running;
 }
 
 void UIdleStrategy::Tick(float DeltaTime)
@@ -31,4 +32,5 @@ void UIdleStrategy::Stop()
 	UE_LOG(LogTemp, Warning, TEXT("bRunning at stop first ="), bTimerComplete ? TEXT("true") : TEXT("false"));
 	bTimerComplete = true;
 	UE_LOG(LogTemp, Warning, TEXT("bRunning at stop end ="), bTimerComplete ? TEXT("true") : TEXT("false"));
+	Status = EStrategyStatus::Succeeded;
 }

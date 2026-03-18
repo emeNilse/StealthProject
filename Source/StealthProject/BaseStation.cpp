@@ -48,10 +48,11 @@ bool ABaseStation::IsInteractionComplete_Implementation()
 void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	FWorldFact Fact;
-	Fact.Key = KeyName;
+	Fact.Key = WorldFactKeyName;
+	Fact.Type = FactType;
 	Fact.BoolValue = bIsStationActive;
 	Fact.IntValue = ResourceAmount;
-	Fact.FloatValue = ResourceFloat;
+	//Fact.FloatValue = ResourceFloat;
 	Fact.Location = GetActorLocation();
 	Fact.Source = TWeakObjectPtr<AActor>(this);
 

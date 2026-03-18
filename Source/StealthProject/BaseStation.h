@@ -32,7 +32,10 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
-	FName KeyName;
+	FName WorldFactKeyName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	EWorldFactType FactType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
 	bool bIsStationActive;
@@ -40,10 +43,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
 	int ResourceAmount;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
-	float ResourceFloat;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
+	float ResourceFloat;*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource Details")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
 	int MaxResourceAmount;
 
 	UFUNCTION(BlueprintCallable)

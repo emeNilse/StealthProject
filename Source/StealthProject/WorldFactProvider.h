@@ -21,19 +21,19 @@ struct FWorldFact
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FName Key = NAME_None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EWorldFactType Type = EWorldFactType::Bool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool BoolValue = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 IntValue = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float FloatValue = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
