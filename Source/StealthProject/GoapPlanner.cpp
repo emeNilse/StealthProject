@@ -41,7 +41,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 	for (TSharedPtr<GoapGoal> goal : orderdGoals)
 	{
-		/*Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
+		Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 		startNode->HCost = Heuristic(startNode->RequiredEffects);
 
 		Node* pathResult = FindPathAStar(startNode, inAI, agent->Actions);
@@ -50,32 +50,32 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 		TArray<TSharedPtr<GoapAction>> actions = BuildPlan(pathResult);
 
-		return MakeShared<ActionPlan>(goal, actions, pathResult->GCost);*/
+		return MakeShared<ActionPlan>(goal, actions, pathResult->GCost);
 		
 		//Old path finder
-		Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
-		if (FindPath(goalNode, inAI, agent->Actions, 0))
-		{
-			if (goalNode->IsLeafDead())
-			{
-				continue;
-			}
-			TArray<TSharedPtr<GoapAction>> goapActionStack;
-			//Node* currentNode = goalNode;
-			while (goalNode->Leaves.Num() > 0)
-			{
-				goalNode->Leaves.Sort([](const Node& A, const Node& B)
-					{
-						return A.Cost < B.Cost;
-					});
-				Node* cheapestLeaf = goalNode->Leaves[0];
-				goalNode = cheapestLeaf;
-				goapActionStack.Push(cheapestLeaf->Action);
-			}
-			//To make the plan a "stack"
-			//Algo::Reverse(goapActionStack);
-			return MakeShared<ActionPlan>(goal, goapActionStack, goalNode->Cost);
-		}
+		//Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
+		//if (FindPath(goalNode, inAI, agent->Actions, 0))
+		//{
+		//	if (goalNode->IsLeafDead())
+		//	{
+		//		continue;
+		//	}
+		//	TArray<TSharedPtr<GoapAction>> goapActionStack;
+		//	//Node* currentNode = goalNode;
+		//	while (goalNode->Leaves.Num() > 0)
+		//	{
+		//		goalNode->Leaves.Sort([](const Node& A, const Node& B)
+		//			{
+		//				return A.Cost < B.Cost;
+		//			});
+		//		Node* cheapestLeaf = goalNode->Leaves[0];
+		//		goalNode = cheapestLeaf;
+		//		goapActionStack.Push(cheapestLeaf->Action);
+		//	}
+		//	//To make the plan a "stack"
+		//	//Algo::Reverse(goapActionStack);
+		//	return MakeShared<ActionPlan>(goal, goapActionStack, goalNode->Cost);
+		//}
 	}
 	
 	return nullptr;
@@ -191,8 +191,6 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 
 	while (openSet.Num() > 0)
 	{
-		
-		
 		openSet.Sort([](Node& A, Node& B)
 			{
 				return A.FCost() < B.FCost();
@@ -201,9 +199,8 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		Node* currentNode = openSet[0];
 		openSet.RemoveAt(0);
 
-
+		//Remove any Required Effects that are already true.
 		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = currentNode->RequiredEffects;
-
 		TArray<TSharedPtr<AgentBeliefs>> removeList;
 
 		for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
@@ -219,26 +216,20 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			requiredDesiredEffects.Remove(belief);
 		}
 
-
-
+		//If Required Effects is empty, then all requirements are satisfied. Return current node and set up the action plan.
 		if (requiredDesiredEffects.Num() == 0)
 		{
 			return currentNode;
 		}
 
+		currentNode->RequiredEffects = requiredDesiredEffects;
+
 		closedSet.Add(currentNode);
-
-
-
-
-		
-
-
 
 		for (TSharedPtr<GoapAction> action : actions)
 		{
 			bool bUseful = false;
-			for (TSharedPtr<AgentBeliefs> belief : requiredDesiredEffects)
+			for (TSharedPtr<AgentBeliefs> belief : currentNode->RequiredEffects)
 			{
 				if (HasMatchingEffect(action->Effects, belief))
 				{
@@ -246,10 +237,9 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 					break;
 				}
 			}
-
 			if (!bUseful) continue;
-			//currentNode->RequiredEffects
-			TSet<TSharedPtr<AgentBeliefs>> newEffects = requiredDesiredEffects;
+
+			TSet<TSharedPtr<AgentBeliefs>> newEffects = currentNode->RequiredEffects;
 			newEffects = newEffects.Difference(action->Effects);
 			newEffects = newEffects.Union(action->Preconditions);
 
@@ -347,7 +337,7 @@ TArray<TSharedPtr<GoapAction>> GoapPlanner::BuildPlan(Node* endNode)
 		plan.Push(current->Action);
 		current = current->Parent;
 	}
-	//Algo::Reverse(plan);
+	Algo::Reverse(plan);
 	return plan;
 }
 
