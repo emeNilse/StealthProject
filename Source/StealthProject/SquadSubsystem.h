@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "SquadManager.h"
 #include "SquadSubsystem.generated.h"
 
 /**

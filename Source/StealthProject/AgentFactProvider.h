@@ -15,6 +15,14 @@ enum class ENPCState : uint8
 	Engaged
 };
 
+UENUM(BlueprintType)
+enum class ESquadRole : uint8
+{
+	Assualt,
+	Support,
+	Skirmisher
+};
+
 USTRUCT(BlueprintType)
 struct FAgentInfo
 {
