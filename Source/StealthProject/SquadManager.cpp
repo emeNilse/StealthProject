@@ -17,11 +17,8 @@ void ASquadManager::FindMembers()
 
 	TArray<AActor*> ignoreActors;
 	ignoreActors.Init(this, 1);
-	TArray<AActor*> foundNPCs;
-
-	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), Radius, traceObjectTypes, ANPC::StaticClass(), ignoreActors, foundNPCs);
-
-	MySquad = foundNPCs;
+	
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), GetActorLocation(), Radius, traceObjectTypes, ANPC::StaticClass(), ignoreActors, MySquad);
 }
 
 void ASquadManager::RoleAssignemnt()

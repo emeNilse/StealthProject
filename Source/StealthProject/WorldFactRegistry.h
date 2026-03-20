@@ -24,8 +24,5 @@ public:
 		}
 	}
 
-	const TArray<TWeakObjectPtr<AActor>>& GetProviders() const
-	{
-		return Providers;
-	}
+	const TArray<TWeakObjectPtr<AActor>>& GetProviders() const { return Providers; }
 };

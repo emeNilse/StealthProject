@@ -8,9 +8,22 @@
 #include "NPC.h"
 #include "SquadManager.generated.h"
 
-/**
- * 
- */
+UENUM(BlueprintType)
+enum class ESquadRole : uint8
+{
+	Assualt,
+	Support,
+	Skirmisher
+};
+
+UENUM(BlueprintType)
+enum class ESquadState : uint8
+{
+	Neutral,
+	Alert,
+	Combat
+};
+
 UCLASS()
 class STEALTHPROJECT_API ASquadManager : public AInfo
 {
@@ -19,12 +32,7 @@ class STEALTHPROJECT_API ASquadManager : public AInfo
 public:
 	ASquadManager();
 
-	UPROPERTY()
-	TArray<AActor*> MySquad;
-
-	UPROPERTY()
 	float Radius;
-
 
 	UFUNCTION()
 	void FindMembers();
@@ -36,6 +44,8 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	FVector ManagerLocation;
 
+	TArray<AActor*> MySquad;
 	
 };
