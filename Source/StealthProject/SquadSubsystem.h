@@ -3,35 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Subsystems/GameInstanceSubsystem.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "SquadManager.h"
-#include "SquadComponent.h"
 #include "SquadSubsystem.generated.h"
 
-
+class USquadComponent;
 
 struct Cluster
 {
 	TArray<TWeakObjectPtr<USquadComponent>> Members;
-	FVector Ceneter;
+	FVector Center;
 };
 
 UCLASS()
-class STEALTHPROJECT_API USquadSubsystem : public UGameInstanceSubsystem
+class STEALTHPROJECT_API USquadSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 	
 public:
-	TArray<TWeakObjectPtr<USquadComponent>> SquadProviders;
+	TArray<TWeakObjectPtr<USquadComponent>> SquadAgents;
 
 	void Register(USquadComponent* squadActor);
 
-	void BuildClusters(TArray<TWeakObjectPtr<USquadComponent>> agents, float radius);
+	void BuildClusters();
 
 	FVector CalculateAverageCenter(Cluster cluster);
 
 	void CreateSquadManager(Cluster cluster);
 
+	void RemoveSquad(TWeakObjectPtr<ASquadManager> deadSquad);
+
 private:
 	TArray<Cluster> Clusters;
+
+	TArray<TWeakObjectPtr<ASquadManager>> ActiveSquads;
+
+	bool bClusterBuildScheduled = false;
+
+	float ClusterRadius = 50000;
 };

@@ -8,9 +8,13 @@
 #include "NPC.h"
 #include "SquadManager.generated.h"
 
+
+class USquadComponent;
+
 UENUM(BlueprintType)
 enum class ESquadRole : uint8
 {
+	Default,
 	Assualt,
 	Support,
 	Skirmisher
@@ -24,6 +28,7 @@ enum class ESquadState : uint8
 	Combat
 };
 
+
 UCLASS()
 class STEALTHPROJECT_API ASquadManager : public AInfo
 {
@@ -34,11 +39,22 @@ public:
 
 	float Radius;
 
+	void Initialize(TArray<TWeakObjectPtr<USquadComponent>> members);
+
+	ESquadState GetSquadState() const { return SquadState; }
+
 	UFUNCTION()
 	void FindMembers();
 
 	UFUNCTION()
 	void RoleAssignemnt();
+
+	UFUNCTION()
+	void NotifyMemberDied(USquadComponent* deadMember);
+
+	void ChangeState(ESquadState newState);
+
+	void OnStateChange();
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +62,13 @@ protected:
 private:
 	FVector ManagerLocation;
 
-	TArray<AActor*> MySquad;
+	TArray<USquadComponent*> MySquad;
+
+	ESquadState SquadState;
+
+	AActor* CurrentTarget;
+
+	int AssualtRolesAvailable = 1;
+	int SkirmisherRolesAvailable = 2;
 	
 };

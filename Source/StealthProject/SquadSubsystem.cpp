@@ -2,48 +2,54 @@
 
 
 #include "SquadSubsystem.h"
+#include "SquadComponent.h"
 
 void USquadSubsystem::Register(USquadComponent* squadActor)
 {
     if (squadActor)
     {
-        SquadProviders.Add(squadActor);
+        SquadAgents.Add(squadActor);
+    }
+
+    if (!bClusterBuildScheduled)
+    {
+        bClusterBuildScheduled = true;
+
+        FTimerHandle timerHandle;
+        GetWorld()->GetTimerManager().SetTimer(timerHandle, this, &USquadSubsystem::BuildClusters, 0.1f, false);
     }
 }
 
-void USquadSubsystem::BuildClusters(TArray<TWeakObjectPtr<USquadComponent>> agents, float radius)
+void USquadSubsystem::BuildClusters()
 {
-    while (!agents.IsEmpty())
+    while (!SquadAgents.IsEmpty())
     {
-        TWeakObjectPtr<USquadComponent> agent = agents[0];
-        agents.RemoveAt(0);
+        TWeakObjectPtr<USquadComponent> agent = SquadAgents[0];
+        SquadAgents.RemoveAt(0);
 
         Cluster newCluster;
         newCluster.Members.Add(agent);
         FVector location;
 
-        if (agent.IsValid())
-        {
-            AActor* actor = agent.Get()->GetOwner();
-            if (actor)
-            {
-                location = actor->GetActorLocation();
-            }
-        }
+        if (!agent.IsValid()) continue;
 
-        for (TWeakObjectPtr<USquadComponent> other : agents)
+        location = agent->CachedOwner->GetActorLocation();
+
+        for (const TWeakObjectPtr<USquadComponent>& other : SquadAgents)
         {
+            if (!other.IsValid()) continue;
+            
             AActor* otherActor = other.Get()->GetOwner();
-            if (otherActor)
-            {
-                FVector otherLocation = otherActor->GetActorLocation();
 
-                if (FVector::DistSquared(location, otherLocation) < pow(radius, 2))
-                {
-                    newCluster.Members.Add(other);
-                    agents.Remove(other);
-                }
-            } 
+            if (!otherActor) continue;
+            
+            FVector otherLocation = otherActor->GetActorLocation();
+
+            if (FVector::DistSquared(location, otherLocation) < pow(ClusterRadius, 2))
+            {
+                newCluster.Members.Add(other);
+                SquadAgents.Remove(other);
+            }
         }
 
         Clusters.Add(newCluster);
@@ -53,7 +59,7 @@ void USquadSubsystem::BuildClusters(TArray<TWeakObjectPtr<USquadComponent>> agen
     {
         if (clust.Members.Num() >= 3)
         {
-            clust.Ceneter = CalculateAverageCenter(clust);
+            clust.Center = CalculateAverageCenter(clust);
             CreateSquadManager(clust);
         }
     }
@@ -61,10 +67,32 @@ void USquadSubsystem::BuildClusters(TArray<TWeakObjectPtr<USquadComponent>> agen
 
 FVector USquadSubsystem::CalculateAverageCenter(Cluster cluster)
 {
-    return FVector();
+    FVector sumOfVectors = FVector::ZeroVector;
+    FVector averageLocation;
+
+    for (const TWeakObjectPtr<USquadComponent>& member : cluster.Members)
+    {
+        sumOfVectors += member->CachedOwner->GetActorLocation();
+    }
+
+    averageLocation = sumOfVectors / cluster.Members.Num();
+    
+    return averageLocation;
 }
 
 void USquadSubsystem::CreateSquadManager(Cluster cluster)
 {
-    
+    ASquadManager* squad = GetWorld()->SpawnActor<ASquadManager>(ASquadManager::StaticClass(), cluster.Center, FRotator::ZeroRotator);
+
+    if (squad)
+    {
+        squad->Initialize(cluster.Members);
+        TWeakObjectPtr<ASquadManager> weakSquad = squad;
+        ActiveSquads.Add(weakSquad);
+    }
+}
+
+void USquadSubsystem::RemoveSquad(TWeakObjectPtr<ASquadManager> deadSquad)
+{
+    ActiveSquads.Remove(deadSquad);
 }

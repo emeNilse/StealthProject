@@ -2,33 +2,55 @@
 
 
 #include "SquadComponent.h"
+#include "GoapComponent.h"
 
-// Sets default values for this component's properties
 USquadComponent::USquadComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
+void USquadComponent::SetSquad(TWeakObjectPtr<ASquadManager> inManager)
+{
+	SquadID = inManager;
+}
 
-// Called when the game starts
+ESquadState USquadComponent::GetSquadState()
+{
+	
+	
+	return ESquadState();
+}
+
+void USquadComponent::CallSquadStateChange(ESquadState newState)
+{
+	SquadID->ChangeState(newState);
+}
+
+void USquadComponent::SquadStateChanged()
+{
+}
+
+void USquadComponent::InjectSquadBeliefsToGoap()
+{
+
+}
+
 void USquadComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	CachedOwner = GetOwner();
+	GoapComponent = CachedOwner->GetComponentByClass<UGoapComponent>();
 
-	// ...
-	
+	if (USquadSubsystem* Registry = GetWorld()->GetSubsystem<USquadSubsystem>())
+	{
+		Registry->Register(this);
+	}
 }
 
-
-// Called every frame
 void USquadComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 

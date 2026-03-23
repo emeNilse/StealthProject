@@ -29,6 +29,8 @@ public:
 	
 	UAISenseConfig_Sight* GetSightConfig() const { return SightConfig; }
 
+	UGoapComponent* GetGoap() const { return Goap; }
+
 protected: 
 
 	virtual void OnPossess(APawn* InPawn) override;

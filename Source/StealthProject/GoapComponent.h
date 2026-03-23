@@ -11,6 +11,7 @@
 #include "GoapGoalObject.h"
 #include "CountdownTimer.h"
 #include "ActionStackComponent.h"
+#include "SquadComponent.h"
 #include "ActionPlan.h"
 #include "GoapPlanner.h"
 #include "AgentBeliefs.h"
@@ -56,8 +57,10 @@ public:
 
 	AAI_Controller* AI;
 	ANPC* NPC;
+	AActor* CachedOwner;
 	UBlackboardComponent* AI_BlackBoard;
 	UActionStackComponent* ActionStackComponent;
+	USquadComponent* SquadComponent;
 	UGoapWorldStateComponent* WorldState;
 
 	TSharedPtr<GoapAction> CurrentAction;

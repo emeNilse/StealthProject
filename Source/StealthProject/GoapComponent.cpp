@@ -14,17 +14,18 @@ UGoapComponent::UGoapComponent()
 void UGoapComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	CachedOwner = GetOwner();
 	
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	APawn* OwnerPawn = Cast<APawn>(CachedOwner);
 	AI = Cast<AAI_Controller>(OwnerPawn->GetController());
 
 	NPC = Cast<ANPC>(AI ? AI->GetPawn() : nullptr);
 	AI_BlackBoard = AI->GetBlackboardComponent();
 
-	WorldState = GetOwner()->FindComponentByClass<UGoapWorldStateComponent>();
+	WorldState = CachedOwner->FindComponentByClass<UGoapWorldStateComponent>();
 	if (!IsValid(WorldState))
 	{
-		UE_LOG(LogTemp, Error, TEXT("GoapComp: world state comp missing on %s"), *GetOwner()->GetName());
+		UE_LOG(LogTemp, Error, TEXT("GoapComp: world state comp missing on %s"), *CachedOwner->GetName());
 		return;
 	}
 
@@ -39,9 +40,11 @@ void UGoapComponent::BeginPlay()
 		}
 	}
 
-	ActionStackComponent = GetOwner()->FindComponentByClass<UActionStackComponent>();
+	ActionStackComponent = CachedOwner->FindComponentByClass<UActionStackComponent>();
 	ActionStackComponent->OnStackFailed.AddUObject(this, &UGoapComponent::HandlePlanFailed);
 	ActionStackComponent->OnStackFinished.AddUObject(this, &UGoapComponent::HandlePlanFinished);
+
+	SquadComponent = CachedOwner->FindComponentByClass<USquadComponent>();
 
 	MyBeliefRegistry = MakeUnique<AgentBeliefs::BeliefRegistry>();
 	MyBeliefFactory = MakeUnique<BeliefFactory>(this, *MyBeliefRegistry);
@@ -53,7 +56,7 @@ void UGoapComponent::BeginPlay()
 		if (IsValid(GoapFactory))
 		{
 			GoapPlanner = GoapFactory->CreatePlanner();
-			UE_LOG(LogTemp, Warning, TEXT("%s assigned GoapPlanner at %p"), *GetOwner()->GetName(), GoapPlanner.Get());
+			UE_LOG(LogTemp, Warning, TEXT("%s assigned GoapPlanner at %p"), *CachedOwner->GetName(), GoapPlanner.Get());
 		}
 		else
 		{

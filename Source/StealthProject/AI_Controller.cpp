@@ -107,7 +107,11 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 				GetBlackboardComponent()->SetValueAsObject("PlayerActor", Actor);
 				GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", true);
 				GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
+
 				MyNPC->SetNPCState(ENPCState::Engaged);
+
+				//
+				Goap->SquadComponent->CallSquadStateChange(ESquadState::Combat);
 			}
 		}
 		else

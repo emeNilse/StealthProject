@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SquadManager.h"
+#include "SquadSubsystem.h"
 #include "SquadComponent.generated.h"
 
-
+class UGoapComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API USquadComponent : public UActorComponent
@@ -17,11 +17,10 @@ class STEALTHPROJECT_API USquadComponent : public UActorComponent
 public:	
 	USquadComponent();
 
-	ASquadManager* SquadID;
+	UPROPERTY(BlueprintType, BlueprintReadWrite)
+	ESquadRole SquadRole = ESquadRole::Default;
 
-	ESquadRole SquadRole;
-
-	ESquadState SquadState;
+	AActor* CachedOwner;
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,5 +28,21 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	TWeakObjectPtr<ASquadManager> GetSquad() const { return SquadID; }
+
+	void SetSquad(TWeakObjectPtr<ASquadManager> inManager);
+
+	ESquadState GetSquadState();
+
+	void CallSquadStateChange(ESquadState newState);
+
+	void SquadStateChanged();
+
+	void InjectSquadBeliefsToGoap();
+
+private:
+	TWeakObjectPtr<ASquadManager> SquadID;
+
+	UGoapComponent* GoapComponent;
 		
 };
