@@ -43,6 +43,8 @@ public:
 
 	ESquadState GetSquadState() const { return SquadState; }
 
+	AActor* GetCurrentTarget() const { return CurrentTarget; }
+
 	UFUNCTION()
 	void FindMembers();
 

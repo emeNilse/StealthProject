@@ -82,6 +82,9 @@ void ASquadManager::NotifyMemberDied(USquadComponent* deadMember)
 	}
 }
 
+//Manager should have world context so it can tell the AI to spread out/not stand in line to the player's pov
+//Consider a "Bridge" system that handles environment query for the manager until ready to coonect to Unreal's EQS
+
 void ASquadManager::ChangeState(ESquadState newState)
 {
 	SquadState = newState;

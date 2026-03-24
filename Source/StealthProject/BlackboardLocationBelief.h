@@ -8,6 +8,7 @@
 #include "BlackboardLocationBelief.generated.h"
 
 //Beliefs based on Locations saved in the Blackboard
+//A bit misleading, should've been called Blackboard Object Location Belief as it acquires the location of a saved object
 UCLASS(Blueprintable, EditInlineNew)
 class STEALTHPROJECT_API UBlackboardLocationBelief : public UGoapBelief
 {
