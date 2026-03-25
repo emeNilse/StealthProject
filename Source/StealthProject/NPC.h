@@ -137,6 +137,8 @@ private:
 
 	FTimerHandle InvestigativeTimerhandle;
 
+	UWorld* CachedWorld;
+
 	bool PlayerSpotted = false;
 
 	float StatTimerInterval;

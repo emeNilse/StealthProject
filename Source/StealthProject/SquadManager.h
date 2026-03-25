@@ -14,10 +14,10 @@ class USquadComponent;
 UENUM(BlueprintType)
 enum class ESquadRole : uint8
 {
-	Default,
-	Assualt,
-	Support,
-	Skirmisher
+	Default		UMETA(DisplayName = "No Role Assigned"),
+	Assualt		UMETA(DisplayName = "Assualt"),
+	Support		UMETA(DisplayName = "Support"),
+	Skirmisher	UMETA(DisplayName = "Skirmisher")
 };
 
 UENUM(BlueprintType)
@@ -43,6 +43,7 @@ public:
 
 	ESquadState GetSquadState() const { return SquadState; }
 
+	UFUNCTION(BlueprintCallable)
 	AActor* GetCurrentTarget() const { return CurrentTarget; }
 
 	UFUNCTION()
@@ -58,6 +59,8 @@ public:
 
 	void OnStateChange();
 
+	void CalculateFlankingPosition();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -69,6 +72,8 @@ private:
 	ESquadState SquadState;
 
 	AActor* CurrentTarget;
+
+	UWorld* CachedWorld;
 
 	int AssualtRolesAvailable = 1;
 	int SkirmisherRolesAvailable = 2;

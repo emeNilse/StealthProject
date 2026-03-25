@@ -27,6 +27,8 @@ void ANPC::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CachedWorld = GetWorld();
+
 	StatTimerInterval = 1.f;
 	StatTimerRemaining = 1.f;
 
@@ -146,12 +148,12 @@ void ANPC::SetNPCState(ENPCState NewState)
 
 	if (NPCState == ENPCState::Alert)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(AlertTimerhandle);
+		CachedWorld->GetTimerManager().ClearTimer(AlertTimerhandle);
 	}
 
 	if (NPCState == ENPCState::Investigative)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(InvestigativeTimerhandle);
+		CachedWorld->GetTimerManager().ClearTimer(InvestigativeTimerhandle);
 	}
 	
 	LastNPCState = NPCState;
@@ -185,7 +187,7 @@ void ANPC::ReturnToAlert()
 //When the AI becomes Alert, after 30 seconds it should return to a calm state.
 void ANPC::BeginAlert()
 {
-	GetWorld()->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 30.f, false);
+	CachedWorld->GetTimerManager().SetTimer(AlertTimerhandle, this, &ANPC::ReturnToCalm, 30.f, false);
 }
 
 //When the AI becomes Investigative, if it gets stuck there, after 2 seconds it should return to a calm state.
@@ -196,11 +198,11 @@ void ANPC::BeginInvestigative()
 {
 	if (LastNPCState == ENPCState::Alert)
 	{
-		GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToAlert, 1.f, false);
+		CachedWorld->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToAlert, 1.f, false);
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 1.f, false);
+		CachedWorld->GetTimerManager().SetTimer(InvestigativeTimerhandle, this, &ANPC::ReturnToCalm, 1.f, false);
 	}
 }
 

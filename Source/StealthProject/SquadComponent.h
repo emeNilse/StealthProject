@@ -8,6 +8,7 @@
 #include "SquadComponent.generated.h"
 
 class UGoapComponent;
+DECLARE_DELEGATE(FOnCalculationComplete);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API USquadComponent : public UActorComponent
@@ -16,6 +17,8 @@ class STEALTHPROJECT_API USquadComponent : public UActorComponent
 
 public:	
 	USquadComponent();
+
+	FOnCalculationComplete OnComplete;
 
 	UPROPERTY(BlueprintType, BlueprintReadWrite)
 	ESquadRole SquadRole = ESquadRole::Default;
@@ -28,7 +31,7 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	TWeakObjectPtr<ASquadManager> GetSquad() const { return SquadID; }
+	TWeakObjectPtr<ASquadManager> GetSquad() const { return SquadManagerID; }
 
 	void SetSquad(TWeakObjectPtr<ASquadManager> inManager);
 
@@ -40,8 +43,12 @@ public:
 
 	void InjectSquadBeliefsToGoap();
 
+	void RequestFlankingPosition();
+
+	void FlankingCalculationComplete();
+
 private:
-	TWeakObjectPtr<ASquadManager> SquadID;
+	TWeakObjectPtr<ASquadManager> SquadManagerID;
 
 	UGoapComponent* GoapComponent;
 		

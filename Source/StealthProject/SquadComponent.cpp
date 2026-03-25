@@ -12,7 +12,7 @@ USquadComponent::USquadComponent()
 
 void USquadComponent::SetSquad(TWeakObjectPtr<ASquadManager> inManager)
 {
-	SquadID = inManager;
+	SquadManagerID = inManager;
 }
 
 ESquadState USquadComponent::GetSquadState()
@@ -24,7 +24,7 @@ ESquadState USquadComponent::GetSquadState()
 
 void USquadComponent::CallSquadStateChange(ESquadState newState)
 {
-	SquadID->ChangeState(newState);
+	SquadManagerID->ChangeState(newState);
 }
 
 void USquadComponent::SquadStateChanged()
@@ -34,6 +34,16 @@ void USquadComponent::SquadStateChanged()
 void USquadComponent::InjectSquadBeliefsToGoap()
 {
 
+}
+
+void USquadComponent::RequestFlankingPosition()
+{
+	SquadManagerID->CalculateFlankingPosition();
+}
+
+void USquadComponent::FlankingCalculationComplete()
+{
+	OnComplete.ExecuteIfBound();
 }
 
 void USquadComponent::BeginPlay()

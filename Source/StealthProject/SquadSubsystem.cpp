@@ -34,6 +34,7 @@ void USquadSubsystem::BuildClusters()
         if (!agent.IsValid()) continue;
 
         location = agent->CachedOwner->GetActorLocation();
+        TArray<TWeakObjectPtr<USquadComponent>> removeList;
 
         for (const TWeakObjectPtr<USquadComponent>& other : SquadAgents)
         {
@@ -48,11 +49,16 @@ void USquadSubsystem::BuildClusters()
             if (FVector::DistSquared(location, otherLocation) < pow(ClusterRadius, 2))
             {
                 newCluster.Members.Add(other);
-                SquadAgents.Remove(other);
+                
+                removeList.Add(other);
             }
         }
 
         Clusters.Add(newCluster);
+        for (TWeakObjectPtr<USquadComponent> other : removeList)
+        {
+            SquadAgents.Remove(other);
+        }
     }
 
     for (Cluster clust : Clusters)

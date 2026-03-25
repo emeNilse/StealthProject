@@ -44,7 +44,7 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 		Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 		startNode->HCost = Heuristic(startNode->RequiredEffects);
 
-		Node* pathResult = FindPathAStar(startNode, inAI, agent->Actions);
+		Node* pathResult = FindPathAStar(startNode, inAI, agent->GetActions());
 		
 		if (!pathResult) continue;
 

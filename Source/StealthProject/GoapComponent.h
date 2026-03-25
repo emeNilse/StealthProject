@@ -55,36 +55,6 @@ class STEALTHPROJECT_API UGoapComponent : public UActorComponent
 public:	
 	UGoapComponent();
 
-	AAI_Controller* AI;
-	ANPC* NPC;
-	AActor* CachedOwner;
-	UBlackboardComponent* AI_BlackBoard;
-	UActionStackComponent* ActionStackComponent;
-	USquadComponent* SquadComponent;
-	UGoapWorldStateComponent* WorldState;
-
-	TSharedPtr<GoapAction> CurrentAction;
-
-	TSet<TSharedPtr<GoapAction>> Actions;
-	
-	TSharedPtr<GoapGoal> CurrentGoal;
-
-	TSet<TSharedPtr<GoapGoal>> Goals;
-
-	TSharedPtr<ActionPlan> TheActionPlan;
-
-	bool bShouldReplan = false;
-
-	TUniquePtr<AgentBeliefs::BeliefRegistry> MyBeliefRegistry;
-
-	TUniquePtr<IGoapPlannerInterface> GoapPlanner;
-	UGoapFactorySubsystem* GoapFactory;
-
-	TUniquePtr<BeliefFactory> MyBeliefFactory;
-
-	NPCLatestStats LastNPCStats;
-	ENPCState LastNPCState = ENPCState::Calm;
-
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TArray<UGoapBelief*> BeliefSet;
 
@@ -98,6 +68,8 @@ public:
 	FString CurrentActionText;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TEXT")
 	FString CurrentGoalText;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TEXT")
+	FString CurrentSquadRoleText;
 
 protected:
 	virtual void BeginPlay() override;
@@ -128,8 +100,44 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FString GetCurrentGoal() const { return CurrentGoal->Name; }
 
+	USquadComponent* GetSquadComponent() const { return SquadComponent; }
+
+	UGoapWorldStateComponent* GetWorldState() const { return WorldState; }
+
+	TSet<TSharedPtr<GoapAction>> GetActions() const { return Actions; }
+
 private:
 
+	AAI_Controller* AI;
+	ANPC* NPC;
+	AActor* CachedOwner;
+	UBlackboardComponent* AI_BlackBoard;
+	UActionStackComponent* ActionStackComponent;
+	USquadComponent* SquadComponent;
+
+	UGoapWorldStateComponent* WorldState;
+
+	TSharedPtr<GoapAction> CurrentAction;
+
+	TSet<TSharedPtr<GoapAction>> Actions;
+
+	TSharedPtr<GoapGoal> CurrentGoal;
 	TSharedPtr<GoapGoal> LastGoal;
+
+	TSet<TSharedPtr<GoapGoal>> Goals;
+
+	TSharedPtr<ActionPlan> TheActionPlan;
+
+	bool bShouldReplan = false;
+
+	TUniquePtr<AgentBeliefs::BeliefRegistry> MyBeliefRegistry;
+
+	TUniquePtr<IGoapPlannerInterface> GoapPlanner;
+	UGoapFactorySubsystem* GoapFactory;
+
+	TUniquePtr<BeliefFactory> MyBeliefFactory;
+
+	NPCLatestStats LastNPCStats;
+	ENPCState LastNPCState = ENPCState::Calm;
 
 };

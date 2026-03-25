@@ -3,7 +3,6 @@
 
 #include "CoreMinimal.h"
 #include "GoapActionStrategyBase.h"
-#include "AI_Controller.h"
 #include "Interactable.h"
 #include "InteractionStrategy.generated.h"
 

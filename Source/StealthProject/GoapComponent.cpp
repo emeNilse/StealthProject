@@ -97,11 +97,13 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		CurrentGoalText = "Goal: " + CurrentGoal->Name;
 		CurrentActionText = "Action: " + ActionStackComponent->GetCurrentAction()->Name;
+		CurrentSquadRoleText = "Role: " + UEnum::GetDisplayValueAsText(SquadComponent->SquadRole).ToString();
 	} 
 	else
 	{
 		CurrentGoalText = "Goal: ";
 		CurrentActionText = "Action: ";
+		CurrentSquadRoleText = "Role: No Role Assigned";
 	}
 }
 

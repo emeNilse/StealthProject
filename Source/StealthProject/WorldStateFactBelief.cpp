@@ -67,7 +67,7 @@ bool UWorldStateFactBelief::Evaluate(AAI_Controller* AI) const
 		return false;
 	}
 
-	UGoapWorldStateComponent* ThisWorldState = GoapComp->WorldState;
+	UGoapWorldStateComponent* ThisWorldState = GoapComp->GetWorldState();
 
 	if (!IsValid(ThisWorldState))
 	{

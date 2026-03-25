@@ -13,7 +13,7 @@ ASquadManager::ASquadManager()
 
 void ASquadManager::Initialize(TArray<TWeakObjectPtr<USquadComponent>> members)
 {
-	for (TWeakObjectPtr<USquadComponent> squadMember : MySquad)
+	for (TWeakObjectPtr<USquadComponent> squadMember : members)
 	{
 		if (squadMember.IsValid())
 		{
@@ -99,8 +99,14 @@ void ASquadManager::OnStateChange()
 	}
 }
 
+void ASquadManager::CalculateFlankingPosition()
+{
+
+}
+
 void ASquadManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CachedWorld = GetWorld();
 }
