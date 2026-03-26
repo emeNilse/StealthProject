@@ -13,6 +13,10 @@ USquadComponent::USquadComponent()
 void USquadComponent::SetSquad(TWeakObjectPtr<ASquadManager> inManager)
 {
 	SquadManagerID = inManager;
+	if (SquadManagerID.IsValid())
+	{
+		SquadManagerID->OnFuckThisDelegate.AddUObject(this, &USquadComponent::SquadStateChanged);
+	}
 }
 
 ESquadState USquadComponent::GetSquadState()
@@ -22,13 +26,14 @@ ESquadState USquadComponent::GetSquadState()
 	return ESquadState();
 }
 
-void USquadComponent::CallSquadStateChange(ESquadState newState)
+void USquadComponent::EncounteredTarget(AActor* newTarget)
 {
-	SquadManagerID->ChangeState(newState);
+	SquadManagerID->SquadMemberEncounteredTarget(newTarget);
 }
 
 void USquadComponent::SquadStateChanged()
 {
+
 }
 
 void USquadComponent::InjectSquadBeliefsToGoap()
@@ -38,7 +43,7 @@ void USquadComponent::InjectSquadBeliefsToGoap()
 
 void USquadComponent::RequestFlankingPosition()
 {
-	SquadManagerID->CalculateFlankingPosition();
+	SquadManagerID->CalculateFlankingPosition(this);
 }
 
 void USquadComponent::FlankingCalculationComplete()

@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "SquadComponent.h"
+#include "StealthProjectCharacter.h"
 
 ASquadManager::ASquadManager()
 {
@@ -24,6 +25,11 @@ void ASquadManager::Initialize(TArray<TWeakObjectPtr<USquadComponent>> members)
 
 	SquadState = ESquadState::Neutral;
 	RoleAssignemnt();
+}
+
+void ASquadManager::ConfigInitialize(TWeakObjectPtr<USquadConfigData> configData)
+{
+	AnchorQuery = configData->AnchorQuery;
 }
 
 void ASquadManager::FindMembers()
@@ -82,6 +88,16 @@ void ASquadManager::NotifyMemberDied(USquadComponent* deadMember)
 	}
 }
 
+void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
+{
+	if (!newTarget) return;
+
+	if (auto* const c = Cast<AStealthProjectCharacter>(newTarget))
+	{
+		ChangeState(ESquadState::Combat);
+	}
+}
+
 //Manager should have world context so it can tell the AI to spread out/not stand in line to the player's pov
 //Consider a "Bridge" system that handles environment query for the manager until ready to coonect to Unreal's EQS
 
@@ -99,9 +115,79 @@ void ASquadManager::OnStateChange()
 	}
 }
 
-void ASquadManager::CalculateFlankingPosition()
+void ASquadManager::UpdateFlankSlots()
 {
+	FlankSlots.Empty();
 
+	//Query calculations and fill a new FlankSlots
+	FEnvQueryRequest QueryRequest = FEnvQueryRequest(AnchorQuery, this);
+	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &ASquadManager::FlankingQueryResult);
+}
+
+bool ASquadManager::ShouldUpdateFlankSlots()
+{
+	if (!CurrentTarget) return false;
+
+	float distanceMoved = FVector::DistSquared(CurrentTarget->GetActorLocation(), LastKnownTargetLocation);
+	
+	return distanceMoved >= PlayerMoveThreshold * PlayerMoveThreshold;
+}
+
+FVector ASquadManager::RequestFlankingPosition(AAI_Controller* requester)
+{
+	if (FlankSlots.IsEmpty() || ShouldUpdateFlankSlots())
+	{
+		UpdateFlankSlots();
+	}
+	
+	FFlankSlot* slot = FindBestAvailableSlot();
+
+	if (slot)
+	{
+		slot->bReserved = true;
+		slot->User = requester;
+		return slot->Position;
+	}
+
+	return CurrentTarget->GetActorLocation();
+}
+
+void ASquadManager::CalculateFlankingPosition(UObject* member)
+{
+	FEnvQueryRequest AnchorQueryRequest = FEnvQueryRequest(AnchorQuery, member);
+	AnchorQueryRequest.Execute(EEnvQueryRunMode::SingleResult, this, &ASquadManager::FlankingQueryResult);
+}
+
+void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
+{
+	if (!result.IsValid() || result->Items.Num() == 0) return;
+
+	for (int i = 0; i < result->Items.Num(); i++)
+	{
+		FFlankSlot slot;
+		slot.Position = result->GetItemAsLocation(i);
+		slot.Score = result->GetItemScore(i);
+		FlankSlots.Add(slot);
+	}
+}
+
+FFlankSlot* ASquadManager::FindBestAvailableSlot()
+{
+	FFlankSlot* best = nullptr;
+	float  bestScore = -FLT_MAX;
+
+	for (FFlankSlot& slot : FlankSlots)
+	{
+		if (slot.bReserved) continue;
+
+		if (slot.Score > bestScore)
+		{
+			bestScore = slot.Score;
+			best = &slot;
+		}
+	}
+
+	return best;
 }
 
 void ASquadManager::BeginPlay()

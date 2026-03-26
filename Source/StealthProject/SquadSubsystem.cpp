@@ -3,6 +3,17 @@
 
 #include "SquadSubsystem.h"
 #include "SquadComponent.h"
+#include "UObject/ConstructorHelpers.h"
+
+USquadSubsystem::USquadSubsystem()
+{
+    static ConstructorHelpers::FObjectFinder<USquadConfigData> ConfigObj(TEXT("/Game/ThirdPerson/AI/Controller/DA_SquadConfig.DA_SquadConfig"));
+
+    if (ConfigObj.Succeeded())
+    {
+        SquadConfig = ConfigObj.Object;
+    }
+}
 
 void USquadSubsystem::Register(USquadComponent* squadActor)
 {
@@ -89,6 +100,8 @@ FVector USquadSubsystem::CalculateAverageCenter(Cluster cluster)
 void USquadSubsystem::CreateSquadManager(Cluster cluster)
 {
     ASquadManager* squad = GetWorld()->SpawnActor<ASquadManager>(ASquadManager::StaticClass(), cluster.Center, FRotator::ZeroRotator);
+
+    squad->ConfigInitialize(SquadConfig);
 
     if (squad)
     {

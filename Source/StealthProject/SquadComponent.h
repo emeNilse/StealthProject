@@ -33,11 +33,12 @@ public:
 
 	TWeakObjectPtr<ASquadManager> GetSquad() const { return SquadManagerID; }
 
+	UFUNCTION()
 	void SetSquad(TWeakObjectPtr<ASquadManager> inManager);
 
 	ESquadState GetSquadState();
 
-	void CallSquadStateChange(ESquadState newState);
+	void EncounteredTarget(AActor* newTarget);
 
 	void SquadStateChanged();
 

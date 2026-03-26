@@ -21,7 +21,11 @@ class STEALTHPROJECT_API USquadSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 	
 public:
+	USquadConfigData* SquadConfig;
+	
 	TArray<TWeakObjectPtr<USquadComponent>> SquadAgents;
+
+	USquadSubsystem();
 
 	void Register(USquadComponent* squadActor);
 

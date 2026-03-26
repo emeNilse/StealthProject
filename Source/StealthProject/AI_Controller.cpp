@@ -111,7 +111,11 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 				MyNPC->SetNPCState(ENPCState::Engaged);
 
 				//
-				Goap->GetSquadComponent()->CallSquadStateChange(ESquadState::Combat);
+				if (Goap->GetSquadComponent())
+				{
+					Goap->GetSquadComponent()->EncounteredTarget(Actor);
+				}
+				
 			}
 		}
 		else

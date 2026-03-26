@@ -1,15 +1,22 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
+#include "GameFramework/Actor.h"
 #include "AgentfactProvider.h"
 #include "NPC.h"
+#include "SquadConfigData.h"
 #include "SquadManager.generated.h"
 
-
 class USquadComponent;
+
+DECLARE_DELEGATE(FOnCalculationComplete);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSquadStateChanged, AActor*, NewTarget);
+
+DECLARE_MULTICAST_DELEGATE(FFuckThisDelegate);
+
 
 UENUM(BlueprintType)
 enum class ESquadRole : uint8
@@ -28,6 +35,21 @@ enum class ESquadState : uint8
 	Combat
 };
 
+USTRUCT()
+struct FFlankSlot
+{
+	GENERATED_BODY()
+
+	FVector Position;
+
+	TWeakObjectPtr<AAIController> User;
+
+	bool bReserved = false;
+
+	float Score = 0.f;
+};
+
+
 
 UCLASS()
 class STEALTHPROJECT_API ASquadManager : public AInfo
@@ -39,7 +61,18 @@ public:
 
 	float Radius;
 
+	float PlayerMoveThreshold = 200.f;
+
+	FOnCalculationComplete OnCalculationComplete;
+
+	FFuckThisDelegate OnFuckThisDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSquadStateChanged OnSquadStateChanged;
+
 	void Initialize(TArray<TWeakObjectPtr<USquadComponent>> members);
+
+	void ConfigInitialize(TWeakObjectPtr<USquadConfigData> configData);
 
 	ESquadState GetSquadState() const { return SquadState; }
 
@@ -55,11 +88,23 @@ public:
 	UFUNCTION()
 	void NotifyMemberDied(USquadComponent* deadMember);
 
+	void SquadMemberEncounteredTarget(AActor* newTarget);
+
 	void ChangeState(ESquadState newState);
 
 	void OnStateChange();
 
-	void CalculateFlankingPosition();
+	void UpdateFlankSlots();
+
+	bool ShouldUpdateFlankSlots();
+
+	FVector RequestFlankingPosition(AAI_Controller* requester);
+
+	void CalculateFlankingPosition(UObject* member);
+
+	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
+
+	FFlankSlot* FindBestAvailableSlot();
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,7 +118,13 @@ private:
 
 	AActor* CurrentTarget;
 
+	FVector LastKnownTargetLocation;
+
 	UWorld* CachedWorld;
+
+	UEnvQuery* AnchorQuery; 
+
+	TArray<FFlankSlot> FlankSlots;
 
 	int AssualtRolesAvailable = 1;
 	int SkirmisherRolesAvailable = 2;
