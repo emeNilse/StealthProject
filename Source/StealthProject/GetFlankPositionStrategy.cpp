@@ -21,7 +21,7 @@ void UGetFlankPositionStrategy::Start()
 	}
 
 	squadComponent->OnComplete.BindUObject(this, &UGetFlankPositionStrategy::AcquiredFlankingposition);
-	squadComponent->RequestFlankingPosition();
+	squadComponent->RequestFlankingPosition(AI);
 	Status = EStrategyStatus::Running;
 }
 

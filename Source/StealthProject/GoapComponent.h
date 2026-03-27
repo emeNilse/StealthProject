@@ -106,6 +106,8 @@ public:
 
 	TSet<TSharedPtr<GoapAction>> GetActions() const { return Actions; }
 
+	UBlackboardComponent* GetBlackboardData() const { return AI_BlackBoard; }
+
 private:
 
 	AAI_Controller* AI;

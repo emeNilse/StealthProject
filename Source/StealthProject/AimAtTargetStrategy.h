@@ -17,7 +17,7 @@ public:
 	{
 		UAimAtTargetStrategy* Runtime = NewObject<UAimAtTargetStrategy>(outer);
 		Runtime->AI = inAI;
-
+		
 		return Runtime;
 	}
 
@@ -30,4 +30,8 @@ public:
 private:
 
 	AAI_Controller* AI = nullptr;
+
+	float AimThreshold = 0.9f;
+
+	AActor* Target = nullptr;
 };

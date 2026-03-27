@@ -13,9 +13,7 @@ class USquadComponent;
 
 DECLARE_DELEGATE(FOnCalculationComplete);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSquadStateChanged, AActor*, NewTarget);
-
-DECLARE_MULTICAST_DELEGATE(FFuckThisDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSquadStateChanged);
 
 
 UENUM(BlueprintType)
@@ -30,6 +28,7 @@ enum class ESquadRole : uint8
 UENUM(BlueprintType)
 enum class ESquadState : uint8
 {
+	Default,
 	Neutral,
 	Alert,
 	Combat
@@ -65,9 +64,6 @@ public:
 
 	FOnCalculationComplete OnCalculationComplete;
 
-	FFuckThisDelegate OnFuckThisDelegate;
-
-	UPROPERTY(BlueprintAssignable)
 	FOnSquadStateChanged OnSquadStateChanged;
 
 	void Initialize(TArray<TWeakObjectPtr<USquadComponent>> members);

@@ -212,24 +212,24 @@ void ANPC::OnNPCStateChange()
 	{
 	case ENPCState::Calm:
 		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Green);
-		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
+		//DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Green);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		PlayerSpotted = false;
 		break;
 	case ENPCState::Investigative:
 		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
-		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
+		//DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Blue);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		break;
 	case ENPCState::Alert:
 		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
-		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
+		//DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Yellow);
 		GetCharacterMovement()->MaxWalkSpeed = 400.f;
 		PlayerSpotted = false;
 		break;
 	case ENPCState::Engaged:
 		//DynMaterial->SetVectorParameterValue("ConeColour", FLinearColor::Red);
-		DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Red);
+		//DynMaterialForScanner->SetVectorParameterValue("ConeColour", FLinearColor::Red);
 		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 		PlayerSpotted = true;
 		break;

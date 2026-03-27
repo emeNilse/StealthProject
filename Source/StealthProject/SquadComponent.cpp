@@ -3,6 +3,7 @@
 
 #include "SquadComponent.h"
 #include "GoapComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 USquadComponent::USquadComponent()
 {
@@ -15,20 +16,35 @@ void USquadComponent::SetSquad(TWeakObjectPtr<ASquadManager> inManager)
 	SquadManagerID = inManager;
 	if (SquadManagerID.IsValid())
 	{
-		SquadManagerID->OnFuckThisDelegate.AddUObject(this, &USquadComponent::SquadStateChanged);
+		SquadManagerID->OnSquadStateChanged.AddUObject(this, &USquadComponent::SquadStateChanged);
 	}
 }
 
 ESquadState USquadComponent::GetSquadState()
 {
+	if (SquadManagerID.IsValid())
+	{
+		return SquadManagerID->GetSquadState();
+	}
+	return ESquadState::Default;
+}
+
+AActor* USquadComponent::GetSquadTarget()
+{
+	if (SquadManagerID.IsValid())
+	{
+		return SquadManagerID->GetCurrentTarget();
+	}
 	
-	
-	return ESquadState();
+	return nullptr;
 }
 
 void USquadComponent::EncounteredTarget(AActor* newTarget)
 {
-	SquadManagerID->SquadMemberEncounteredTarget(newTarget);
+	if (SquadManagerID.IsValid())
+	{
+		SquadManagerID->SquadMemberEncounteredTarget(newTarget);
+	}
 }
 
 void USquadComponent::SquadStateChanged()
@@ -41,13 +57,13 @@ void USquadComponent::InjectSquadBeliefsToGoap()
 
 }
 
-void USquadComponent::RequestFlankingPosition()
+void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 {
-	SquadManagerID->CalculateFlankingPosition(this);
-}
+	//SquadManagerID->CalculateFlankingPosition(this);
 
-void USquadComponent::FlankingCalculationComplete()
-{
+	FVector flankPosition = SquadManagerID->RequestFlankingPosition(inAI);
+
+	GoapComponent->GetBlackboardData()->SetValueAsVector("ShootingPosition", flankPosition);
 	OnComplete.ExecuteIfBound();
 }
 

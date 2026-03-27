@@ -44,5 +44,5 @@ private:
 
 	bool bClusterBuildScheduled = false;
 
-	float ClusterRadius = 50000;
+	float ClusterRadius = 5000;
 };

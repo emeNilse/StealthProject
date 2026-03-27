@@ -15,13 +15,13 @@ class STEALTHPROJECT_API UBlackboardObjectBelief : public UGoapBelief
 public:
 
 	UPROPERTY(EditAnywhere)
-	FName BlackboardKey;
+	FName BlackboardObjectKeyName;
 
 	virtual bool Evaluate(AAI_Controller* AI) const override
 	{
 		if (!AI) return false;
 
-		AActor* Target = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey));
+		AActor* Target = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardObjectKeyName));
 
 		return Target ? true : false;
 	}

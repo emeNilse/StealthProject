@@ -38,15 +38,15 @@ public:
 
 	ESquadState GetSquadState();
 
+	AActor* GetSquadTarget();
+
 	void EncounteredTarget(AActor* newTarget);
 
 	void SquadStateChanged();
 
 	void InjectSquadBeliefsToGoap();
 
-	void RequestFlankingPosition();
-
-	void FlankingCalculationComplete();
+	void RequestFlankingPosition(AAI_Controller* inAI);
 
 private:
 	TWeakObjectPtr<ASquadManager> SquadManagerID;

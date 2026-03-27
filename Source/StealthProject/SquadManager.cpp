@@ -95,6 +95,7 @@ void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
 	if (auto* const c = Cast<AStealthProjectCharacter>(newTarget))
 	{
 		ChangeState(ESquadState::Combat);
+		OnSquadStateChanged.Broadcast();
 	}
 }
 
@@ -149,7 +150,12 @@ FVector ASquadManager::RequestFlankingPosition(AAI_Controller* requester)
 		return slot->Position;
 	}
 
-	return CurrentTarget->GetActorLocation();
+	if (CurrentTarget)
+	{
+		return CurrentTarget->GetActorLocation();
+	}
+	
+	return FVector::ZeroVector;
 }
 
 void ASquadManager::CalculateFlankingPosition(UObject* member)

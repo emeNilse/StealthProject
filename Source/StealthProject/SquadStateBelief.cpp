@@ -8,5 +8,5 @@ bool USquadStateBelief::Evaluate(AAI_Controller* AI) const
 {
 	if (!AI) return false;
 
-	return AI->GetGoap()->GetSquadComponent()->GetSquad()->GetSquadState() == DesiredSquadState;
+	return AI->GetGoap()->GetSquadComponent()->GetSquadState() == DesiredSquadState;
 }
