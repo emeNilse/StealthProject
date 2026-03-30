@@ -8,7 +8,7 @@
 #include "SquadComponent.generated.h"
 
 class UGoapComponent;
-DECLARE_DELEGATE(FOnCalculationComplete);
+DECLARE_DELEGATE(FOnRequstComplete);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STEALTHPROJECT_API USquadComponent : public UActorComponent
@@ -18,7 +18,7 @@ class STEALTHPROJECT_API USquadComponent : public UActorComponent
 public:	
 	USquadComponent();
 
-	FOnCalculationComplete OnComplete;
+	FOnRequstComplete OnComplete;
 
 	UPROPERTY(BlueprintType, BlueprintReadWrite)
 	ESquadRole SquadRole = ESquadRole::Default;
@@ -47,6 +47,8 @@ public:
 	void InjectSquadBeliefsToGoap();
 
 	void RequestFlankingPosition(AAI_Controller* inAI);
+
+	void OnFlankReady(FVector flankPosition);
 
 private:
 	TWeakObjectPtr<ASquadManager> SquadManagerID;

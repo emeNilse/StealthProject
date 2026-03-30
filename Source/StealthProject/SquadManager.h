@@ -11,7 +11,7 @@
 
 class USquadComponent;
 
-DECLARE_DELEGATE(FOnCalculationComplete);
+DECLARE_DELEGATE_OneParam(FOnCalculationComplete, FVector);
 
 DECLARE_MULTICAST_DELEGATE(FOnSquadStateChanged);
 
@@ -49,6 +49,13 @@ struct FFlankSlot
 };
 
 
+struct FPendingFlankRequest
+{
+
+	AAI_Controller* Requester;
+	FOnCalculationComplete OnCalculationComplete;
+};
+
 
 UCLASS()
 class STEALTHPROJECT_API ASquadManager : public AInfo
@@ -62,7 +69,7 @@ public:
 
 	float PlayerMoveThreshold = 200.f;
 
-	FOnCalculationComplete OnCalculationComplete;
+	
 
 	FOnSquadStateChanged OnSquadStateChanged;
 
@@ -71,7 +78,6 @@ public:
 	void ConfigInitialize(TWeakObjectPtr<USquadConfigData> configData);
 
 	ESquadState GetSquadState() const { return SquadState; }
-
 	UFUNCTION(BlueprintCallable)
 	AActor* GetCurrentTarget() const { return CurrentTarget; }
 
@@ -94,7 +100,7 @@ public:
 
 	bool ShouldUpdateFlankSlots();
 
-	FVector RequestFlankingPosition(AAI_Controller* requester);
+	void RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback);
 
 	void CalculateFlankingPosition(UObject* member);
 
@@ -112,15 +118,17 @@ private:
 
 	ESquadState SquadState;
 
-	AActor* CurrentTarget;
+	AActor* CurrentTarget = nullptr;
 
-	FVector LastKnownTargetLocation;
+	FVector LastKnownTargetLocation = FVector::ZeroVector;
 
 	UWorld* CachedWorld;
 
 	UEnvQuery* AnchorQuery; 
 
 	TArray<FFlankSlot> FlankSlots;
+
+	TArray<FPendingFlankRequest> PendingRequests;
 
 	int AssualtRolesAvailable = 1;
 	int SkirmisherRolesAvailable = 2;

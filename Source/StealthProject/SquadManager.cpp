@@ -94,8 +94,8 @@ void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
 
 	if (auto* const c = Cast<AStealthProjectCharacter>(newTarget))
 	{
+		CurrentTarget = newTarget;
 		ChangeState(ESquadState::Combat);
-		OnSquadStateChanged.Broadcast();
 	}
 }
 
@@ -105,7 +105,8 @@ void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
 void ASquadManager::ChangeState(ESquadState newState)
 {
 	SquadState = newState;
-	OnStateChange();
+	OnSquadStateChanged.Broadcast();
+	//OnStateChange();
 }
 
 void ASquadManager::OnStateChange()
@@ -127,35 +128,25 @@ void ASquadManager::UpdateFlankSlots()
 
 bool ASquadManager::ShouldUpdateFlankSlots()
 {
-	if (!CurrentTarget) return false;
+	if (CurrentTarget == nullptr) return false;
+
+	if (!IsValid(CurrentTarget)) return false;
 
 	float distanceMoved = FVector::DistSquared(CurrentTarget->GetActorLocation(), LastKnownTargetLocation);
 	
 	return distanceMoved >= PlayerMoveThreshold * PlayerMoveThreshold;
 }
 
-FVector ASquadManager::RequestFlankingPosition(AAI_Controller* requester)
+void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback)
 {
+	PendingRequests.Add({ requester, callback });
+	
 	if (FlankSlots.IsEmpty() || ShouldUpdateFlankSlots())
 	{
 		UpdateFlankSlots();
 	}
 	
-	FFlankSlot* slot = FindBestAvailableSlot();
-
-	if (slot)
-	{
-		slot->bReserved = true;
-		slot->User = requester;
-		return slot->Position;
-	}
-
-	if (CurrentTarget)
-	{
-		return CurrentTarget->GetActorLocation();
-	}
-	
-	return FVector::ZeroVector;
+	//
 }
 
 void ASquadManager::CalculateFlankingPosition(UObject* member)
@@ -166,6 +157,8 @@ void ASquadManager::CalculateFlankingPosition(UObject* member)
 
 void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
 {
+	UE_LOG(LogTemp, Warning, TEXT("EQS Query finished! Valid: %d Items: %d"), result.IsValid(), result->Items.Num());
+	
 	if (!result.IsValid() || result->Items.Num() == 0) return;
 
 	for (int i = 0; i < result->Items.Num(); i++)
@@ -175,6 +168,28 @@ void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
 		slot.Score = result->GetItemScore(i);
 		FlankSlots.Add(slot);
 	}
+
+	for (FPendingFlankRequest& request : PendingRequests)
+	{
+		FFlankSlot* slot = FindBestAvailableSlot();
+
+		FVector pos = slot ? slot->Position : FVector::ZeroVector;
+
+		if (slot)
+		{
+			slot->bReserved = true;
+			slot->User = request.Requester;
+		}
+
+		if (CurrentTarget)
+		{
+			LastKnownTargetLocation = CurrentTarget->GetActorLocation();
+		}
+
+		request.OnCalculationComplete.ExecuteIfBound(pos);
+	}
+
+	PendingRequests.Empty();
 }
 
 FFlankSlot* ASquadManager::FindBestAvailableSlot()

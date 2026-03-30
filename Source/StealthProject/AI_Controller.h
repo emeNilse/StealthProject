@@ -31,6 +31,8 @@ public:
 
 	UGoapComponent* GetGoap() const { return Goap; }
 
+	ANPC* GetMyNPC() const { return MyNPC; }
+
 protected: 
 
 	virtual void OnPossess(APawn* InPawn) override;

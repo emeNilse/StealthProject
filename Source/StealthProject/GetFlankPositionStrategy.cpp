@@ -3,7 +3,7 @@
 
 #include "GetFlankPositionStrategy.h"
 #include "GoapComponent.h"
-#include "SquadComponent.h"
+
 
 void UGetFlankPositionStrategy::Start()
 {
@@ -13,7 +13,7 @@ void UGetFlankPositionStrategy::Start()
 		return;
 	}
 
-	USquadComponent* squadComponent = AI->GetGoap()->GetSquadComponent();
+	squadComponent = AI->GetGoap()->GetSquadComponent();
 	if (!squadComponent)
 	{
 		Status = EStrategyStatus::Failed;

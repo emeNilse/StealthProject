@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GoapActionStrategyBase.h"
+#include "SquadComponent.h"
 #include "GetFlankPositionStrategy.generated.h"
 
 
@@ -34,4 +35,6 @@ private:
 	AAI_Controller* AI = nullptr;
 
 	bool bCalculationComplete = false;
+
+	USquadComponent* squadComponent;
 };

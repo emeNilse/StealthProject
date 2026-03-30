@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GoapActionStrategyBase.h"
+#include "NPC.h"
 #include "ShootAtTargetStrategy.generated.h"
 
 
@@ -30,5 +31,9 @@ public:
 private:
 
 	AAI_Controller* AI = nullptr;
+
+	AActor* Target = nullptr;
+
+	ANPC* SelfReference = nullptr;
 
 };

@@ -49,7 +49,7 @@ void USquadComponent::EncounteredTarget(AActor* newTarget)
 
 void USquadComponent::SquadStateChanged()
 {
-
+	GoapComponent->GetBlackboardData()->SetValueAsObject("SquadTarget", SquadManagerID->GetCurrentTarget());
 }
 
 void USquadComponent::InjectSquadBeliefsToGoap()
@@ -59,11 +59,15 @@ void USquadComponent::InjectSquadBeliefsToGoap()
 
 void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 {
-	//SquadManagerID->CalculateFlankingPosition(this);
+	//FVector flankPosition = SquadManagerID->RequestFlankingPosition(inAI);
 
-	FVector flankPosition = SquadManagerID->RequestFlankingPosition(inAI);
+	SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
+}
 
+void USquadComponent::OnFlankReady(FVector flankPosition)
+{
 	GoapComponent->GetBlackboardData()->SetValueAsVector("ShootingPosition", flankPosition);
+
 	OnComplete.ExecuteIfBound();
 }
 
