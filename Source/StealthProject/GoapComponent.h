@@ -94,6 +94,8 @@ public:
 
 	bool HasNPCStateChanged();
 
+	bool HasSquadStateChanged();
+
 	UFUNCTION(BlueprintCallable)
 	UGoapActionStrategyBase* GetCurrentStrategy() const { return CurrentAction->Strategy; }
 
@@ -141,5 +143,6 @@ private:
 
 	NPCLatestStats LastNPCStats;
 	ENPCState LastNPCState = ENPCState::Calm;
+	ESquadState LastSquadState = ESquadState::Neutral;
 
 };

@@ -94,8 +94,11 @@ void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
 
 	if (auto* const c = Cast<AStealthProjectCharacter>(newTarget))
 	{
-		CurrentTarget = newTarget;
-		ChangeState(ESquadState::Combat);
+		if (CurrentTarget != newTarget)
+		{
+			CurrentTarget = newTarget;
+			ChangeState(ESquadState::Combat);
+		}
 	}
 }
 
@@ -120,6 +123,7 @@ void ASquadManager::OnStateChange()
 void ASquadManager::UpdateFlankSlots()
 {
 	FlankSlots.Empty();
+	ChosenFlankPositions.Empty();
 
 	//Query calculations and fill a new FlankSlots
 	FEnvQueryRequest QueryRequest = FEnvQueryRequest(AnchorQuery, this);
@@ -179,6 +183,7 @@ void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
 		{
 			slot->bReserved = true;
 			slot->User = request.Requester;
+			ChosenFlankPositions.Add(pos);
 		}
 
 		if (CurrentTarget)

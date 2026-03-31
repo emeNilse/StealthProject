@@ -89,10 +89,10 @@ void AAI_Controller::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		OnTargetDetected(Actor, Stimulus);
 	}
-	else if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && !GetBlackboardComponent()->GetValueAsBool("bIgnoreNoise") && MyNPC->GetStat("Suspicious") < 90.f)
+	/*else if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && !GetBlackboardComponent()->GetValueAsBool("bIgnoreNoise") && MyNPC->GetStat("Suspicious") < 90.f)
 	{
 		OnNoiseHeard(Actor, Stimulus);
-	}
+	}*/
 }
 
 void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
@@ -108,14 +108,12 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 				GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", true);
 				GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
 
-				MyNPC->SetNPCState(ENPCState::Engaged);
+				//MyNPC->SetNPCState(ENPCState::Engaged);
 
-				//
 				if (Goap->GetSquadComponent())
 				{
 					Goap->GetSquadComponent()->EncounteredTarget(Actor);
 				}
-				
 			}
 		}
 		else
@@ -125,12 +123,12 @@ void AAI_Controller::OnTargetDetected(AActor* Actor, FAIStimulus const Stimulus)
 			GetBlackboardComponent()->SetValueAsBool("bCanSeePlayer", false);
 			GetBlackboardComponent()->SetValueAsVector("PlayerLocation", c->GetActorLocation());
 
-			MyNPC->SetNPCState(ENPCState::Alert);
+			//MyNPC->SetNPCState(ENPCState::Alert);
 
-			if (AStealthGameState* GS = GetWorld()->GetGameState<AStealthGameState>())
+			/*if (AStealthGameState* GS = GetWorld()->GetGameState<AStealthGameState>())
 			{
 				GS->SetGlobalAlert();
-			}
+			}*/
 		}
 	}
 }

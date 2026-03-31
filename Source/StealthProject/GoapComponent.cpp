@@ -79,7 +79,7 @@ void UGoapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		AI_BlackBoard = AI ? AI->GetBlackboardComponent() : nullptr;
 	}
 
-	if (!TheActionPlan.IsValid() || HasNPCStateChanged() || bShouldReplan)
+	if (!TheActionPlan.IsValid() || HasNPCStateChanged() || HasSquadStateChanged() || bShouldReplan)
 	{
 		if (ActionStackComponent->IsExecuting())
 		{
@@ -247,6 +247,19 @@ bool UGoapComponent::HasNPCStateChanged()
 		return true;
 	}
 
+	return false;
+}
+
+bool UGoapComponent::HasSquadStateChanged()
+{
+	if (LastSquadState != SquadComponent->GetSquadState())
+	{
+		LastSquadState = SquadComponent->GetSquadState();
+		LastGoal = CurrentGoal;
+		TheActionPlan = nullptr;
+		return true;
+	}
+	
 	return false;
 }
 

@@ -15,25 +15,40 @@ void UMoveStrategy::Start()
 		return;
 	}
 
-	AActor* RuntimeTarget;
+	AActor* RuntimeTarget = nullptr;
 
 	if (bEnableBlackboardLocation)
 	{
-		AActor* BlackboardTarget = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey));
-		RuntimeTarget = BlackboardTarget;
+		if (AActor* BlackboardTarget = Cast<AActor>(AI->GetBlackboardComponent()->GetValueAsObject(BlackboardKey)))
+		{
+			RuntimeTarget = BlackboardTarget;
+			if (!IsValid(RuntimeTarget))
+			{
+				Status = EStrategyStatus::Failed;
+				return;
+			}
+		}
+		else
+		{
+			FVector BlackboardVector = AI->GetBlackboardComponent()->GetValueAsVector(BlackboardKey);
+			Destination = BlackboardVector;
+		}
 	}
 	else
 	{
 		RuntimeTarget = TargetActor.Get();
+		if (!IsValid(RuntimeTarget))
+		{
+			Status = EStrategyStatus::Failed;
+			return;
+		}
 	}
 	
-	if (!IsValid(RuntimeTarget))
+	if (IsValid(RuntimeTarget))
 	{
-		Status = EStrategyStatus::Failed;
-		return;
+		Destination = RuntimeTarget->GetActorLocation();
 	}
 
-	Destination = RuntimeTarget->GetActorLocation();
 	AI->MoveToLocation(Destination);
 	Status = EStrategyStatus::Running;
 }

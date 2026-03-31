@@ -81,6 +81,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AActor* GetCurrentTarget() const { return CurrentTarget; }
 
+	TArray<FVector> GetChosenFlankPositions() const { return ChosenFlankPositions; }
+
 	UFUNCTION()
 	void FindMembers();
 
@@ -127,6 +129,8 @@ private:
 	UEnvQuery* AnchorQuery; 
 
 	TArray<FFlankSlot> FlankSlots;
+
+	TArray<FVector> ChosenFlankPositions;
 
 	TArray<FPendingFlankRequest> PendingRequests;
 

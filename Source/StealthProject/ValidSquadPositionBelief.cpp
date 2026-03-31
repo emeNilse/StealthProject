@@ -12,5 +12,19 @@ bool UValidSquadPositionBelief::Evaluate(AAI_Controller* AI) const
 
 	if (!AI->GetBlackboardComponent()->GetValueAsObject("SquadTarget")) return false;
 
-	return (AI->GetBlackboardComponent()->GetValueAsVector(BlackboardKey) != FVector::ZeroVector && !AI->GetGoap()->GetSquadComponent()->GetSquad()->ShouldUpdateFlankSlots());
+	FVector BlackboardVector = AI->GetBlackboardComponent()->GetValueAsVector(BlackboardKey);
+
+	TArray<FVector> ChosenVectors = AI->GetGoap()->GetSquadComponent()->GetSquad()->GetChosenFlankPositions();
+
+	//return (AI->GetBlackboardComponent()->GetValueAsVector(BlackboardKey) != FVector::ZeroVector && !AI->GetGoap()->GetSquadComponent()->GetSquad()->ShouldUpdateFlankSlots());
+
+	for (FVector pos : ChosenVectors)
+	{
+		if (pos == BlackboardVector)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
