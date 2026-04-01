@@ -141,6 +141,17 @@ bool ASquadManager::ShouldUpdateFlankSlots()
 	return distanceMoved >= PlayerMoveThreshold * PlayerMoveThreshold;
 }
 
+FVector ASquadManager::RequestFlankingDirection(AAI_Controller* requester)
+{
+	FVector RightSide = CurrentTarget->GetActorRightVector();
+	FVector TargetToNPC = (CurrentTarget->GetActorLocation() - requester->GetMyNPC()->GetActorLocation()).GetSafeNormal();
+	float FlankDir = FVector::DotProduct(RightSide, TargetToNPC);
+
+	//positive is left and negative is right
+	
+	return RightSide;
+}
+
 void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback)
 {
 	PendingRequests.Add({ requester, callback });
@@ -150,7 +161,7 @@ void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalcul
 		UpdateFlankSlots();
 	}
 	
-	//
+	//What is Slot Update is not needed?
 }
 
 void ASquadManager::CalculateFlankingPosition(UObject* member)

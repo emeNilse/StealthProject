@@ -18,5 +18,12 @@ public:
 
 protected:
 	virtual void RunTest(FEnvQueryInstance& QueryInstance) const override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "EQS Context")
+	TSubclassOf<UEnvQueryContext> TargetContext;
+
+	FAIDataProviderFloatValue FlankDirectionX;
+	FAIDataProviderFloatValue FlankDirectionY;
+	FAIDataProviderFloatValue FlankDirectionZ;
 	
 };

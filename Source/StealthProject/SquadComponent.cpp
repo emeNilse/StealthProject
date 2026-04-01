@@ -61,7 +61,31 @@ void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 {
 	//FVector flankPosition = SquadManagerID->RequestFlankingPosition(inAI);
 
-	SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
+	//SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
+
+	FlankSide = SquadManagerID->RequestFlankingDirection(inAI);
+
+	FEnvQueryRequest QueryRequest = FEnvQueryRequest(Query, this);
+
+	FEnvNamedValue paramX;
+	paramX.ParamName = "FlankDirectionX";
+	paramX.Value = FlankSide.X;
+	paramX.ParamType = EAIParamType::Float;
+	FEnvNamedValue paramY;
+	paramY.ParamName = "FlankDirectionY";
+	paramY.Value = FlankSide.Y;
+	paramY.ParamType = EAIParamType::Float;
+	FEnvNamedValue paramZ;
+	paramZ.ParamName = "FlankDirectionZ";
+	paramZ.Value = FlankSide.Z;
+	paramZ.ParamType = EAIParamType::Float;
+
+	QueryRequest.SetNamedParam(paramX);
+	QueryRequest.SetNamedParam(paramY);
+	QueryRequest.SetNamedParam(paramZ);
+
+	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &USquadComponent::FlankingQueryResult);
+
 }
 
 void USquadComponent::OnFlankReady(FVector flankPosition)
@@ -69,6 +93,11 @@ void USquadComponent::OnFlankReady(FVector flankPosition)
 	GoapComponent->GetBlackboardData()->SetValueAsVector("ShootingPosition", flankPosition);
 
 	OnComplete.ExecuteIfBound();
+}
+
+void USquadComponent::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
+{
+
 }
 
 void USquadComponent::BeginPlay()

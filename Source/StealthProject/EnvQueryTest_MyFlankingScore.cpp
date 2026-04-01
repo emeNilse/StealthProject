@@ -19,15 +19,17 @@ float UEnvQueryTest_MyFlankingScore::ScoreFlank(FVector& itemLocation, FVector& 
 
 void UEnvQueryTest_MyFlankingScore::RunTest(FEnvQueryInstance& QueryInstance) const
 {
-	float tarX = QueryInstance.NamedParams.FindRef(TEXT("TargetX"));
-	float tarY = QueryInstance.NamedParams.FindRef(TEXT("TargetY"));
-	float tarZ = QueryInstance.NamedParams.FindRef(TEXT("TargetZ"));
-	FVector targetLoc(tarX, tarY, tarZ);
+	TArray<FVector> ContextLocations;
+	QueryInstance.PrepareContext(TargetContext, ContextLocations);
+	FVector TargetLocationFromContext = ContextLocations[0];
 
-	
-	float fX = QueryInstance.NamedParams.FindRef(TEXT("FlankDirX"));
-	float fY = QueryInstance.NamedParams.FindRef(TEXT("FlankDirY"));
-	float fZ = QueryInstance.NamedParams.FindRef(TEXT("FlankDirZ"));
+	FlankDirectionX.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);
+	FlankDirectionY.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);
+	FlankDirectionZ.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);
+
+	float fX = FlankDirectionX.GetValue();
+	float fY = FlankDirectionY.GetValue();
+	float fZ = FlankDirectionZ.GetValue();
 	FVector flankDir(fX, fY, fZ);
 	flankDir.Normalize();
 	
@@ -35,7 +37,7 @@ void UEnvQueryTest_MyFlankingScore::RunTest(FEnvQueryInstance& QueryInstance) co
 	{
 		FVector itemLoc = GetItemLocation(QueryInstance, It.GetIndex());
 		
-		float score = ScoreFlank(itemLoc, targetLoc, flankDir);
+		float score = ScoreFlank(itemLoc, TargetLocationFromContext, flankDir);
 		
 		It.SetScore(TestPurpose, FilterType, score, 0, 1);
 	}

@@ -51,7 +51,6 @@ struct FFlankSlot
 
 struct FPendingFlankRequest
 {
-
 	AAI_Controller* Requester;
 	FOnCalculationComplete OnCalculationComplete;
 };
@@ -102,6 +101,8 @@ public:
 
 	bool ShouldUpdateFlankSlots();
 
+	FVector RequestFlankingDirection(AAI_Controller* requester);
+
 	void RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback);
 
 	void CalculateFlankingPosition(UObject* member);
@@ -136,5 +137,7 @@ private:
 
 	int AssualtRolesAvailable = 1;
 	int SkirmisherRolesAvailable = 2;
+
+	float LastFlankDirection = 0.f;
 	
 };

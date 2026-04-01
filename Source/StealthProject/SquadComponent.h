@@ -50,9 +50,16 @@ public:
 
 	void OnFlankReady(FVector flankPosition);
 
+	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
+
 private:
 	TWeakObjectPtr<ASquadManager> SquadManagerID;
 
 	UGoapComponent* GoapComponent;
+
+	FVector FlankSide;
+
+	UPROPERTY(BlueprintAssignable)
+	UEnvQuery* Query;
 		
 };
