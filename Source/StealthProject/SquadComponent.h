@@ -25,6 +25,9 @@ public:
 
 	AActor* CachedOwner;
 
+	UPROPERTY(BlueprintType)
+	UEnvQuery* Query;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -58,8 +61,5 @@ private:
 	UGoapComponent* GoapComponent;
 
 	FVector FlankSide;
-
-	UPROPERTY(BlueprintAssignable)
-	UEnvQuery* Query;
 		
 };

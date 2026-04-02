@@ -48,10 +48,20 @@ struct FFlankSlot
 	float Score = 0.f;
 };
 
+USTRUCT()
+struct FPositionsForRoleAssignment
+{
+	GENERATED_BODY()
+
+	float DistanceToTarget;
+
+	TWeakObjectPtr<USquadComponent> Member;
+};
 
 struct FPendingFlankRequest
 {
 	AAI_Controller* Requester;
+
 	FOnCalculationComplete OnCalculationComplete;
 };
 
@@ -101,15 +111,15 @@ public:
 
 	bool ShouldUpdateFlankSlots();
 
-	FVector RequestFlankingDirection(AAI_Controller* requester);
-
 	void RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback);
 
 	void CalculateFlankingPosition(UObject* member);
 
 	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
 
-	FFlankSlot* FindBestAvailableSlot();
+	FFlankSlot* FindBestAvailableSlot(AAI_Controller* requester);
+
+	bool ItemAndMemberOnSameSide(FFlankSlot& slot, AAI_Controller* requester);
 
 protected:
 	virtual void BeginPlay() override;

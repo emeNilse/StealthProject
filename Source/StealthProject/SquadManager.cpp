@@ -24,7 +24,6 @@ void ASquadManager::Initialize(TArray<TWeakObjectPtr<USquadComponent>> members)
 	}
 
 	SquadState = ESquadState::Neutral;
-	RoleAssignemnt();
 }
 
 void ASquadManager::ConfigInitialize(TWeakObjectPtr<USquadConfigData> configData)
@@ -45,7 +44,47 @@ void ASquadManager::FindMembers()
 
 void ASquadManager::RoleAssignemnt()
 {
+	TArray<FPositionsForRoleAssignment> roleList;
+	FVector targetLocation = CurrentTarget->GetActorLocation();
+
 	for (USquadComponent* member : MySquad)
+	{
+		if (member->SquadRole != ESquadRole::Default)
+		{
+			continue;
+		}
+		
+		FPositionsForRoleAssignment assignment;
+		assignment.Member = member;
+		assignment.DistanceToTarget = FVector::Dist(targetLocation, member->CachedOwner->GetActorLocation());
+
+		roleList.Add(assignment);
+	}
+	
+	roleList.Sort([](const FPositionsForRoleAssignment& A, const FPositionsForRoleAssignment& B)
+		{
+			return A.DistanceToTarget < B.DistanceToTarget;
+		});
+
+	for (FPositionsForRoleAssignment assignee : roleList)
+	{
+		if (AssualtRolesAvailable > 0)
+		{
+			assignee.Member->SquadRole = ESquadRole::Assualt;
+			AssualtRolesAvailable--;
+		}
+		else if (SkirmisherRolesAvailable > 0)
+		{
+			assignee.Member->SquadRole = ESquadRole::Skirmisher;
+			SkirmisherRolesAvailable--;
+		}
+		else
+		{
+			assignee.Member->SquadRole = ESquadRole::Support;
+		}
+	}
+
+	/*for (USquadComponent* member : MySquad)
 	{
 		if (!member) continue;
 
@@ -70,7 +109,7 @@ void ASquadManager::RoleAssignemnt()
 				member->SquadRole = ESquadRole::Support;
 			}
 		}
-	}
+	}*/
 }
 
 void ASquadManager::NotifyMemberDied(USquadComponent* deadMember)
@@ -97,6 +136,7 @@ void ASquadManager::SquadMemberEncounteredTarget(AActor* newTarget)
 		if (CurrentTarget != newTarget)
 		{
 			CurrentTarget = newTarget;
+			RoleAssignemnt();
 			ChangeState(ESquadState::Combat);
 		}
 	}
@@ -141,17 +181,6 @@ bool ASquadManager::ShouldUpdateFlankSlots()
 	return distanceMoved >= PlayerMoveThreshold * PlayerMoveThreshold;
 }
 
-FVector ASquadManager::RequestFlankingDirection(AAI_Controller* requester)
-{
-	FVector RightSide = CurrentTarget->GetActorRightVector();
-	FVector TargetToNPC = (CurrentTarget->GetActorLocation() - requester->GetMyNPC()->GetActorLocation()).GetSafeNormal();
-	float FlankDir = FVector::DotProduct(RightSide, TargetToNPC);
-
-	//positive is left and negative is right
-	
-	return RightSide;
-}
-
 void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback)
 {
 	PendingRequests.Add({ requester, callback });
@@ -184,9 +213,15 @@ void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
 		FlankSlots.Add(slot);
 	}
 
+	FlankSlots.Sort([](const FFlankSlot& A, const FFlankSlot& B) {return A.Score > B.Score;});
+
 	for (FPendingFlankRequest& request : PendingRequests)
 	{
-		FFlankSlot* slot = FindBestAvailableSlot();
+		/*FVector RightSide = CurrentTarget->GetActorRightVector();
+		FVector TargetToNPC = (CurrentTarget->GetActorLocation() - request.Requester->GetMyNPC()->GetActorLocation()).GetSafeNormal();
+		float FlankDir = FVector::DotProduct(RightSide, TargetToNPC);*/
+		
+		FFlankSlot* slot = FindBestAvailableSlot(request.Requester);
 
 		FVector pos = slot ? slot->Position : FVector::ZeroVector;
 
@@ -208,23 +243,39 @@ void ASquadManager::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
 	PendingRequests.Empty();
 }
 
-FFlankSlot* ASquadManager::FindBestAvailableSlot()
+FFlankSlot* ASquadManager::FindBestAvailableSlot(AAI_Controller* requester)
 {
 	FFlankSlot* best = nullptr;
 	float  bestScore = -FLT_MAX;
 
+	//FlankSlots should be sorted in descending order
 	for (FFlankSlot& slot : FlankSlots)
 	{
 		if (slot.bReserved) continue;
 
-		if (slot.Score > bestScore)
+		if (ItemAndMemberOnSameSide(slot, requester))
+		{
+			best = &slot;
+			return best;
+		}
+		/*if (slot.Score > bestScore)
 		{
 			bestScore = slot.Score;
 			best = &slot;
-		}
+		}*/
 	}
 
 	return best;
+}
+
+bool ASquadManager::ItemAndMemberOnSameSide(FFlankSlot& slot, AAI_Controller* requester)
+{
+	FVector rightSide = CurrentTarget->GetActorRightVector();
+	FVector targetLocation = CurrentTarget->GetActorLocation();
+	float itemToTargetDot = FVector::DotProduct(rightSide, (slot.Position - targetLocation));
+	float requesterToTargetDot = FVector::DotProduct(rightSide, (requester->GetMyNPC()->GetActorLocation() - targetLocation));
+	
+	return (itemToTargetDot <= 0 && requesterToTargetDot <= 0 || itemToTargetDot > 0 && requesterToTargetDot > 0);
 }
 
 void ASquadManager::BeginPlay()

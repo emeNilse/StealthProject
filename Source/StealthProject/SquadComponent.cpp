@@ -59,11 +59,10 @@ void USquadComponent::InjectSquadBeliefsToGoap()
 
 void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 {
-	//FVector flankPosition = SquadManagerID->RequestFlankingPosition(inAI);
+	SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
 
-	//SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
-
-	FlankSide = SquadManagerID->RequestFlankingDirection(inAI);
+	//
+	/*FlankSide = SquadManagerID->RequestFlankingDirection(inAI);
 
 	FEnvQueryRequest QueryRequest = FEnvQueryRequest(Query, this);
 
@@ -84,7 +83,7 @@ void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 	QueryRequest.SetNamedParam(paramY);
 	QueryRequest.SetNamedParam(paramZ);
 
-	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &USquadComponent::FlankingQueryResult);
+	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &USquadComponent::FlankingQueryResult);*/
 
 }
 

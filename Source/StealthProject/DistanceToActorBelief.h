@@ -17,7 +17,7 @@ class STEALTHPROJECT_API UDistanceToActorBelief : public UGoapBelief
 public:
 
 	UPROPERTY(EditAnywhere)
-	float MaxDistance = 5.f;
+	float MaxDistance;
 
 	UPROPERTY(EditAnywhere)
 	FName BlackboardKey;
@@ -36,7 +36,6 @@ public:
 			return false;
 		}
 
-		return FVector::Dist(AI->GetPawn()->GetActorLocation(), Target->GetActorLocation()) <= MaxDistance;
+		return FVector::DistSquared(AI->GetPawn()->GetActorLocation(), Target->GetActorLocation()) <= MaxDistance * MaxDistance;
 	}
-	
 };

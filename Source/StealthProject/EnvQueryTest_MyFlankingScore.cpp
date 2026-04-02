@@ -22,6 +22,10 @@ void UEnvQueryTest_MyFlankingScore::RunTest(FEnvQueryInstance& QueryInstance) co
 	TArray<FVector> ContextLocations;
 	QueryInstance.PrepareContext(TargetContext, ContextLocations);
 	FVector TargetLocationFromContext = ContextLocations[0];
+	
+	TArray<AActor*> ContextActors;
+	QueryInstance.PrepareContext(TargetContext, ContextActors);
+
 
 	FlankDirectionX.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);
 	FlankDirectionY.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);

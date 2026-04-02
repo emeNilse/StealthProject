@@ -36,4 +36,5 @@ private:
 
 	ANPC* SelfReference = nullptr;
 
+	float DistanceThreshold = 1500.f;
 };

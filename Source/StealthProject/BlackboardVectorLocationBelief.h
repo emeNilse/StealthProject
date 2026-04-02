@@ -25,6 +25,6 @@ public:
 
 		FVector position = AI->GetBlackboardComponent()->GetValueAsVector(BlackboardVectorKeyName);
 
-		return FVector::Dist(AI->GetPawn()->GetActorLocation(), position) <= DistanceThreshold;
+		return FVector::DistSquared(AI->GetPawn()->GetActorLocation(), position) <= DistanceThreshold * DistanceThreshold;
 	}
 };
