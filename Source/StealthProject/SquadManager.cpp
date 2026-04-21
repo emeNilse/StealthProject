@@ -190,7 +190,7 @@ void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalcul
 		UpdateFlankSlots();
 	}
 	
-	//What is Slot Update is not needed?
+	//What in Slot Update is not needed?
 }
 
 void ASquadManager::CalculateFlankingPosition(UObject* member)

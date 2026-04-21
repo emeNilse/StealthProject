@@ -48,7 +48,7 @@ public:
 		//Builder(const FString name);
 		//Builder(const TSharedPtr<AgentBeliefs>& name);
 
-		//I don't understand why this is what works, I tried my own way first but a youtube example and ChatGPT told me it had to be written like this
+		//I don't understand why this is what works, I tried my own way first but a youtube example and chatgpt told me it had to be written like this
 		Builder& WithCondition(TFunction<bool()> func)
 		{
 			Belief->ConditionFunc = func;
