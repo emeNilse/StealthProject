@@ -13,7 +13,8 @@ enum class EItemType : uint8
 	None, 
 	Resource,
 	Supply,
-	Fuel
+	Fuel, 
+	Weapon
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -30,6 +31,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	EItemType GetHeldItem() const;
 
+	UFUNCTION(BlueprintCallable)
 	bool PickUpItem(EItemType item);
 	EItemType DropItem();
 

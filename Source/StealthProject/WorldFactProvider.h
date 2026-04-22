@@ -11,9 +11,18 @@
 UENUM(BlueprintType)
 enum class EWorldFactType : uint8
 {
+	Default,
 	Bool,
 	Int,
 	Float
+};
+
+UENUM(BlueprintType)
+enum class EWorldBaseType : uint8
+{
+	Default,
+	Station,
+	Item
 };
 
 USTRUCT(BlueprintType)
@@ -25,15 +34,23 @@ struct FWorldFact
 	FName Key = NAME_None;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EWorldFactType Type = EWorldFactType::Bool;
+	bool SingleOwner = false;
+
+	bool IsAlreadyTaken = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EWorldBaseType BaseType = EWorldBaseType::Default;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EWorldFactType InfoType = EWorldFactType::Default;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == EWorldFactType::Bool", EditConditionHides))
 	bool BoolValue = false;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == EWorldFactType::Int", EditConditionHides))
 	int32 IntValue = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == EWorldFactType::Float", EditConditionHides))
 	float FloatValue = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -41,6 +58,8 @@ struct FWorldFact
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TWeakObjectPtr<AActor> Source;
+
+	TWeakObjectPtr<AActor> OwningActor;
 };
 
 UINTERFACE(BlueprintType)

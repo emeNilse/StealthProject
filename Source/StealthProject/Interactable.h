@@ -21,7 +21,8 @@ enum class EInteractionType : uint8
 	Default,
 	Storage_Check,
 	Storage_Take,
-	Storage_Refill
+	Storage_Refill,
+	Item_PickUp
 };
 
 UINTERFACE(BlueprintType)

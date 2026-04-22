@@ -21,7 +21,7 @@ void AFirePlace::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	FWorldFact FireFact;
 	FireFact.Key = "FirePlace";
-	FireFact.Type = EWorldFactType::Bool;
+	FireFact.InfoType = EWorldFactType::Bool;
 	FireFact.BoolValue = bFireActive;
 	FireFact.Location = GetActorLocation();
 	FireFact.Source = TWeakObjectPtr<AActor>(this);

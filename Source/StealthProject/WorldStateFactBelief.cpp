@@ -1,6 +1,8 @@
 
 
 #include "WorldStateFactBelief.h"
+#include "BaseStation.h"
+#include "BaseItem.h"
 
 bool UWorldStateFactBelief::CompareInt(int stat) const
 {
@@ -81,6 +83,8 @@ bool UWorldStateFactBelief::Evaluate(AAI_Controller* AI) const
 	{
 		if (fact.Key == FactName)
 		{
+			if (fact.SingleOwner && fact.IsAlreadyTaken) continue;
+			
 			float Distance = FVector::DistSquared(fact.Location, AgentLocation);
 
 			switch (Type)
@@ -124,6 +128,15 @@ bool UWorldStateFactBelief::Evaluate(AAI_Controller* AI) const
 	if (BestSource.IsValid())
 	{
 		AI->GetBlackboardComponent()->SetValueAsObject(BlackboardKey, BestSource.Get());
+
+		if (ABaseItem* i = Cast<ABaseItem>(BestSource))
+		{
+			if (i->bSingleOwner)
+			{
+				i->SetOwner(Pawn);
+			}
+		}
+
 		return true;
 	}
 	return false;

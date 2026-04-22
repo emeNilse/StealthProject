@@ -23,13 +23,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	EWorldFactType Type = EWorldFactType::Bool;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "Type == EWorldFactType::Bool", EditConditionHides))
 	bool FactBool;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "Type == EWorldFactType::Int", EditConditionHides))
 	int IntValue;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "Type == EWorldFactType::Float", EditConditionHides))
 	float FloatValue;
 
 	UPROPERTY(EditAnywhere)

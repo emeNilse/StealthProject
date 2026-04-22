@@ -32,10 +32,10 @@ bool ALumberStorage::Interact_Implementation(AActor* interactor, EInteractionTyp
 void ALumberStorage::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	Super::GatherWorldFacts_Implementation(OutFacts);
-	
+
 	FWorldFact LumberFact;
 	LumberFact.Key = "LumberStorage";
-	LumberFact.Type = EWorldFactType::Int;
+	LumberFact.InfoType = EWorldFactType::Int;
 	LumberFact.IntValue = CurrentLumberAmount;
 	LumberFact.Location = GetActorLocation();
 	LumberFact.Source = TWeakObjectPtr<AActor>(this);

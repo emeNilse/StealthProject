@@ -184,6 +184,7 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 
 Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
 {
+	//UE_LOG(LogGOAP, Warning, TEXT("%sEntering FindPath | Cost: %f | RequiredEffects: %d"), *Indent(depth), parent->Cost, parent->RequiredEffects.Num());
 	TArray<Node*> openSet;
 	TArray<Node*> closedSet;
 
@@ -231,9 +232,17 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			bool bUseful = false;
 			for (TSharedPtr<AgentBeliefs> belief : currentNode->RequiredEffects)
 			{
+				bool bMatched = HasMatchingEffect(action->Effects, belief);
+				if (!bMatched)
+				{
+					//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does NOT satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
+				}
+				
+				
 				if (HasMatchingEffect(action->Effects, belief))
 				{
 					bUseful = true;
+					//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
 					break;
 				}
 			}
@@ -261,7 +270,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			if (bVisited) continue;*/
 
 			if (IsInClosedAndBetterCost(neighbourNode, closedSet)) continue;
-
+			//UE_LOG(LogGOAP, Warning, TEXT("%sRecursing with Action: %s | NewRequiredEffects: %d"), *Indent(depth), *action->Name, newRequiredEffects.Num());
 			openSet.Add(neighbourNode);
 		}
 	}

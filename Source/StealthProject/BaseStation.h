@@ -43,9 +43,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
 	int ResourceAmount;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
-	float ResourceFloat;*/
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Facts")
 	int MaxResourceAmount;
 

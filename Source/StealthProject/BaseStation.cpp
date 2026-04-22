@@ -49,12 +49,14 @@ void ABaseStation::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 {
 	FWorldFact Fact;
 	Fact.Key = WorldFactKeyName;
-	Fact.Type = FactType;
+	Fact.BaseType = EWorldBaseType::Station;
+	Fact.InfoType = FactType;
 	Fact.BoolValue = bIsStationActive;
 	Fact.IntValue = ResourceAmount;
-	//Fact.FloatValue = ResourceFloat;
 	Fact.Location = GetActorLocation();
 	Fact.Source = TWeakObjectPtr<AActor>(this);
+	Fact.SingleOwner = false;
+	Fact.IsAlreadyTaken = false;
 
 	OutFacts.Add(Fact);
 }
