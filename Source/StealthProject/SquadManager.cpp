@@ -189,8 +189,36 @@ void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalcul
 	{
 		UpdateFlankSlots();
 	}
-	
-	//What in Slot Update is not needed?
+	else
+	{
+		FlankSlotWithoutUpdate();
+	}
+}
+
+void ASquadManager::FlankSlotWithoutUpdate()
+{
+	for (FPendingFlankRequest& request : PendingRequests)
+	{
+		FFlankSlot* slot = FindBestAvailableSlot(request.Requester);
+
+		FVector pos = slot ? slot->Position : FVector::ZeroVector;
+
+		if (slot)
+		{
+			slot->bReserved = true;
+			slot->User = request.Requester;
+			ChosenFlankPositions.Add(pos);
+		}
+
+		if (CurrentTarget)
+		{
+			LastKnownTargetLocation = CurrentTarget->GetActorLocation();
+		}
+
+		request.OnCalculationComplete.ExecuteIfBound(pos);
+	}
+
+	PendingRequests.Empty();
 }
 
 void ASquadManager::CalculateFlankingPosition(UObject* member)
@@ -253,10 +281,17 @@ FFlankSlot* ASquadManager::FindBestAvailableSlot(AAI_Controller* requester)
 	{
 		if (slot.bReserved) continue;
 
+		for (FFlankSlot& s : FlankSlots)
+		{
+			if (s.bReserved && FVector::DistSquared(s.Position, slot.Position) <= 100.f * 100.f)
+			{
+				continue;
+			}
+		}
+
 		if (ItemAndMemberOnSameSide(slot, requester))
 		{
 			best = &slot;
-			return best;
 		}
 		/*if (slot.Score > bestScore)
 		{

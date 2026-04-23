@@ -51,6 +51,7 @@ void ABaseItem::GatherWorldFacts_Implementation(TArray<FWorldFact>& OutFacts)
 	Fact.Source = TWeakObjectPtr<AActor>(this);
 	Fact.SingleOwner = bSingleOwner;
 	Fact.IsAlreadyTaken = bItemIsTaken;
+	Fact.OwningActor = Owner;
 
 	OutFacts.Add(Fact);
 }

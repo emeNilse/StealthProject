@@ -179,12 +179,10 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 	}
 
 	return parent->Leaves.Num() > 0;
-	//return false;
 }
 
 Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
 {
-	//UE_LOG(LogGOAP, Warning, TEXT("%sEntering FindPath | Cost: %f | RequiredEffects: %d"), *Indent(depth), parent->Cost, parent->RequiredEffects.Num());
 	TArray<Node*> openSet;
 	TArray<Node*> closedSet;
 
@@ -199,6 +197,9 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 
 		Node* currentNode = openSet[0];
 		openSet.RemoveAt(0);
+
+		//Debugging
+		//UE_LOG(LogGOAP, Warning, TEXT("Processing node | G: %f H: %f F: %f | RequiredEffects: %d | OpenSet: %d ClosedSet: %d"), currentNode->GCost, currentNode->HCost, currentNode->FCost(), currentNode->RequiredEffects.Num(), openSet.Num(), closedSet.Num());
 
 		//Remove any Required Effects that are already true.
 		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = currentNode->RequiredEffects;
@@ -220,33 +221,56 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		//If Required Effects is empty, then all requirements are satisfied. Return current node and set up the action plan.
 		if (requiredDesiredEffects.Num() == 0)
 		{
+			//Debugging
+			/*UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
+			Node* trace = currentNode;
+			while (trace)
+			{
+				if (trace->Action)
+				{
+					UE_LOG(LogGOAP, Warning, TEXT("Step: %s"), *trace->Action->Name);
+				}
+				trace = trace->Parent;
+			}*/
+
 			return currentNode;
 		}
 
 		currentNode->RequiredEffects = requiredDesiredEffects;
 
+		//Debugging
+		/*UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
+		if (requiredDesiredEffects.Num() == 1)
+		{
+			TSharedPtr<AgentBeliefs> b = *requiredDesiredEffects.CreateIterator();
+			
+			UE_LOG(LogGOAP, Verbose, TEXT("The Required Effect: %s"), *b->Name);
+		}*/
+
 		closedSet.Add(currentNode);
+		//Debugging
+		//UE_LOG(LogGOAP, Verbose, TEXT("Moved node to ClosedSet. Closed size: %d"), closedSet.Num());
 
 		for (TSharedPtr<GoapAction> action : actions)
 		{
+			//Debugging
+			//UE_LOG(LogGOAP, Verbose, TEXT("Evaluating Actions: %s | Cost: %f"), *action->Name, action->CostValue());
+			
 			bool bUseful = false;
 			for (TSharedPtr<AgentBeliefs> belief : currentNode->RequiredEffects)
 			{
-				bool bMatched = HasMatchingEffect(action->Effects, belief);
-				if (!bMatched)
-				{
-					//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does NOT satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
-				}
-				
-				
 				if (HasMatchingEffect(action->Effects, belief))
 				{
 					bUseful = true;
-					//UE_LOG(LogGOAP, Verbose, TEXT("%sAction %s does satisfy belief %s"), *Indent(depth), *action->Name, *belief->Name);
 					break;
 				}
 			}
-			if (!bUseful) continue;
+			if (!bUseful)
+			{
+				//Debugging
+				//UE_LOG(LogGOAP, Verbose, TEXT("Skipping Action %s (not useful)"), *action->Name);
+				continue;
+			}
 
 			TSet<TSharedPtr<AgentBeliefs>> newEffects = currentNode->RequiredEffects;
 			newEffects = newEffects.Difference(action->Effects);
@@ -257,6 +281,9 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 
 			Node* neighbourNode = new Node(currentNode, action, newEffects, newG);
 			neighbourNode->HCost = newH;
+
+			//Debugging
+			//UE_LOG(LogGOAP, Warning, TEXT("Creating neighbour via Action: %s | NewEffects: %d | G: %f H: %f F: %f"), *action->Name, newEffects.Num(), newG, newH, newG + newH);
 
 			/*bool bVisited = false;
 			for (Node* closed : closedSet)
@@ -269,12 +296,19 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			}
 			if (bVisited) continue;*/
 
-			if (IsInClosedAndBetterCost(neighbourNode, closedSet)) continue;
-			//UE_LOG(LogGOAP, Warning, TEXT("%sRecursing with Action: %s | NewRequiredEffects: %d"), *Indent(depth), *action->Name, newRequiredEffects.Num());
+			if (IsInClosedAndBetterCost(neighbourNode, closedSet))
+			{
+				//Debugging
+				//UE_LOG(LogGOAP, Verbose, TEXT("Skipping neighbour (better node already in ClosedSet)"));
+				continue;
+			}
 			openSet.Add(neighbourNode);
+			//Debugging
+			//UE_LOG(LogGOAP, Verbose, TEXT("Added neighbour to OpenSet. New size: %d"), openSet.Num());
 		}
 	}
-	
+	//Debugging
+	//UE_LOG(LogGOAP, Error, TEXT("A* failed: OpenSet exhausted, no solution found."))
 	return nullptr;
 }
 

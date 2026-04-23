@@ -83,7 +83,14 @@ bool UWorldStateFactBelief::Evaluate(AAI_Controller* AI) const
 	{
 		if (fact.Key == FactName)
 		{
-			if (fact.SingleOwner && fact.IsAlreadyTaken) continue;
+			if (fact.SingleOwner && fact.IsAlreadyTaken)
+			{
+				if (fact.OwningActor == Pawn)
+				{
+					return true;
+				}
+				continue;
+			}
 			
 			float Distance = FVector::DistSquared(fact.Location, AgentLocation);
 

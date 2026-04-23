@@ -113,6 +113,8 @@ public:
 
 	void RequestFlankingPosition(AAI_Controller* requester, FOnCalculationComplete callback);
 
+	void FlankSlotWithoutUpdate();
+
 	void CalculateFlankingPosition(UObject* member);
 
 	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
