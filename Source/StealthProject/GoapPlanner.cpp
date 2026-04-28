@@ -199,7 +199,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		openSet.RemoveAt(0);
 
 		//Debugging
-		//UE_LOG(LogGOAP, Warning, TEXT("Processing node | G: %f H: %f F: %f | RequiredEffects: %d | OpenSet: %d ClosedSet: %d"), currentNode->GCost, currentNode->HCost, currentNode->FCost(), currentNode->RequiredEffects.Num(), openSet.Num(), closedSet.Num());
+		UE_LOG(LogGOAP, Warning, TEXT("Processing node | G: %f H: %f F: %f | RequiredEffects: %d | OpenSet: %d ClosedSet: %d"), currentNode->GCost, currentNode->HCost, currentNode->FCost(), currentNode->RequiredEffects.Num(), openSet.Num(), closedSet.Num());
 
 		//Remove any Required Effects that are already true.
 		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = currentNode->RequiredEffects;
@@ -222,7 +222,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		if (requiredDesiredEffects.Num() == 0)
 		{
 			//Debugging
-			/*UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
+			UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
 			Node* trace = currentNode;
 			while (trace)
 			{
@@ -231,7 +231,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 					UE_LOG(LogGOAP, Warning, TEXT("Step: %s"), *trace->Action->Name);
 				}
 				trace = trace->Parent;
-			}*/
+			}
 
 			return currentNode;
 		}
@@ -239,13 +239,13 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		currentNode->RequiredEffects = requiredDesiredEffects;
 
 		//Debugging
-		/*UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
+		UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
 		if (requiredDesiredEffects.Num() == 1)
 		{
 			TSharedPtr<AgentBeliefs> b = *requiredDesiredEffects.CreateIterator();
 			
 			UE_LOG(LogGOAP, Verbose, TEXT("The Required Effect: %s"), *b->Name);
-		}*/
+		}
 
 		closedSet.Add(currentNode);
 		//Debugging
@@ -254,7 +254,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		for (TSharedPtr<GoapAction> action : actions)
 		{
 			//Debugging
-			//UE_LOG(LogGOAP, Verbose, TEXT("Evaluating Actions: %s | Cost: %f"), *action->Name, action->CostValue());
+			UE_LOG(LogGOAP, Verbose, TEXT("Evaluating Actions: %s | Cost: %f"), *action->Name, action->CostValue());
 			
 			bool bUseful = false;
 			for (TSharedPtr<AgentBeliefs> belief : currentNode->RequiredEffects)
@@ -304,11 +304,11 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			}
 			openSet.Add(neighbourNode);
 			//Debugging
-			//UE_LOG(LogGOAP, Verbose, TEXT("Added neighbour to OpenSet. New size: %d"), openSet.Num());
+			UE_LOG(LogGOAP, Verbose, TEXT("Added neighbour to OpenSet. New size: %d"), openSet.Num());
 		}
 	}
 	//Debugging
-	//UE_LOG(LogGOAP, Error, TEXT("A* failed: OpenSet exhausted, no solution found."))
+	UE_LOG(LogGOAP, Error, TEXT("A* failed: OpenSet exhausted, no solution found."))
 	return nullptr;
 }
 

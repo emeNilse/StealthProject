@@ -36,6 +36,9 @@ void ANPC::BeginPlay()
 
 	VisionMesh->SetRelativeLocation(FVector(0, 0, -HalfHeight + 2.f));
 
+	MoveComponent = GetCharacterMovement();
+	MoveComponent->GetNavAgentPropertiesRef().bCanCrouch = true;
+
 	ConeMesh = Cast<UStaticMeshComponent>(GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	if (ConeMesh)
 	{
@@ -382,6 +385,22 @@ void ANPC::PossessedBy(AController* NewController)
 	//InitializeVisionCone();
 }
 
+void ANPC::CallCrouch()
+{
+	if (!MoveComponent->IsCrouching())
+	{
+		MoveComponent->Crouch();
+	}
+}
+
+void ANPC::CallUnCrouch()
+{
+	if (MoveComponent->IsCrouching())
+	{
+		MoveComponent->UnCrouch();
+	}
+}
+
 void ANPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -392,6 +411,11 @@ void ANPC::Tick(float DeltaTime)
 	{
 		UpdateStats();
 		StatTimerRemaining = StatTimerInterval;
+	}
+
+	if (!bBehindCover && MoveComponent->IsCrouching())
+	{
+		MoveComponent->UnCrouch();
 	}
 }
 

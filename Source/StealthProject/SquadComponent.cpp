@@ -87,9 +87,18 @@ void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 
 }
 
-void USquadComponent::OnFlankReady(FVector flankPosition)
+void USquadComponent::OnFlankReady(FVector flankPosition, float flankScore)
 {
 	GoapComponent->GetBlackboardData()->SetValueAsVector("ShootingPosition", flankPosition);
+
+	if (flankScore == 1)
+	{
+		GoapComponent->GetBlackboardData()->SetValueAsBool("bCanCrouch", true);
+	}
+	else
+	{
+		GoapComponent->GetBlackboardData()->SetValueAsBool("bCanCrouch", false);
+	}
 
 	OnComplete.ExecuteIfBound();
 }

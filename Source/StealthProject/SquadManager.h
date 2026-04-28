@@ -11,7 +11,7 @@
 
 class USquadComponent;
 
-DECLARE_DELEGATE_OneParam(FOnCalculationComplete, FVector);
+DECLARE_DELEGATE_TwoParams(FOnCalculationComplete, FVector, float);
 
 DECLARE_MULTICAST_DELEGATE(FOnSquadStateChanged);
 
@@ -115,13 +115,21 @@ public:
 
 	void FlankSlotWithoutUpdate();
 
-	void CalculateFlankingPosition(UObject* member);
+	void RunCoverQuery();
 
-	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
+	void RunFlankingQuery();
+
+	void CoverQueryResult(TSharedPtr<FEnvQueryResult> result);
+
+	void FlankQueryResult(TSharedPtr<FEnvQueryResult> result);
+
+	void PickASlot(float score);
 
 	FFlankSlot* FindBestAvailableSlot(AAI_Controller* requester);
 
 	bool ItemAndMemberOnSameSide(FFlankSlot& slot, AAI_Controller* requester);
+
+	bool VectorAngleDifference(FFlankSlot& slot1, FFlankSlot& slot2);
 
 protected:
 	virtual void BeginPlay() override;
@@ -139,7 +147,9 @@ private:
 
 	UWorld* CachedWorld;
 
-	UEnvQuery* AnchorQuery; 
+	UEnvQuery* CoverQuery; 
+
+	UEnvQuery* FlankQuery;
 
 	TArray<FFlankSlot> FlankSlots;
 

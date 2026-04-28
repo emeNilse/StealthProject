@@ -49,6 +49,9 @@ public:
 
 	bool bRecharging = false;
 
+	UPROPERTY(BlueprintReadOnly)
+	bool bBehindCover = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> Stats;
 
@@ -99,6 +102,10 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 
+	void CallCrouch();
+
+	void CallUnCrouch();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -138,6 +145,8 @@ private:
 	FTimerHandle InvestigativeTimerhandle;
 
 	UWorld* CachedWorld;
+
+	UCharacterMovementComponent* MoveComponent;
 
 	bool PlayerSpotted = false;
 

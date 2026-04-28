@@ -39,9 +39,17 @@ void UShootAtTargetStrategy::Tick(float DeltaTime)
 	if (FVector::DistSquared(AI->GetPawn()->GetActorLocation(), Target->GetActorLocation()) > DistanceThreshold * DistanceThreshold)
 	{
 		AI->GetBlackboardComponent()->SetValueAsVector("ShootingPosition", FVector::ZeroVector);
+		SelfReference->bBehindCover = false;
+		SelfReference->CallUnCrouch();
 		Status = EStrategyStatus::Failed;
 	}
 	
+	if (AI->GetBlackboardComponent()->GetValueAsBool("bCanCrouch"))
+	{
+		SelfReference->bBehindCover = true;
+		SelfReference->CallCrouch();
+	}
+
 	FRotator lookAtRot = UKismetMathLibrary::FindLookAtRotation(SelfReference->GetActorLocation(), Target->GetActorLocation());
 
 	SelfReference->SetActorRotation(lookAtRot);

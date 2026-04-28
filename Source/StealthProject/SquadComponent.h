@@ -51,7 +51,7 @@ public:
 
 	void RequestFlankingPosition(AAI_Controller* inAI);
 
-	void OnFlankReady(FVector flankPosition);
+	void OnFlankReady(FVector flankPosition, float flankScore);
 
 	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
 
