@@ -52,16 +52,10 @@ void USquadComponent::SquadStateChanged()
 	GoapComponent->GetBlackboardData()->SetValueAsObject("SquadTarget", SquadManagerID->GetCurrentTarget());
 }
 
-void USquadComponent::InjectSquadBeliefsToGoap()
-{
-
-}
-
 void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 {
 	SquadManagerID->RequestFlankingPosition(inAI, FOnCalculationComplete::CreateUObject(this, &USquadComponent::OnFlankReady));
 
-	//
 	/*FlankSide = SquadManagerID->RequestFlankingDirection(inAI);
 
 	FEnvQueryRequest QueryRequest = FEnvQueryRequest(Query, this);
@@ -84,28 +78,13 @@ void USquadComponent::RequestFlankingPosition(AAI_Controller* inAI)
 	QueryRequest.SetNamedParam(paramZ);
 
 	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &USquadComponent::FlankingQueryResult);*/
-
 }
 
-void USquadComponent::OnFlankReady(FVector flankPosition, float flankScore)
+void USquadComponent::OnFlankReady(FVector flankPosition)
 {
 	GoapComponent->GetBlackboardData()->SetValueAsVector("ShootingPosition", flankPosition);
 
-	if (flankScore == 1)
-	{
-		GoapComponent->GetBlackboardData()->SetValueAsBool("bCanCrouch", true);
-	}
-	else
-	{
-		GoapComponent->GetBlackboardData()->SetValueAsBool("bCanCrouch", false);
-	}
-
 	OnComplete.ExecuteIfBound();
-}
-
-void USquadComponent::FlankingQueryResult(TSharedPtr<FEnvQueryResult> result)
-{
-
 }
 
 void USquadComponent::BeginPlay()

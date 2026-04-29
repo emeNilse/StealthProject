@@ -84,33 +84,6 @@ void ASquadManager::RoleAssignemnt()
 			assignee.Member->SquadRole = ESquadRole::Support;
 		}
 	}
-
-	/*for (USquadComponent* member : MySquad)
-	{
-		if (!member) continue;
-
-		if (member->SquadRole != ESquadRole::Default)
-		{
-			continue;
-		}
-		else
-		{
-			if (AssualtRolesAvailable > 0)
-			{
-				member->SquadRole = ESquadRole::Assualt;
-				AssualtRolesAvailable--;
-			}
-			else if (SkirmisherRolesAvailable > 0)
-			{
-				member->SquadRole = ESquadRole::Skirmisher;
-				SkirmisherRolesAvailable--;
-			}
-			else
-			{
-				member->SquadRole = ESquadRole::Support;
-			}
-		}
-	}*/
 }
 
 void ASquadManager::NotifyMemberDied(USquadComponent* deadMember)
@@ -150,22 +123,13 @@ void ASquadManager::ChangeState(ESquadState newState)
 {
 	SquadState = newState;
 	OnSquadStateChanged.Broadcast();
-	//OnStateChange();
-}
-
-void ASquadManager::OnStateChange()
-{
-	for (USquadComponent* member : MySquad)
-	{
-
-	}
 }
 
 void ASquadManager::UpdateFlankSlots()
 {
 	FlankSlots.Empty();
+	ReservedFlankSlots.Empty();
 	ChosenFlankPositions.Empty();
-
 	RunCoverQuery();
 }
 
@@ -196,12 +160,16 @@ void ASquadManager::RequestFlankingPosition(AAI_Controller* requester, FOnCalcul
 
 void ASquadManager::FlankSlotWithoutUpdate()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Slot update not needed"));
+
+	
 	for (FPendingFlankRequest& request : PendingRequests)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Begin searching through available slots"));
+
 		FFlankSlot* slot = FindBestAvailableSlot(request.Requester);
 
 		FVector pos = slot ? slot->Position : FVector::ZeroVector;
-		float score = slot ? slot->Score : 0;
 
 		if (slot)
 		{
@@ -214,8 +182,13 @@ void ASquadManager::FlankSlotWithoutUpdate()
 		{
 			LastKnownTargetLocation = CurrentTarget->GetActorLocation();
 		}
-
-		request.OnCalculationComplete.ExecuteIfBound(pos, score);
+		
+		if (!slot)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Invalid slot from FlankSlotWithoutUpdate"));
+			UE_LOG(LogTemp, Warning, TEXT("Must create a catch"));
+		}
+		request.OnCalculationComplete.ExecuteIfBound(pos);
 	}
 
 	PendingRequests.Empty();
@@ -227,21 +200,9 @@ void ASquadManager::RunCoverQuery()
 	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &ASquadManager::CoverQueryResult);
 }
 
-void ASquadManager::RunFlankingQuery()
-{
-	FEnvQueryRequest QueryRequest = FEnvQueryRequest(FlankQuery, this);
-	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &ASquadManager::FlankQueryResult);
-}
-
 void ASquadManager::CoverQueryResult(TSharedPtr<FEnvQueryResult> result)
 {
-	UE_LOG(LogTemp, Warning, TEXT("EQS Query finished! Valid: %d Items: %d"), result.IsValid(), result->Items.Num());
-	
-	if (!result.IsValid() || result->Items.Num() == 0)
-	{
-		RunFlankingQuery();
-		return;
-	}
+	//UE_LOG(LogTemp, Warning, TEXT("Cover Query finished! Valid: %d Items: %d"), result.IsValid(), result->Items.Num());
 
 	for (int i = 0; i < result->Items.Num(); i++)
 	{
@@ -253,39 +214,21 @@ void ASquadManager::CoverQueryResult(TSharedPtr<FEnvQueryResult> result)
 
 	FlankSlots.Sort([](const FFlankSlot& A, const FFlankSlot& B) {return A.Score > B.Score;});
 
-	PickASlot(1);
+	PickASlot();
 }
 
-void ASquadManager::FlankQueryResult(TSharedPtr<FEnvQueryResult> result)
-{
-	UE_LOG(LogTemp, Warning, TEXT("EQS Query finished! Valid: %d Items: %d"), result.IsValid(), result->Items.Num());
-
-	if (!result.IsValid() || result->Items.Num() == 0) return;
-
-	for (int i = 0; i < result->Items.Num(); i++)
-	{
-		FFlankSlot slot;
-		slot.Position = result->GetItemAsLocation(i);
-		slot.Score = result->GetItemScore(i);
-		FlankSlots.Add(slot);
-	}
-
-	FlankSlots.Sort([](const FFlankSlot& A, const FFlankSlot& B) {return A.Score > B.Score;});
-
-	PickASlot(0);
-}
-
-void ASquadManager::PickASlot(float score)
+void ASquadManager::PickASlot()
 {
 	for (FPendingFlankRequest& request : PendingRequests)
 	{
 		FFlankSlot* slot = FindBestAvailableSlot(request.Requester);
 
-		FVector pos = slot ? slot->Position : FVector::ZeroVector;
+		FVector pos = slot ? slot->Position : CurrentTarget->GetActorForwardVector() + CurrentTarget->GetActorLocation();
 
 		if (slot)
 		{
 			slot->bReserved = true;
+			ReservedFlankSlots.Add(*slot);
 			slot->User = request.Requester;
 			ChosenFlankPositions.Add(pos);
 		}
@@ -295,7 +238,7 @@ void ASquadManager::PickASlot(float score)
 			LastKnownTargetLocation = CurrentTarget->GetActorLocation();
 		}
 
-		request.OnCalculationComplete.ExecuteIfBound(pos, score);
+		request.OnCalculationComplete.ExecuteIfBound(pos);
 	}
 
 	PendingRequests.Empty();
@@ -306,21 +249,23 @@ FFlankSlot* ASquadManager::FindBestAvailableSlot(AAI_Controller* requester)
 	FFlankSlot* best = nullptr;
 	float  bestScore = 0;
 
-	//FlankSlots should be sorted in descending order
+	//UE_LOG(LogTemp, Warning, TEXT("Number of slots in FlankSlots: %d"), FlankSlots.Num());
+
 	for (FFlankSlot& slot : FlankSlots)
 	{
 		if (slot.bReserved) continue;
 
-		for (FFlankSlot& s : FlankSlots)
+		bool isValid = true;
+		for (FFlankSlot& s : ReservedFlankSlots)
 		{	
-			if (s.bReserved)
+			if (FVector::DistSquared(s.Position, slot.Position) <= 200.f * 200.f || VectorAngleDifference(s, slot))
 			{
-				if (FVector::DistSquared(s.Position, slot.Position) <= 200.f * 200.f || VectorAngleDifference(s, slot))
-				{
-					continue;
-				}
+				isValid = false;
+				break;
 			}
 		}
+
+		if (!isValid) continue;
 
 		if (ItemAndMemberOnSameSide(slot, requester))
 		{
@@ -330,7 +275,6 @@ FFlankSlot* ASquadManager::FindBestAvailableSlot(AAI_Controller* requester)
 				best = &slot;
 			}
 		}
-		
 	}
 
 	return best;
@@ -349,10 +293,10 @@ bool ASquadManager::ItemAndMemberOnSameSide(FFlankSlot& slot, AAI_Controller* re
 bool ASquadManager::VectorAngleDifference(FFlankSlot& slot1, FFlankSlot& slot2)
 {
 	FVector targetLocation = CurrentTarget->GetActorLocation();
-	FVector v1 = slot1.Position - targetLocation;
-	FVector v2 = slot2.Position - targetLocation;
-	float angle = acos(FVector::DotProduct(v1, v2) / (v1.Size() * v2.Size()));
-	return  angle < 30;
+	FVector v1 = (slot1.Position - targetLocation).GetSafeNormal();
+	FVector v2 = (slot2.Position - targetLocation).GetSafeNormal();
+	float cosAngle = FVector::DotProduct(v1, v2);
+	return  cosAngle > 0.866f;
 }
 
 void ASquadManager::BeginPlay()

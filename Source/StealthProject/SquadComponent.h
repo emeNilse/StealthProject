@@ -47,19 +47,14 @@ public:
 
 	void SquadStateChanged();
 
-	void InjectSquadBeliefsToGoap();
-
 	void RequestFlankingPosition(AAI_Controller* inAI);
 
-	void OnFlankReady(FVector flankPosition, float flankScore);
-
-	void FlankingQueryResult(TSharedPtr<FEnvQueryResult> result);
+	void OnFlankReady(FVector flankPosition);
 
 private:
 	TWeakObjectPtr<ASquadManager> SquadManagerID;
 
 	UGoapComponent* GoapComponent;
 
-	FVector FlankSide;
-		
+	FVector FlankSide;	
 };

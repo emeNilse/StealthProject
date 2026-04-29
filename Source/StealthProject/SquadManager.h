@@ -11,7 +11,7 @@
 
 class USquadComponent;
 
-DECLARE_DELEGATE_TwoParams(FOnCalculationComplete, FVector, float);
+DECLARE_DELEGATE_OneParam(FOnCalculationComplete, FVector);
 
 DECLARE_MULTICAST_DELEGATE(FOnSquadStateChanged);
 
@@ -78,8 +78,6 @@ public:
 
 	float PlayerMoveThreshold = 200.f;
 
-	
-
 	FOnSquadStateChanged OnSquadStateChanged;
 
 	void Initialize(TArray<TWeakObjectPtr<USquadComponent>> members);
@@ -105,8 +103,6 @@ public:
 
 	void ChangeState(ESquadState newState);
 
-	void OnStateChange();
-
 	void UpdateFlankSlots();
 
 	bool ShouldUpdateFlankSlots();
@@ -117,13 +113,9 @@ public:
 
 	void RunCoverQuery();
 
-	void RunFlankingQuery();
-
 	void CoverQueryResult(TSharedPtr<FEnvQueryResult> result);
 
-	void FlankQueryResult(TSharedPtr<FEnvQueryResult> result);
-
-	void PickASlot(float score);
+	void PickASlot();
 
 	FFlankSlot* FindBestAvailableSlot(AAI_Controller* requester);
 
@@ -152,6 +144,8 @@ private:
 	UEnvQuery* FlankQuery;
 
 	TArray<FFlankSlot> FlankSlots;
+
+	TArray<FFlankSlot> ReservedFlankSlots;
 
 	TArray<FVector> ChosenFlankPositions;
 
