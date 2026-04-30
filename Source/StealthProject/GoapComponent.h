@@ -110,13 +110,20 @@ public:
 
 	UBlackboardComponent* GetBlackboardData() const { return AI_BlackBoard; }
 
+	TSharedPtr<AgentBeliefs> GetBeliefFromRegistry(const FString& name) const { return MyBeliefRegistry->Get(name); }
+
 private:
 
 	AAI_Controller* AI;
+
 	ANPC* NPC;
+
 	AActor* CachedOwner;
+
 	UBlackboardComponent* AI_BlackBoard;
+
 	UActionStackComponent* ActionStackComponent;
+
 	USquadComponent* SquadComponent;
 
 	UGoapWorldStateComponent* WorldState;
@@ -126,6 +133,7 @@ private:
 	TSet<TSharedPtr<GoapAction>> Actions;
 
 	TSharedPtr<GoapGoal> CurrentGoal;
+
 	TSharedPtr<GoapGoal> LastGoal;
 
 	TSet<TSharedPtr<GoapGoal>> Goals;

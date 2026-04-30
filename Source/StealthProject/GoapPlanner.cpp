@@ -6,12 +6,15 @@
 #include "GoapAction.h"
 
 DEFINE_LOG_CATEGORY(LogGOAP);
+DEFINE_LOG_CATEGORY(LogGOAPGOAL);
 GoapPlanner::GoapPlanner()
 {
+
 }
 
 GoapPlanner::~GoapPlanner()
 {
+
 }
 
 TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* inAI, TSet<TSharedPtr<GoapGoal>> goals, TSharedPtr<GoapGoal> mostRecentGoal)
@@ -22,6 +25,11 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 		{
 			for (TSharedPtr<AgentBeliefs> belief : G->DesiredEffects)
 			{
+				if (belief->Name.Equals("FullStorages"))
+				{
+					int i = 0;
+				}
+				
 				if (!belief->Evaluate(inAI))
 				{
 					return true;
@@ -41,12 +49,18 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 	for (TSharedPtr<GoapGoal> goal : orderdGoals)
 	{
+		//TArray<TUniquePtr<Node>> AllNodes;
+		
 		Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
+		//Node* startNode = AllNodes.Add_GetRef(MakeUnique<Node>(nullptr, nullptr, goal->DesiredEffects, 0)).Get();
 		startNode->HCost = Heuristic(startNode->RequiredEffects);
 
 		Node* pathResult = FindPathAStar(startNode, inAI, agent->GetActions());
 		
-		if (!pathResult) continue;
+		if (!pathResult)
+		{
+			continue;
+		}
 
 		TArray<TSharedPtr<GoapAction>> actions = BuildPlan(pathResult);
 
@@ -200,7 +214,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		openSet.RemoveAt(0);
 
 		//Debugging
-		//UE_LOG(LogGOAP, Warning, TEXT("Processing node | G: %f H: %f F: %f | RequiredEffects: %d | OpenSet: %d ClosedSet: %d"), currentNode->GCost, currentNode->HCost, currentNode->FCost(), currentNode->RequiredEffects.Num(), openSet.Num(), closedSet.Num());
+		UE_LOG(LogGOAP, Warning, TEXT("Processing node | G: %f H: %f F: %f | RequiredEffects: %d | OpenSet: %d ClosedSet: %d"), currentNode->GCost, currentNode->HCost, currentNode->FCost(), currentNode->RequiredEffects.Num(), openSet.Num(), closedSet.Num());
 
 		//Remove any Required Effects that are already true.
 		TSet<TSharedPtr<AgentBeliefs>> requiredDesiredEffects = currentNode->RequiredEffects;
@@ -223,7 +237,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		if (requiredDesiredEffects.Num() == 0)
 		{
 			//Debugging
-			/*UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
+			UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
 			Node* trace = currentNode;
 			while (trace)
 			{
@@ -232,7 +246,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 					UE_LOG(LogGOAP, Warning, TEXT("Step: %s"), *trace->Action->Name);
 				}
 				trace = trace->Parent;
-			}*/
+			}
 
 			return currentNode;
 		}
@@ -240,13 +254,13 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		currentNode->RequiredEffects = requiredDesiredEffects;
 
 		//Debugging
-		/*UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
+		UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
 		if (requiredDesiredEffects.Num() == 1)
 		{
 			TSharedPtr<AgentBeliefs> b = *requiredDesiredEffects.CreateIterator();
 			
 			UE_LOG(LogGOAP, Verbose, TEXT("The Required Effect: %s"), *b->Name);
-		}*/
+		}
 
 		closedSet.Add(currentNode);
 		//Debugging

@@ -18,6 +18,7 @@ class GoapGoal;
 class GoapAction;
 class UGoapComponent;
 DECLARE_LOG_CATEGORY_EXTERN(LogGOAP, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogGOAPGOAL, Log, All);
 
 class STEALTHPROJECT_API GoapPlanner : public IGoapPlannerInterface
 {

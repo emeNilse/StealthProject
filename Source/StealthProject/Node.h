@@ -29,4 +29,6 @@ public:
 	}
 
 	Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost);
+
+	~Node();
 };

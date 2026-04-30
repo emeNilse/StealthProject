@@ -9,3 +9,15 @@ Node::Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBel
 	GCost = cost;
 }
 
+Node::~Node()
+{
+	delete Parent;
+
+	for (Node* n : Leaves)
+	{
+		delete n;
+	}
+
+	Leaves.Empty();
+}
+
