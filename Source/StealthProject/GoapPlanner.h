@@ -43,6 +43,9 @@ public:
 
 	TArray<TSharedPtr<GoapAction>> BuildPlan(Node* endNode);
 
+private:
+	//TArray<TUniquePtr<Node>> AllNodes;
+
 	//I was using this for "Pretty printing", but thinking I'll scrap it
 	/*FString Indent(int32 Depth)
 	{

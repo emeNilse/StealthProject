@@ -239,6 +239,7 @@ void ANPC::OnNPCStateChange()
 	}
 }
 
+
 //State debugging purposes. However, for now it looks good as a visual too.
 void ANPC::InitializeVisionCone()
 {

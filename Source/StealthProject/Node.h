@@ -30,5 +30,12 @@ public:
 
 	Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBeliefs>> effects, float cost);
 
+	Node(const Node&) = delete;
+	Node& operator=(const Node&) = delete;
+
+	Node(Node&&) = default;
+	Node& operator=(Node&&) = default;
+
 	~Node();
+
 };

@@ -20,4 +20,3 @@ Node::~Node()
 
 	Leaves.Empty();
 }
-

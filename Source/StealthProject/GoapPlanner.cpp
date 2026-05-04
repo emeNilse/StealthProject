@@ -49,10 +49,13 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 	for (TSharedPtr<GoapGoal> goal : orderdGoals)
 	{
-		//TArray<TUniquePtr<Node>> AllNodes;
+		//AllNodes.Empty();
 		
 		Node* startNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
 		//Node* startNode = AllNodes.Add_GetRef(MakeUnique<Node>(nullptr, nullptr, goal->DesiredEffects, 0)).Get();
+		/*TUniquePtr<Node> uniqueNode = MakeUnique<Node>(nullptr, nullptr, goal->DesiredEffects, 0);
+		Node* startNode = uniqueNode.Get();
+		AllNodes.Add(MoveTemp(uniqueNode));*/
 		startNode->HCost = Heuristic(startNode->RequiredEffects);
 
 		Node* pathResult = FindPathAStar(startNode, inAI, agent->GetActions());
@@ -237,7 +240,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		if (requiredDesiredEffects.Num() == 0)
 		{
 			//Debugging
-			UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
+			/*UE_LOG(LogGOAP, Warning, TEXT("Goal reached! Final node cost: &f"), currentNode->GCost);
 			Node* trace = currentNode;
 			while (trace)
 			{
@@ -246,7 +249,7 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 					UE_LOG(LogGOAP, Warning, TEXT("Step: %s"), *trace->Action->Name);
 				}
 				trace = trace->Parent;
-			}
+			}*/
 
 			return currentNode;
 		}
@@ -254,13 +257,13 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 		currentNode->RequiredEffects = requiredDesiredEffects;
 
 		//Debugging
-		UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
+		/*UE_LOG(LogGOAP, Verbose, TEXT("After pruning, RequiredEffects: %d"), requiredDesiredEffects.Num());
 		if (requiredDesiredEffects.Num() == 1)
 		{
 			TSharedPtr<AgentBeliefs> b = *requiredDesiredEffects.CreateIterator();
 			
 			UE_LOG(LogGOAP, Verbose, TEXT("The Required Effect: %s"), *b->Name);
-		}
+		}*/
 
 		closedSet.Add(currentNode);
 		//Debugging
@@ -296,6 +299,10 @@ Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TS
 			float newH = Heuristic(newEffects);
 
 			Node* neighbourNode = new Node(currentNode, action, newEffects, newG);
+			//Node* neighbourNode = AllNodes.Add_GetRef(MakeUnique<Node>(currentNode, action, newEffects, newG)).Get();
+			/*TUniquePtr<Node> uniqueNode = MakeUnique<Node>(currentNode, action, newEffects, newG);
+			Node* neighbourNode = uniqueNode.Get();
+			AllNodes.Add(MoveTemp(uniqueNode));*/
 			neighbourNode->HCost = newH;
 
 			//Debugging

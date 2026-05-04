@@ -100,6 +100,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnNPCStateChange();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShootVisuals();
+
 	virtual void PossessedBy(AController* NewController) override;
 
 	void CallCrouch();
