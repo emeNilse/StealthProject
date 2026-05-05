@@ -67,7 +67,11 @@ TSharedPtr<ActionPlan> GoapPlanner::Plan(UGoapComponent* agent, AAI_Controller* 
 
 		TArray<TSharedPtr<GoapAction>> actions = BuildPlan(pathResult);
 
-		return MakeShared<ActionPlan>(goal, actions, pathResult->GCost);
+		float cost = pathResult->GCost;
+		delete startNode;
+		EmptySets();
+
+		return MakeShared<ActionPlan>(goal, actions, cost);
 		
 		//Old path finder
 		//Node* goalNode = new Node(nullptr, nullptr, goal->DesiredEffects, 0);
@@ -201,9 +205,6 @@ bool GoapPlanner::FindPath(Node* parent, AAI_Controller* inAI, TSet<TSharedPtr<G
 
 Node* GoapPlanner::FindPathAStar(Node* parentNode, AAI_Controller* inAI, TSet<TSharedPtr<GoapAction>> actions)
 {
-	TArray<Node*> openSet;
-	TArray<Node*> closedSet;
-
 	openSet.Add(parentNode);
 
 	while (openSet.Num() > 0)
@@ -405,5 +406,11 @@ TArray<TSharedPtr<GoapAction>> GoapPlanner::BuildPlan(Node* endNode)
 	}
 	Algo::Reverse(plan);
 	return plan;
+}
+
+void GoapPlanner::EmptySets()
+{
+	openSet.Empty();
+	closedSet.Empty();
 }
 

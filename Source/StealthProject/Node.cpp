@@ -11,12 +11,12 @@ Node::Node(Node* parent, TSharedPtr<GoapAction> action, TSet<TSharedPtr<AgentBel
 
 Node::~Node()
 {
-	delete Parent;
-
 	for (Node* n : Leaves)
 	{
-		delete n;
+		if (n)
+		{
+			delete n;
+		}
 	}
-
 	Leaves.Empty();
 }

@@ -16,13 +16,5 @@ bool AgentBeliefs::Equals(TSharedPtr<AgentBeliefs> comparison)
 	return (this->Name == comparison->Name);
 }
 
-FVector const AgentBeliefs::GetLocation()
-{
-	return ObservedLocation ? ObservedLocation() : FVector::ZeroVector;
-}
-
-AgentBeliefs::Builder::Builder(TSharedPtr<AgentBeliefs>& InBelief) : Belief(InBelief)
-{
-
-}
+AgentBeliefs::Builder::Builder(TSharedPtr<AgentBeliefs>& InBelief) : Belief(InBelief) {}
 

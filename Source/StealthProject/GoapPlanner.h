@@ -44,6 +44,12 @@ public:
 	TArray<TSharedPtr<GoapAction>> BuildPlan(Node* endNode);
 
 private:
+
+	TArray<Node*> openSet;
+	TArray<Node*> closedSet;
+
+	void EmptySets();
+
 	//TArray<TUniquePtr<Node>> AllNodes;
 
 	//I was using this for "Pretty printing", but thinking I'll scrap it

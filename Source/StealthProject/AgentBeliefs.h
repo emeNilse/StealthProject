@@ -28,13 +28,10 @@ public:
 	FString Name;
 
 	TFunction<bool()> ConditionFunc;
-	TFunction<FVector()> ObservedLocation;
 
 	bool const Evaluate(AAI_Controller* inAI);
 
 	bool Equals(TSharedPtr<AgentBeliefs> comparison);
-
-	FVector const GetLocation();
 
 	AgentBeliefs(FString name);
 
@@ -45,19 +42,11 @@ public:
 
 	public:
 		Builder(TSharedPtr<AgentBeliefs>& InBelief);
-		//Builder(const FString name);
-		//Builder(const TSharedPtr<AgentBeliefs>& name);
 
 		//I don't understand why this is what works, I tried my own way first but a youtube example and chatgpt told me it had to be written like this
 		Builder& WithCondition(TFunction<bool()> func)
 		{
 			Belief->ConditionFunc = func;
-			return *this;
-		}
-
-		Builder& WithLocation(TFunction<FVector()> func)
-		{
-			Belief->ObservedLocation = func;
 			return *this;
 		}
 
