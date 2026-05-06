@@ -54,7 +54,6 @@ public:
 		{
 			return Belief;
 		}
-
 	};
 
 	class BeliefRegistry
@@ -66,13 +65,9 @@ public:
 			{
 				Cache.Add(name, MakeShared<AgentBeliefs>(name));
 			}
-
 			return Cache[name];
 		}
-
 	private:
 		TMap<FString, TSharedPtr<AgentBeliefs>> Cache;
 	};
 };
-
-

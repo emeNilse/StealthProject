@@ -155,5 +155,4 @@ private:
 	int SkirmisherRolesAvailable = 2;
 
 	float LastFlankDirection = 0.f;
-	
 };

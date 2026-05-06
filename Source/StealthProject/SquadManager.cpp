@@ -7,10 +7,7 @@
 #include "SquadComponent.h"
 #include "StealthProjectCharacter.h"
 
-ASquadManager::ASquadManager()
-{
-	
-}
+ASquadManager::ASquadManager(){}
 
 void ASquadManager::Initialize(TArray<TWeakObjectPtr<USquadComponent>> members)
 {

@@ -75,7 +75,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void MakeAPlanForActionStack();
@@ -145,12 +144,14 @@ private:
 	TUniquePtr<AgentBeliefs::BeliefRegistry> MyBeliefRegistry;
 
 	TUniquePtr<IGoapPlannerInterface> GoapPlanner;
+
 	UGoapFactorySubsystem* GoapFactory;
 
 	TUniquePtr<BeliefFactory> MyBeliefFactory;
 
 	NPCLatestStats LastNPCStats;
-	ENPCState LastNPCState = ENPCState::Calm;
-	ESquadState LastSquadState = ESquadState::Neutral;
 
+	ENPCState LastNPCState = ENPCState::Calm;
+
+	ESquadState LastSquadState = ESquadState::Neutral;
 };

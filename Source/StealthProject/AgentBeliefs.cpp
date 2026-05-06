@@ -17,4 +17,3 @@ bool AgentBeliefs::Equals(TSharedPtr<AgentBeliefs> comparison)
 }
 
 AgentBeliefs::Builder::Builder(TSharedPtr<AgentBeliefs>& InBelief) : Belief(InBelief) {}
-
